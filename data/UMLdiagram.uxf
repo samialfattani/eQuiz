@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.1.0">
+  <zoom_level>12</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>48</x>
+      <y>36</y>
+      <w>120</w>
+      <h>168</h>
+    </coordinates>
+    <panel_attributes>/AbstractClass/
+Question
+--
+id: Long
+text: String
+image: Image
+studentAnswer: String
+
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>192</x>
+      <y>36</y>
+      <w>252</w>
+      <h>228</h>
+    </coordinates>
+    <panel_attributes>MultipleChoice
+Package::frawla.equiz.exam
+--
+_-ClassAttribute: Long_
+--
+#Operation(i: int): int
+/+isCorrectAnswer()/
+--
+Responsibilities
+-- Resp1
+*-- Resp2*</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

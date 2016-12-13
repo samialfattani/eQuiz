@@ -1,0 +1,91 @@
+	apply plugin: 'java'
+	apply plugin: 'eclipse'
+
+	repositories{
+		mavenLocal();
+		mavenCentral();		
+	}
+
+	dependencies{
+		testCompile 'junit:junit:4.+'
+		
+		compile files ( System.getenv()['COMMON_JAVA_LIB'] + '/excel/poi-3.14-20160307.jar')		
+		compile files ( System.getenv()['COMMON_JAVA_LIB'] + '/excel/poi-ooxml-3.14-20160307.jar')
+		compile files ( System.getenv()['COMMON_JAVA_LIB'] + '/excel/poi-ooxml-schemas-3.14-20160307.jar')
+		compile files ( System.getenv()['COMMON_JAVA_LIB'] + '/excel/poi-scratchpad-3.14-20160307.jar')
+		compile files ( System.getenv()['COMMON_JAVA_LIB'] + '/excel/xmlbeans-2.6.0.jar')
+		compile 'uk.com.robust-it:cloning:1.9.2'
+	}
+
+	eclipse {
+		classpath {	
+		    //customizing the classes output directory:
+		    defaultOutputDir = file('build-eclipse')
+		
+		    //default settings for downloading sources and Javadoc:
+		    downloadSources = false
+		    downloadJavadoc = true
+
+			file
+			{
+	            whenMerged { cp ->
+	                // Add sources to a classpath entry
+	                def fileReferenceFactory = new org.gradle.plugins.ide.eclipse.model.internal.FileReferenceFactory()
+	
+					def entry 
+					entry = cp.entries.find{ e -> e.path.endsWith('poi-3.14-20160307.jar') }
+					entry.javadocPath = fileReferenceFactory.fromPath('http://poi.apache.org/apidocs')
+	                entry = cp.entries.find{ e -> e.path.endsWith('poi-ooxml-3.14-20160307.jar') }
+					entry.javadocPath = fileReferenceFactory.fromPath('http://poi.apache.org/apidocs')
+	                entry = cp.entries.find{ e -> e.path.endsWith('poi-ooxml-schemas-3.14-20160307.jar') }
+					entry.javadocPath = fileReferenceFactory.fromPath('http://poi.apache.org/apidocs')
+	                entry = cp.entries.find{ e -> e.path.endsWith('poi-scratchpad-3.14-20160307.jar') }
+					entry.javadocPath = fileReferenceFactory.fromPath('http://poi.apache.org/apidocs')
+	                entry = cp.entries.find{ e -> e.path.endsWith('xmlbeans-2.6.0.jar') }
+					entry.javadocPath = fileReferenceFactory.fromPath('http://poi.apache.org/apidocs')
+	                
+	                //entry.javadocPath = fileReferenceFactory.fromPath('http://poi.apache.org/apidocs/')	                
+	                //entry.javadocPath = fileReferenceFactory.fromPath( System.getenv()['COMMON_JAVA_LIB'] + '/excel/apidocs.zip' )
+            	}
+            }
+		}
+	}
+	
+	apply plugin: 'application' //adds 'run' task	
+	mainClassName = 'frawla.equiz.server.Main'
+
+	apply plugin: 'distribution' //adds 'distZip' task	
+	version = '2.2.0.5' 
+	distributions {
+    	custom {}
+	}
+
+	jar {
+    	manifest {
+    	 attributes(
+			'Class-Path': ".",
+    	 	'Implementation-Title': "Gradle",
+            'Implementation-Version': version,
+            'Main-Class': mainClassName)
+    	}
+	}
+
+	task samiJar(type: Copy, dependsOn:[jar]) << {
+		copy {
+			String p = "$buildDir/libs/$project.name-$version"
+				.replace("/", File.separator).replace("\\", File.separator)
+	    	from (p + ".jar")
+	    	
+	    	into "Publish"
+	    		.replace("/", File.separator).replace("\\", File.separator)
+	    }
+	}
+	
+	task simo() << {
+		String p = "$buildDir/libs/$project.name-$version".replace("/", File.separator).replace("\\", File.separator)				
+	    println p + ".jar"
+	    println "source compatibility " + sourceCompatibility
+		print System.getenv()['COMMON_JAVA_LIB'] 
+	}
+	
+	

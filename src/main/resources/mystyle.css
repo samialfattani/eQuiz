@@ -1,0 +1,27 @@
+
+
+/*for coloring progress bar*/
+.red-bar{ 
+	-fx-accent: red;    
+	-fx-control-inner-background: yellow;
+	
+}
+
+
+.btn{
+	-fx-background-repeat: stretch;   
+    -fx-background-position: center center;
+}
+
+.btn:hover{
+	-fx-background-repeat: stretch;   
+    -fx-background-position: center center;
+    -fx-effect: dropshadow(three-pass-box, blue, 5, 0.3, 0, 0); 
+}
+
+.highlightedRow {
+    -fx-background-color: brown;
+    -fx-background-insets: 0, 1, 2;
+    -fx-background: -fx-accent;
+    -fx-text-fill: -fx-selection-bar-text;
+}

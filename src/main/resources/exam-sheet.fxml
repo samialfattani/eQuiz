@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="pnlRoot" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="620.0" minWidth="914.0" prefHeight="722.0" prefWidth="1025.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frawla.equiz.client.ExamSheetController">
+   <children>
+      <TextArea fx:id="txtQuestion" editable="false" layoutX="14.0" layoutY="71.0" prefHeight="200.0" prefWidth="785.0" promptText="put the question herer" text="put the question herer" wrapText="true" AnchorPane.bottomAnchor="451.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="220.0" AnchorPane.topAnchor="71.0">
+         <font>
+            <Font name="Consolas" size="22.0" />
+         </font>
+      </TextArea>
+      <ImageView fx:id="imgFigure" fitHeight="200.0" fitWidth="200.0" layoutX="811.0" layoutY="71.0" onMouseClicked="#imgFigure_click" onMouseEntered="#imgFigure_mouseEntered" onMouseExited="#imgFigure_mouseExited" pickOnBounds="true" preserveRatio="true" style="-fx-background-color: red;" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="71.0">
+         <image>
+            <Image url="@images/imagebox.png" />
+         </image>
+      </ImageView>
+      <VBox fx:id="pnlChoices" layoutX="15.0" layoutY="310.0" prefHeight="432.0" prefWidth="951.0" spacing="5.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="53.0">
+         <children>
+            <RadioButton fx:id="ch1" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="65.0" prefWidth="1008.0" style="-fx-border-color: blue; -fx-padding: 4;" text="hello this is my hil lkjem meokm okemom e koemkoemkemckmck mk mkm kmkm k mk mk mkm imim km ;klm;kl m " wrapText="true">
+               <font>
+                  <Font name="Consolas Bold" size="18.0" />
+               </font>
+            </RadioButton>
+            <RadioButton fx:id="ch2" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="65.0" prefWidth="1008.0" style="-fx-border-color: blue; -fx-padding: 4;" text="hello this is my hil lkjem meokm okemom e koemkoemkemckmck mk mkm kmkm k mk mk mkm imim km ;klm;kl m " wrapText="true">
+               <font>
+                  <Font name="Consolas Bold" size="18.0" />
+               </font>
+            </RadioButton>
+            <RadioButton fx:id="ch3" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="65.0" prefWidth="1008.0" style="-fx-border-color: blue; -fx-padding: 4;" text="hello this is my hil lkjem meokm okemom e koemkoemkemckmck mk mkm kmkm k mk mk mkm imim km ;klm;kl m " wrapText="true">
+               <font>
+                  <Font name="Consolas Bold" size="18.0" />
+               </font>
+            </RadioButton>
+            <RadioButton fx:id="ch4" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="65.0" prefWidth="1008.0" style="-fx-border-color: blue; -fx-padding: 4;" text="hello this is my hil lkjem meokm okemom e koemkoemkemckmck mk mkm kmkm k mk mk mkm imim km ;klm;kl m " wrapText="true">
+               <font>
+                  <Font name="Consolas Bold" size="18.0" />
+               </font>
+            </RadioButton>
+            <RadioButton fx:id="ch5" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="65.0" prefWidth="1008.0" style="-fx-border-color: blue; -fx-padding: 4;" text="hello this is my hil lkjem meokm okemom e koemkoemkemckmck mk mkm kmkm k mk mk mkm imim km ;klm;kl m " wrapText="true">
+               <font>
+                  <Font name="Consolas Bold" size="18.0" />
+               </font></RadioButton>
+            <RadioButton fx:id="ch6" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="65.0" prefWidth="1008.0" style="-fx-border-color: blue; -fx-padding: 4;" text="hello this is my hil lkjem meokm okemom e koemkoemkemckmck mk mkm kmkm k mk mk mkm imim km ;klm;kl m " wrapText="true">
+               <font>
+                  <Font name="Consolas Bold" size="18.0" />
+               </font>
+            </RadioButton>
+         </children>
+      </VBox>
+      <ProgressBar fx:id="prgTime" layoutX="15.0" layoutY="36.0" prefHeight="28.0" prefWidth="200.0" progress="0.0" />
+      <Button fx:id="btnFinish" focusTraversable="false" layoutX="811.0" layoutY="9.0" mnemonicParsing="false" onAction="#btnFinish_click" prefHeight="54.0" prefWidth="200.0" text="Finish Exam" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="9.0">
+         <font>
+            <Font name="Consolas" size="22.0" />
+         </font>
+      </Button>
+      <Label fx:id="lblQuesCounter" layoutX="268.0" layoutY="37.0" prefHeight="24.0" prefWidth="68.0" style="-fx-background-color: lightyellow; -fx-border-color: blue; -fx-alignment: center;" text="?/?" textAlignment="CENTER" wrapText="true" AnchorPane.leftAnchor="268.0" AnchorPane.topAnchor="37.0">
+         <font>
+            <Font name="Consolas Bold" size="22.0" />
+         </font>
+      </Label>
+      <Label fx:id="lblTime" layoutX="15.0" layoutY="2.0" prefHeight="34.0" prefWidth="322.0" text="Exam Time 0:00:00" textAlignment="CENTER">
+         <font>
+            <Font name="Consolas Bold" size="22.0" />
+         </font>
+      </Label>
+      <ImageView fx:id="imgConnection" fitHeight="54.0" fitWidth="110.0" layoutX="745.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true" style="-fx-background-color: red;" AnchorPane.rightAnchor="220.0">
+         <image>
+            <Image url="@images/imagebox.png" />
+         </image>
+      </ImageView>
+      <Button fx:id="btnBackup" layoutX="629.0" layoutY="7.0" mnemonicParsing="false" onAction="#btnBackup_click" text="btnBackup" visible="false" />
+      <Label fx:id="lblName" layoutX="392.0" layoutY="38.0" prefHeight="25.0" prefWidth="342.0" style="-fx-background-color: lightyellow; -fx-border-color: blue;" text="--" textAlignment="CENTER" wrapText="true" AnchorPane.leftAnchor="392.0" AnchorPane.topAnchor="38.0">
+         <font>
+            <Font name="Consolas Bold" size="20.0" />
+         </font>
+      </Label>
+      <Label fx:id="lblID" layoutX="392.0" layoutY="10.0" prefHeight="25.0" prefWidth="130.0" style="-fx-background-color: lightyellow; -fx-border-color: blue;" text="--" textAlignment="CENTER" wrapText="true" AnchorPane.leftAnchor="392.0" AnchorPane.topAnchor="10.0">
+         <font>
+            <Font name="Consolas Bold" size="20.0" />
+         </font>
+      </Label>
+      <Label fx:id="lblNext" contentDisplay="CENTER" depthTest="DISABLE" layoutX="344.0" layoutY="35.0" onMouseClicked="#lblNext_MouseClicked" styleClass="btn" text="-&gt;" AnchorPane.leftAnchor="344.0" AnchorPane.topAnchor="35.0">
+         <font>
+            <Font size="22.0" />
+         </font>
+      </Label>
+      <Label fx:id="lblPrev" contentDisplay="CENTER" depthTest="DISABLE" layoutX="233.0" layoutY="34.0" onMouseClicked="#lblPrev_MouseClicked" styleClass="btn" text="&lt;-" AnchorPane.leftAnchor="233.0" AnchorPane.topAnchor="34.0">
+         <font>
+            <Font size="22.0" />
+         </font>
+      </Label>
+      <TextField fx:id="txtBlankField" layoutX="14.0" layoutY="276.0" prefHeight="34.0" prefWidth="785.0" promptText="don't care about letter case or spaces" AnchorPane.bottomAnchor="410.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="220.0">
+         <font>
+            <Font name="Consolas Bold" size="18.0" />
+         </font>
+      </TextField>
+      <Label fx:id="lblMark" layoutX="700.0" layoutY="246.0" prefHeight="25.0" prefWidth="165.0" style="-fx-alignment: center; -fx-background-color: lightgray;" text="?" wrapText="true" AnchorPane.bottomAnchor="456.0" AnchorPane.rightAnchor="223.0">
+         <font>
+            <Font name="Consolas Bold" size="18.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

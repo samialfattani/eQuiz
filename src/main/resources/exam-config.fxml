@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="317.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frawla.equiz.server.ExamConfigController">
+   <children>
+      <TextArea fx:id="txtInfo" layoutX="19.0" layoutY="67.0" prefHeight="192.0" prefWidth="562.0" text="None" AnchorPane.bottomAnchor="58.0" AnchorPane.leftAnchor="19.0" AnchorPane.rightAnchor="19.0" AnchorPane.topAnchor="67.0">
+         <font>
+            <Font name="Consolas" size="16.0" />
+         </font></TextArea>
+      <Button fx:id="btnOpen" layoutX="19.0" layoutY="266.0" mnemonicParsing="false" onAction="#btnOpen_click" text="Open..." AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="19.0" />
+      <Button fx:id="btnNew" layoutX="95.0" layoutY="266.0" mnemonicParsing="false" onAction="#btnNew_click" text="New Template..." AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="95.0" />
+      <Button fx:id="btnStart" layoutX="463.0" layoutY="266.0" mnemonicParsing="false" onAction="#btnStart_click" prefHeight="39.0" prefWidth="119.0" text="Start Exam" AnchorPane.bottomAnchor="12.0" AnchorPane.rightAnchor="18.0" />
+      <Label fx:id="lblFile" contentDisplay="TOP" layoutX="19.0" layoutY="14.0" prefHeight="48.0" prefWidth="562.0" style="-fx-background-color: lightyellow;" text="File" wrapText="true" AnchorPane.leftAnchor="19.0" AnchorPane.rightAnchor="19.0" AnchorPane.topAnchor="14.0">
+         <font>
+            <Font name="Consolas Bold" size="18.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

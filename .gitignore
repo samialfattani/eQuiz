@@ -1,0 +1,10 @@
+.gradle
+.settings
+build
+build-eclipse
+publish
+.project
+.classpath
+*.lnk
+.gradle
+Thumb.mdb
