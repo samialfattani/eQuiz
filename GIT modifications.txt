@@ -1,0 +1,9 @@
+
+- all FXML files are renamed with prefex of "fx-<file name>.fxml"
+- all FXML Controller classes also renamed with prefex of "Fx<class name>"
+
+- StudentListFactory is created to read the answers from Excel file and load it into Student List. This feature is about reload the student list so that a PDF extract file can be generated even after finish of exam.
+
+- Exam class will be divided into two classes ExamConfig (holds config. info. only) and ExamSheet (holds list of questions)
+
+- the feature of "Export to PDF" is added successfully. Now any student can review his answers on the printed sheet including marks.

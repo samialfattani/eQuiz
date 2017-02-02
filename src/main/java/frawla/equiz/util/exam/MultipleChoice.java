@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.xml.bind.annotation.XmlType;
+
 public class MultipleChoice extends Question implements Serializable, Randomizable
 {
 	private static final long serialVersionUID = -9129997940545881330L;
@@ -27,8 +29,8 @@ public class MultipleChoice extends Question implements Serializable, Randomizab
 	}
 	public List<String> getOrderList()
 	{
-		if(orderList.isEmpty())
-			Choices.forEach((k,v) -> orderList.add(k) );
+//		if(orderList.isEmpty())
+//			Choices.forEach((k,v) -> orderList.add(k) );
 			
 		return orderList;
 	}

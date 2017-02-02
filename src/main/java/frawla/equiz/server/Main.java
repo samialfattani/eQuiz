@@ -18,7 +18,7 @@ public class Main extends Application
 	public void start(Stage window) throws Exception
 	{
 		try{
-			ExamConfig examConfig = new ExamConfig();
+			FxExamConfig examConfig = new FxExamConfig();
 			File f = new File("data/IT100-2.xlsx");
 			if(f.exists())
 				examConfig.getMyController().setExamFile(f);

@@ -21,7 +21,12 @@ import java.text.SimpleDateFormat;
 import java.util.Optional;
 
 import javax.swing.JOptionPane;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
+import frawla.equiz.util.exam.Student;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.control.Alert;
@@ -151,7 +156,7 @@ public class Util
 		return Optional.ofNullable(selectedFile);
 	}
 
-	public static Optional<File> getFileChooserForSave()
+	public static Optional<File> getFileChooserForSaveExcel()
 	{
 		FileChooser fc = new FileChooser();
 		fc.setTitle("Save File");
@@ -165,6 +170,18 @@ public class Util
 		return Optional.ofNullable(selectedFile);
 	}
 
+	public static Optional<File> getFileChooserForSavePDF()
+	{
+		FileChooser fc = new FileChooser();
+		fc.setTitle("Save File");
+		fc.getExtensionFilters().addAll(
+				new ExtensionFilter("PDF Files", "*.pdf"),
+				new ExtensionFilter("All Files", "*.*"));
+		fc.setTitle("Save PDF files");
+		fc.setInitialDirectory(new File("."));
+		File selectedFile = fc.showSaveDialog( null );
+		return Optional.ofNullable(selectedFile);
+	}
 
 	public static String formatTime(Duration d)
 	{
@@ -369,4 +386,36 @@ public class Util
 		
 	    return s.matches("[-+]?\\d*\\.?\\d+");  
 	}  
+
+
+	public static void jaxbStudentToXML(Student st, File f) {
+
+        try {
+            JAXBContext context = JAXBContext.newInstance(Student.class);
+            Marshaller m = context.createMarshaller();
+            //for pretty-print XML in JAXB
+            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+
+            // Write to System.out for debugging
+            // m.marshal(emp, System.out);
+
+            // Write to File
+            m.marshal(st, f);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+    }
+
+	public static Student jaxbXMLToStudent(File f) {
+        try {
+            JAXBContext context = JAXBContext.newInstance(Student.class);
+            Unmarshaller un = context.createUnmarshaller();
+            Student st = (Student) un.unmarshal(f);
+            return st;
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

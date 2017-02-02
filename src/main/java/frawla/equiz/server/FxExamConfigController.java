@@ -10,9 +10,9 @@ import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 import frawla.equiz.util.Util;
-import frawla.equiz.util.exam.Exam;
+import frawla.equiz.util.exam.ExamConfig;
+import frawla.equiz.util.exam.ExamLoader;
 import frawla.equiz.util.exam.Student;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -24,19 +24,19 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-class ExamConfig
+class FxExamConfig
 {
 	private FXMLLoader fxmlLoader;
-	private ExamConfigController myController;
+	private FxExamConfigController myController;
 
-	public ExamConfig()
+	public FxExamConfig()
 	{		
 		try
 		{
-			fxmlLoader = new FXMLLoader( Util.getResource("exam-config.fxml").toURL() );			
+			fxmlLoader = new FXMLLoader( Util.getResource("fx-exam-config.fxml").toURL() );			
 			
 			AnchorPane root = (AnchorPane) fxmlLoader.load();
-			myController = (ExamConfigController) fxmlLoader.getController();
+			myController = (FxExamConfigController) fxmlLoader.getController();
 			
 			Stage window = new Stage( );
 			window.setScene(new Scene(root, 700, 450));
@@ -51,38 +51,42 @@ class ExamConfig
 		
 	}
 	
-	public ExamConfigController getMyController(){
+	public FxExamConfigController getMyController(){
 		return myController;
 	}
 
 }
 
 
-public class ExamConfigController
+public class FxExamConfigController
 {
 	@FXML private Label lblFile; 
 	@FXML private TextArea txtInfo;
 	@FXML private Button btnOpen;
 
 	//private static AnchorPane root ;
-	private Exam examConfig;
-	
+	private ExamConfig examConfig;
 	private Map<String, byte[]> imageMap = new HashMap<>();
+	ObservableList<Student> Students;
 
 	public void setExamFile(File examFile) 
 	{
 		try
 		{
 			txtInfo.setText("");
-			examConfig = new Exam(examFile);
+			ExamLoader.getInstance().load(examFile);
+			examConfig = ExamLoader.getInstance().getExamConfig();
 		
-			for(File f : examConfig.getImageFiles())
+			for(File f : ExamLoader.getInstance().getImageFiles())
 			{
 				imageMap.put(f.getName(), Util.fileToByteArray(f));	
 			}
 		
+			Students = ExamLoader.getInstance().getStudentList();
+			
 			lblFile.setText(examFile.getAbsolutePath());
-			txtInfo.setText(examConfig.toString());
+			txtInfo.setText(examConfig.toString() );
+			txtInfo.appendText("\n" + ExamLoader.getInstance().getQuestionStatistics());
 			txtInfo.appendText("\n\nexamConfig Object has been configured");
 		}
 		catch (EncryptedDocumentException | InvalidFormatException | IOException e){
@@ -102,7 +106,7 @@ public class ExamConfigController
 	public void btnNew_click()
 	{
 		//TODO: button New Template
-		Util.getFileChooserForSave()
+		Util.getFileChooserForSaveExcel()
 			.filter( f -> !f.exists() )
 			.ifPresent( f -> {
 				Util.copyFile(new File(Util.getResource("Template.xlsx")),  f);
@@ -113,19 +117,22 @@ public class ExamConfigController
 
 	public void btnStart_click()
 	{
-		Optional.ofNullable(examConfig).ifPresent( exam ->
+		Optional.ofNullable(examConfig).ifPresent( examConf ->
 		{
-			Monitor monitor = new Monitor();
-			monitor.getMyController().setExamConfig(exam);
-			monitor.getMyController().setImageList(imageMap);				
+			FxMonitor monitor = new FxMonitor();
+			monitor.getMyController().setExamConfig(examConf);
+			monitor.getMyController().setImageList(imageMap);
+			monitor.getMyController().setStudentList(Students);
+			
 			//hide this current window
 			btnOpen.getScene().getWindow().hide();
 
 		});
+		
 	}
 
 	//*************************** SETTERS AND GETTERS
-	public Exam getExamConfig()
+	public ExamConfig getExamConfig()
 	{
 		return examConfig;
 	}

@@ -75,7 +75,6 @@ public class ExamTableView extends TableView<Student>
 		colStartPoint.setCellFactory(new DateCellFactory());
 		colTimeLeft.setCellFactory(new DurationCellFactory());
 		colLastUpdate.setCellFactory(new DateCellFactory());
-		
 
 		getColumns().addAll(colConnected, colId, colName, colStatus, colStartPoint, colTimeLeft, colLastUpdate);
 

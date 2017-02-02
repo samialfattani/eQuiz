@@ -17,7 +17,7 @@ import frawla.equiz.util.Channel;
 import frawla.equiz.util.Message;
 import frawla.equiz.util.Util;
 import frawla.equiz.util.exam.BlankField;
-import frawla.equiz.util.exam.Exam;
+import frawla.equiz.util.exam.ExamSheet;
 import frawla.equiz.util.exam.MultipleChoice;
 import frawla.equiz.util.exam.Question;
 import frawla.equiz.util.exam.RegisterInfo;
@@ -52,19 +52,19 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-class ExamSheet
+class FxExamSheet
 {
 	private FXMLLoader fxmlLoader;
-	private ExamSheetController myController;
+	private FxExamSheetController myController;
 
-	public ExamSheet()
+	public FxExamSheet()
 	{
 		try
 		{
-			fxmlLoader = new FXMLLoader(Util.getResource("exam-sheet.fxml").toURL());			
+			fxmlLoader = new FXMLLoader(Util.getResource("fx-exam-sheet.fxml").toURL());			
 			
 			AnchorPane root = (AnchorPane) fxmlLoader.load();
-			myController = (ExamSheetController) fxmlLoader.getController();
+			myController = (FxExamSheetController) fxmlLoader.getController();
 
 			Scene scene = new Scene(root, 1000, 700);
 			scene.getStylesheets().add(Util.getResource("mystyle.css").toURL().toExternalForm());
@@ -85,13 +85,13 @@ class ExamSheet
 		
 	}
 	
-	public ExamSheetController getMyController(){
+	public FxExamSheetController getMyController(){
 		return myController;
 	}
 
 }
 
-public class ExamSheetController implements Initializable
+public class FxExamSheetController implements Initializable
 {
 	@FXML private AnchorPane pnlRoot ;
 	@FXML private RadioButton ch1;
@@ -116,7 +116,7 @@ public class ExamSheetController implements Initializable
 	@FXML private Button btnFinish;
 	@FXML private Label lblMark;
 
-	private Exam myExam;
+	private ExamSheet mySheet;
 	public String studentID = ""; 
 	public String studentName = "";
 	
@@ -168,7 +168,7 @@ public class ExamSheetController implements Initializable
 		    @Override
 		    public void handle(ActionEvent event) 
 		    {
-				String str = (myExam.timingType == TimingType.EXAM_LEVEL)? "Exam Time: " :"Question Time: ";
+				String str = (mySheet.getExamConfig().timingType == TimingType.EXAM_LEVEL)? "Exam Time: " :"Question Time: ";
 				str += Util.formatTime(timeLeft); 
 				timeLeft = timeLeft.subtract(Duration.seconds(1) );
 				lblTime.setText(str);
@@ -178,8 +178,8 @@ public class ExamSheetController implements Initializable
 			private void setPrgTime()
 			{
 				double ratio; 
-				if(myExam.timingType == TimingType.EXAM_LEVEL)
-					ratio = timeLeft.toSeconds() / myExam.examTime.toSeconds();
+				if(mySheet.getExamConfig().timingType == TimingType.EXAM_LEVEL)
+					ratio = timeLeft.toSeconds() / mySheet.getExamConfig().examTime.toSeconds();
 				else
 					ratio = timeLeft.toSeconds() / currentQues.getTime().toSeconds();
 				
@@ -212,10 +212,10 @@ public class ExamSheetController implements Initializable
 	
 	private void runExam(Duration tLeft) throws IOException
 	{
-		currentQues = myExam.getCurrentQuestion();		
+		currentQues = mySheet.getCurrentQuestion();		
 		btnFinish.setDisable(false);
 
-		if(myExam.timingType == TimingType.EXAM_LEVEL)
+		if(mySheet.getExamConfig().timingType == TimingType.EXAM_LEVEL)
 			timeLeft = tLeft;
 		else
 			timeLeft = currentQues.getTime().subtract(currentQues.getConsumedTime()) ;
@@ -229,15 +229,15 @@ public class ExamSheetController implements Initializable
 	
 	public void lblNext_MouseClicked() throws IOException{
 		setAnswer();
-		int currIndex = myExam.getQustionList().indexOf(currentQues);		
-		currentQues = myExam.getQustionList().get(currIndex+1);
+		int currIndex = mySheet.getQustionList().indexOf(currentQues);		
+		currentQues = mySheet.getQustionList().get(currIndex+1);
 		loadQuestion( currentQues );
 	}
 	
 	public void lblPrev_MouseClicked() throws IOException{
 		setAnswer();
-		int i = myExam.getQustionList().indexOf(currentQues);
-		currentQues = myExam.getQustionList().get(i-1);		
+		int i = mySheet.getQustionList().indexOf(currentQues);
+		currentQues = mySheet.getQustionList().get(i-1);		
 		loadQuestion( currentQues );
 	}
 
@@ -256,7 +256,7 @@ public class ExamSheetController implements Initializable
 		currentQues.AppendConsumedTime( Duration.millis(endCountingTime - startCountingTime)  );
 		startCountingTime = System.currentTimeMillis();
 		
-		myExam.currentQuesIdx = myExam.getQustionList().indexOf(currentQues);
+		mySheet.currentQuesIdx = mySheet.getQustionList().indexOf(currentQues);
 	}
 	
 	public void btnFinish_click() throws IOException
@@ -269,8 +269,8 @@ public class ExamSheetController implements Initializable
 		if( res.isPresent() && res.get() == ButtonType.CANCEL) 
 			    return;
 		
-    	Message<Exam> msg = new Message<>(
-    			Message.FINAL_COPY_OF_EXAM_WITH_ANSWERS, myExam);
+    	Message<ExamSheet> msg = new Message<>(
+    			Message.FINAL_COPY_OF_EXAM_WITH_ANSWERS, mySheet);
     	myChannel.sendMessage(msg);
 		
     	ExamFinished  = true;
@@ -282,14 +282,14 @@ public class ExamSheetController implements Initializable
 	
 	private void loadQuestion(Question q) 
 	{
-		int idx = myExam.getQustionList().indexOf(q) +1;
+		int idx = mySheet.getQustionList().indexOf(q) +1;
 		txtQuestion.setText(q.getText());
-		lblQuesCounter.setText( idx + "/" + myExam.getQustionList().size() );
+		lblQuesCounter.setText( idx + "/" + mySheet.getQustionList().size() );
 		imgFigure.setImage(  getImage(q.getImgFileName()) );
 		txtQuestion.requestFocus();
 		
 		
-		if(myExam.timingType == TimingType.QUESTION_LEVEL)
+		if(mySheet.getExamConfig().timingType == TimingType.QUESTION_LEVEL)
 			timeLeft = q.getTime().subtract(q.getConsumedTime()).add(Duration.seconds(2));
 
 		lblMark.setText( String.format("Marks: %.2f", q.getMark()) );
@@ -322,15 +322,15 @@ public class ExamSheetController implements Initializable
 		}
 		
 		//enable/disable buttons
-		i = myExam.getQustionList().indexOf(q);
-		lblNext.setDisable(i == myExam.getQustionList().size()-1);
+		i = mySheet.getQustionList().indexOf(q);
+		lblNext.setDisable(i == mySheet.getQustionList().size()-1);
 		lblPrev.setDisable(i == 0);
 		loadAnswer();
 		
 		if(ExamFinished)
 			setDisableAll(true);
 		
-		else if(timeLeft.lessThan(Duration.ZERO) && myExam.timingType == TimingType.QUESTION_LEVEL)
+		else if(timeLeft.lessThan(Duration.ZERO) && mySheet.getExamConfig().timingType == TimingType.QUESTION_LEVEL)
 			// if the question time is up.
 			setDisableAll(true);
 		else if(timeLeft.lessThan(Duration.ZERO) && !q.getStudentAnswer().equals(""))
@@ -432,7 +432,7 @@ public class ExamSheetController implements Initializable
 				btnFinish.setDisable(true);
 			break;
 			case Message.EXAM_OBJECT: 
-				myExam = (Exam) msg.getData();
+				mySheet = (ExamSheet) msg.getData();
 				myChannel.sendMessage(new Message<String>(Message.EXAM_OBJECT_RECIVED_SUCCESSFYLLY));								
 			break;
 			case Message.IMAGES_LIST: 
@@ -445,7 +445,7 @@ public class ExamSheetController implements Initializable
 			case Message.GIVE_ME_A_BACKUP_NOW:
 				setAnswer();
 		    	myChannel.sendMessage(
-		    			new Message<>(Message.BACKUP_COPY_OF_EXAM_WITH_ANSWERS, myExam));	
+		    			new Message<>(Message.BACKUP_COPY_OF_EXAM_WITH_ANSWERS, mySheet));	
 			break;				
 			case Message.KHALAS_TIMES_UP:				
 				new Alert(AlertType.INFORMATION, "TIME'S UP	").showAndWait();
@@ -529,8 +529,8 @@ public class ExamSheetController implements Initializable
 	{
 		//TODO: remove this button
 		setAnswer();
-    	Message<Exam> msg = new Message<>(
-    			Message.BACKUP_COPY_OF_EXAM_WITH_ANSWERS, myExam);
+    	Message<ExamSheet> msg = new Message<>(
+    			Message.BACKUP_COPY_OF_EXAM_WITH_ANSWERS, mySheet);
     	myChannel.sendMessage(msg);		
 	}
 

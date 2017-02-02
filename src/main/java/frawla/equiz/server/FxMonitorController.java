@@ -1,8 +1,8 @@
 package frawla.equiz.server;
 
 
-import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -23,20 +23,23 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
-import com.rits.cloning.Cloner;
+import com.itextpdf.text.DocumentException;
 
 import frawla.equiz.util.Channel;
 import frawla.equiz.util.Heap;
 import frawla.equiz.util.Message;
 import frawla.equiz.util.ServerListener;
 import frawla.equiz.util.Util;
-import frawla.equiz.util.exam.Exam;
+import frawla.equiz.util.exam.ExamConfig;
+import frawla.equiz.util.exam.ExamLoader;
+import frawla.equiz.util.exam.ExamSheet;
+import frawla.equiz.util.exam.Exporter;
+import frawla.equiz.util.exam.QuesinoOrderType;
 import frawla.equiz.util.exam.RegisterInfo;
 import frawla.equiz.util.exam.Student;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -48,7 +51,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextInputDialog;
@@ -60,19 +62,22 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-class Monitor
-{
-	private FXMLLoader fxmlLoader;
-	private MonitorController myController;
 
-	public Monitor()
+class FxMonitor
+{
+	
+	
+	private FXMLLoader fxmlLoader;
+	private FxMonitorController myController;
+
+	public FxMonitor()
 	{		
 		try
 		{
-			fxmlLoader = new FXMLLoader(Util.getResource("monitor.fxml").toURL());			
+			fxmlLoader = new FXMLLoader(Util.getResource("fx-monitor.fxml").toURL());			
 			
 			Parent root = (Parent) fxmlLoader.load();
-			myController = (MonitorController) fxmlLoader.getController();
+			myController = (FxMonitorController) fxmlLoader.getController();
 			
 			Stage window = new Stage( );
 			window.setScene(new Scene(root, 720, 500));
@@ -95,7 +100,7 @@ class Monitor
 		}            
 		
 	}
-	public MonitorController getMyController()
+	public FxMonitorController getMyController()
 	{
 		return myController;
 	}
@@ -103,7 +108,7 @@ class Monitor
 }
 
 
-public class MonitorController implements Initializable
+public class FxMonitorController implements Initializable
 {
 	
 	@FXML private AnchorPane pnlRoot ;
@@ -115,8 +120,10 @@ public class MonitorController implements Initializable
 	@FXML private TextArea txtLog;
 	@FXML private Button btnChangePort;
 	@FXML private ContextMenu mnuStudents;
-	@FXML private MenuItem mntmDelete;
-	@FXML private MenuItem mntmRefresh;
+//	@FXML private MenuItem mntmDelete;
+//	@FXML private MenuItem mntmFinishHim;
+//	@FXML private MenuItem mntmExportPDF;
+//	@FXML private MenuItem mntmRefresh;
 	@FXML private Label lblTotalHeap;
 	@FXML private ProgressBar prgHeap;
 	@FXML private ToggleButton btnAutoBackup;
@@ -124,11 +131,11 @@ public class MonitorController implements Initializable
 	private ExamTableView examTable;
 	private ServerListener listenter;
 
-	public ObservableList<Student> Students = FXCollections.observableArrayList();
+	public ObservableList<Student> Students; // = FXCollections.observableArrayList();
 	public List<Channel> Connections = new ArrayList<>();
 	private boolean examIsRunning =false;
 	private Workbook wrkBook;
-	private Exam examConfig;
+	private ExamConfig examConfig;
 	private Map<String, byte[]> imageList = new HashMap<>();
 	private Timeline backupTimer;
 	private Object backupLock = new Object();
@@ -144,7 +151,6 @@ public class MonitorController implements Initializable
 		
 		//TODO: Later
 		//Students = examConfig.getStudentList();
-		 
 		
 		examTable.setContextMenu(mnuStudents);
 		examTable.setStudentList(Students);
@@ -216,7 +222,7 @@ public class MonitorController implements Initializable
     			{
         			Student st = Students.get(i);
     				if(st.isSTARTED() || st.isRESUMED()){
-    			    	Message<Exam> msg = new Message<>(Message.GIVE_ME_A_BACKUP_NOW);
+    			    	Message<ExamConfig> msg = new Message<>(Message.GIVE_ME_A_BACKUP_NOW);
     			    	st.getServerLinker().sendMessage(msg);
     			    	
     			    	try{ backupLock.wait(1000); } catch (InterruptedException e){ Util.showError(e, e.getMessage()); }
@@ -291,7 +297,7 @@ public class MonitorController implements Initializable
 		){
 		
 			Students.sort( (s1, s2) -> s1.getId().compareTo(s2.getId()) );
-			int quesCount = examConfig.getQustionList().size() ;
+			int quesCount = ExamLoader.getInstance().getQuestionCount() ;
 			ExcelRecorder.RecordAnswers(wrkBook, Students, quesCount);
 			ExcelRecorder.RecordTimer(wrkBook, Students, quesCount);
 			HSSFFormulaEvaluator.evaluateAllFormulaCells(wrkBook);
@@ -323,7 +329,7 @@ public class MonitorController implements Initializable
 		
 		String code = msg.getCode();
 		String stringData;
-		Exam examData;
+		ExamSheet examData;
 		
 		switch(code)		
 		{
@@ -416,7 +422,7 @@ public class MonitorController implements Initializable
 			case  Message.BACKUP_COPY_OF_EXAM_WITH_ANSWERS:
 				synchronized(backupLock)
 				{
-					examData = (Exam) msg.getData();
+					examData = (ExamSheet) msg.getData();
 					student = findStudent(chnl);
 					student.setExamSheet(examData);
 					student.setLastUpdate(new Date());
@@ -427,7 +433,7 @@ public class MonitorController implements Initializable
 				}
 			break;
 			case  Message.FINAL_COPY_OF_EXAM_WITH_ANSWERS:
-				examData = (Exam) msg.getData();
+				examData = (ExamSheet) msg.getData();
 				student = findStudent(chnl);
 				student.setExamSheet(examData);
 				log("Final Copy has been taken from "+ student.getName() );
@@ -464,18 +470,23 @@ public class MonitorController implements Initializable
 
 	private void sendExam(Student student)
 	{
-		Exam newSheet = new Cloner().deepClone(examConfig);
-		Exam.shuffleExam(newSheet);
+		
+		ExamSheet newSheet = new ExamSheet(); 
+		newSheet.setExamConfig(examConfig);
+		newSheet.setQustionList( ExamLoader.getInstance().getCloneOfQustionList() ); 
+		
+		if(examConfig.questionOrderType == QuesinoOrderType.RANDOM)
+			newSheet.shuffle();
 		
 		
-		Exam sheet = student.getOptionalExamSheet().orElse(newSheet);
-		Message<Exam> m = new Message<Exam>(Message.EXAM_OBJECT, sheet );
+		ExamSheet sheet = student.getOptionalExamSheet().orElse(newSheet);
+		Message<ExamSheet> m = new Message<ExamSheet>(Message.EXAM_OBJECT, sheet );
 		student.getServerLinker().sendMessage( m );
 	}
 
 	private boolean isValidStudent(Student st)
 	{
-		return examConfig.isValidStudent(st.getId());
+		return ExamLoader.getInstance().isValidStudent(st.getId());
 	}
 	
 	private Student findStudentOrAddNewOne(final String id)
@@ -513,9 +524,9 @@ public class MonitorController implements Initializable
 		this.imageList = imgLst;
 	}
 	
-	public void setExamConfig(Exam examConfig) 
+	public void setExamConfig(ExamConfig exConf) 
 	{
-		this.examConfig = examConfig;
+		examConfig = exConf;
 		//FileInputStream fin;
 		try(FileInputStream fin = new FileInputStream(examConfig.SourceFile);)
 		{
@@ -573,13 +584,42 @@ public class MonitorController implements Initializable
 		btnRecordOnExcel_click();
 	}
 
+	public void mntmFinishHim_click()
+	{		
+		int i = examTable.getSelectionModel().getSelectedIndex();
+		if(Students.get(i).isConnected())
+			Students.get(i)
+					.getServerLinker()
+					.sendMessage( new Message<>(Message.KHALAS_TIMES_UP) );
+		
+	}
+
 	public void mntmDelete_click(){		
 		int i = examTable.getSelectionModel().getSelectedIndex();
 		if(Students.get(i).isConnected())
 			Students.get(i).getServerLinker().interrupt();
 		Students.remove(i);
 	}
-				
+
+	public void mntmExportPDF_click()
+	{
+		
+		int i = examTable.getSelectionModel().getSelectedIndex();
+		Exporter exp = new Exporter(Students.get(i));
+		
+		Util.getFileChooserForSavePDF()
+			.ifPresent( (f) -> {
+				try{
+					exp.exportToPDF(f);
+				}catch(FileNotFoundException | DocumentException ex){
+					Util.showError(ex,ex.getMessage() );
+				}
+		});
+		
+	}
+	
+	
+	
 	public void mntmRefresh_click(){
 		refreshHeap();
 		examTable.refresh();
@@ -601,4 +641,11 @@ public class MonitorController implements Initializable
 	{
 		System.gc();
 	}
-}
+
+	public void setStudentList(ObservableList<Student> stdlst)
+	{
+		Students = stdlst;
+		examTable.setStudentList(Students);
+	}
+
+}//end MonitorController

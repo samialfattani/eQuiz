@@ -66,7 +66,8 @@ public class ExcelRecorder
 						.findFirst()
 						.get();
 				row.createCell(Base + (2*j+0)).setCellValue( q.toString() );
-				row.createCell(Base + (2*j+1)).setCellValue( q.correctAndGetTheMark());
+				q.setStudentMark(q.correctAndGetTheMark());
+				row.createCell(Base + (2*j+1)).setCellValue( q.getStudentMark());
 			}//end for
 		}//end for
 

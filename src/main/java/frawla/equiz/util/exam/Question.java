@@ -3,6 +3,8 @@ package frawla.equiz.util.exam;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 
+import javax.xml.bind.annotation.XmlType;
+
 import javafx.util.Duration;
 
 public abstract class Question implements Serializable
@@ -19,8 +21,11 @@ public abstract class Question implements Serializable
 	private Duration time = Duration.ZERO;
 	private Duration consumedTime = Duration.ZERO; 
 	private double mark = 0;
-	public String studentAnswer = "";
 	
+	public String studentAnswer = "";
+	private double StudentMark =0 ;
+	
+
 
 	public Question(){
 	}
@@ -53,7 +58,10 @@ public abstract class Question implements Serializable
 
 	public abstract double correctAndGetTheMark();
 	public abstract boolean isCorrectAnswer();
-		
+
+	public double getStudentMark(){return StudentMark;}
+	public void setStudentMark(double studentMark){StudentMark = studentMark;}
+	
 	@Override
 	public String toString()
 	{	

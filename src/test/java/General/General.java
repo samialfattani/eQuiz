@@ -26,7 +26,8 @@ import org.junit.Test;
 import frawla.equiz.util.Message;
 import frawla.equiz.util.Util;
 import frawla.equiz.util.exam.BlankField;
-import frawla.equiz.util.exam.Exam;
+import frawla.equiz.util.exam.ExamConfig;
+import frawla.equiz.util.exam.ExamLoader;
 import frawla.equiz.util.exam.MultipleChoice;
 import frawla.equiz.util.exam.QuesinoOrderType;
 import frawla.equiz.util.exam.Question;
@@ -108,8 +109,9 @@ public class General
 		m1.setData("this name String");
 		assertEquals("49 - this name String", m1.toString());
 
-		Message<Exam> m2 = new Message<>(Message.EXAM_OBJECT);
-		Exam e = new Exam(new File("data/Example.xlsx"));
+		Message<ExamConfig> m2 = new Message<>(Message.EXAM_OBJECT);
+		ExamLoader.getInstance().load(new File("data/Example.xlsx"));
+		ExamConfig e = ExamLoader.getInstance().getExamConfig();
 		e.questionOrderType = QuesinoOrderType.RANDOM;
 		e.timingType = TimingType.EXAM_LEVEL;		
 		m2.setData(e);
@@ -119,13 +121,17 @@ public class General
 		"Question Order Type | RANDOM" + "\n" +
 		"Student List Type   | ALL_STUDENTS" + "\n" +
 		"Timing Type         | EXAM_LEVEL" + "\n" +
-		"Exam Time           | 2.0 Minutes." + "\n" +
-		"No. of Questions    | 7" + "\n" +
-		"                    | 5 Multiple Choice" + "\n" +
-		"                    | 2 Blank Field" + "\n" +  
-		"No. of Images       | 2" + "\n";
+		"Exam Time           | 2.0 Minutes." + "\n";
 		
-		assertEquals(m2Str, m2.toString());
+		assertEquals(m2Str, m2.toString() );
+		
+		String Stat = 
+				"No. of Questions | 7" + "\n" +
+				"                 | 5 Multiple Choice" + "\n" +
+				"                 | 2 Blank Field" + "\n" +
+				"No. of Images    | 2" + "\n" ;
+
+		assertEquals(Stat, ExamLoader.getInstance().getQuestionStatistics());
 	}
 
 	@Test

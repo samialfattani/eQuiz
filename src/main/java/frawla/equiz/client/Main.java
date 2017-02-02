@@ -14,7 +14,7 @@ public class Main extends Application
 	@Override
 	public void start(Stage window) 
 	{
-		new Login();
+		new FxLogin();
 	}
 	
 }

@@ -4,9 +4,15 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Optional;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+
 import frawla.equiz.util.Channel;
 import javafx.util.Duration;
 
+@XmlRootElement
 public class Student implements Serializable
 {
 	private static final long serialVersionUID = -2983386758431074593L;
@@ -18,6 +24,7 @@ public class Student implements Serializable
 	public static final String RESUMED = "Resumed";
 	public static final String FINISHED = "Finished";
 	
+	@XmlTransient
 	private Channel serverLinker;
 	private String id = "";
 	private String name= "";	
@@ -29,9 +36,13 @@ public class Student implements Serializable
 	private Date finishPoint ;
 	private Duration timeLeft = Duration.ZERO;
 	private Duration timeSpend = Duration.ZERO;
-	private Optional<Exam> examSheet = Optional.empty();
+	private Optional<ExamSheet> examSheet = Optional.empty();
 	private Date LastUpdate = new Date();
 	
+
+	//IMPORTANT for JAXB
+	public Student(){
+	}
 
 	public Student(Channel ch){
 		serverLinker = ch;
@@ -50,8 +61,9 @@ public class Student implements Serializable
 	public String getStatus(){return status;}
 	public void setStatus(String status){this.status = status;}
 
-	public void setServerLinker(Channel ch){serverLinker = ch;}
+	@XmlTransient
 	public Channel getServerLinker(){return serverLinker;}
+	public void setServerLinker(Channel ch){serverLinker = ch;}
 	
 	public Date getStartPoint(){return startPoint;}
 	public void setStartPoint(Date start){startPoint = start;}	
@@ -61,8 +73,10 @@ public class Student implements Serializable
 	public Date getCuttoffPoint(){return cuttoffPoint;}
 	public Date getResumePoint(){return resumePoint;}
 	public void setResumePoint(Date rp){resumePoint = rp;}
-	public Optional<Exam> getOptionalExamSheet(){return examSheet;}
-	public void setExamSheet(Exam examSheet){
+
+	@XmlElement
+	public Optional<ExamSheet> getOptionalExamSheet(){return examSheet;}
+	public void setExamSheet(ExamSheet examSheet){
 		this.examSheet = Optional.of(examSheet);
 	}
 	public Date getLastUpdate(){return LastUpdate;}

@@ -18,7 +18,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="497.0" prefWidth="759.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frawla.equiz.server.MonitorController">
+<BorderPane prefHeight="497.0" prefWidth="759.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frawla.equiz.server.FxMonitorController">
    <center>
       <AnchorPane fx:id="pnlRoot" prefHeight="484.0" prefWidth="723.0" BorderPane.alignment="CENTER">
          <children>
@@ -51,19 +51,6 @@
                <font>
                   <Font name="Consolas Bold" size="18.0" />
                </font>
-               <contextMenu>
-                  <ContextMenu fx:id="mnuStudents">
-                    <items>
-                      <MenuItem fx:id="mntmDelete" mnemonicParsing="false" onAction="#mntmDelete_click" text="Delete" />
-                        <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem fx:id="mntmRefresh" mnemonicParsing="false" onAction="#mntmRefresh_click" text="Refresh">
-                           <accelerator>
-                              <KeyCodeCombination alt="DOWN" code="F5" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                           </accelerator>
-                        </MenuItem>
-                    </items>
-                  </ContextMenu>
-               </contextMenu>
             </Label>
             <Label fx:id="lblIP111" layoutX="14.0" layoutY="47.0" prefHeight="24.0" prefWidth="46.0" text="Host" textAlignment="CENTER" AnchorPane.topAnchor="47.0">
                <font>
@@ -130,6 +117,21 @@
             </items>
           </Menu>
         </menus>
+         <contextMenu>
+            <ContextMenu fx:id="mnuStudents">
+              <items>
+                  <MenuItem fx:id="mntmFinishHim" mnemonicParsing="false" onAction="#mntmFinishHim_click" text="Finish him" />
+                <MenuItem fx:id="mntmDelete" mnemonicParsing="false" onAction="#mntmDelete_click" text="Delete" />
+                  <MenuItem fx:id="mntmExportPDF" mnemonicParsing="false" onAction="#mntmExportPDF_click" text="Export to PDF" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem fx:id="mntmRefresh" mnemonicParsing="false" onAction="#mntmRefresh_click" text="Refresh">
+                     <accelerator>
+                        <KeyCodeCombination alt="DOWN" code="F5" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator>
+                  </MenuItem>
+              </items>
+            </ContextMenu>
+         </contextMenu>
       </MenuBar>
    </top>
    <bottom>
