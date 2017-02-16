@@ -289,6 +289,22 @@ public class Util
 		}    	
 	}
 
+	public static void Save(String str, File f)
+	{
+		PrintWriter out;
+		try
+		{
+			out = new PrintWriter(f);
+			out.println(str);	
+			out.flush();
+			out.close();
+		}
+		catch (FileNotFoundException e)
+		{
+			Util.showError(e, e.getMessage());
+		}
+	}
+	
 	public static Object readFileAsObject(File f)
 	{
 		Object obj = null;

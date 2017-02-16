@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.InputMismatchException;
 import java.util.List;
 
 import org.apache.poi.EncryptedDocumentException;
@@ -29,11 +30,11 @@ public class ExamLoader
 	private static ExamLoader instance;
 	private File sourceFile;
 
-	private List<Question> qustionList = new ArrayList<>();
+	private List<Question> questionList = new ArrayList<>();
 	private List<String> BWList = new ArrayList<>();
 	private List<String> ErrReport = new ArrayList<>();
 	private ExamConfig examConfig = new ExamConfig();
-	private List<File> imageList;
+	private List<File> imageList = new ArrayList<>();
 	private Workbook wrkBook;
 	private static ObservableList<Student> students;
 
@@ -48,7 +49,7 @@ public class ExamLoader
 	}
 
 
-	public void load(File srcFile) throws EncryptedDocumentException, InvalidFormatException, IOException
+	public void load(File srcFile) throws EncryptedDocumentException, InputMismatchException, IOException, InvalidFormatException
 	{
 
 		FileInputStream fin = new FileInputStream(srcFile);
@@ -89,23 +90,25 @@ public class ExamLoader
 
 		double d = mySheet.getRow( 4 ).getCell( 1 ).getNumericCellValue();
 		examConfig.examTime = new Duration(d * 60 * 1000 );
-		
-		
+
+
 		examConfig.courseID = mySheet.getRow( 6 ).getCell( 1 ).getStringCellValue().toString();
 		examConfig.courseName = mySheet.getRow( 7 ).getCell( 1 ).getStringCellValue().toString();
 		examConfig.courseSection = String.format("%.0f",mySheet.getRow( 8 ).getCell( 1 ).getNumericCellValue() );
 		examConfig.courseYear = String.format("%.0f",mySheet.getRow( 9 ).getCell( 1 ).getNumericCellValue() );
 		examConfig.courseSemester = mySheet.getRow( 10 ).getCell( 1 ).getStringCellValue().toString();
+		examConfig.courseTitle = mySheet.getRow( 11 ).getCell( 1 ).getStringCellValue().toString();
 
 	}
-	
+
 	private void loadQuestionList() 
 	{
 		String data = "";
 		Sheet shtQuestions = wrkBook.getSheet("Questions");
+		getQustionList().clear();
 
 		if( !isValidQuestionSheet(shtQuestions)){
-			StringBuilder s = new StringBuilder("INVALID QUESTIN SHEET\n");
+			StringBuilder s = new StringBuilder("INVALID QUESTION SHEET\n");
 			ErrReport.forEach( e -> {
 				s.append( ErrReport.toString() + "\n" );	
 			});
@@ -141,6 +144,9 @@ public class ExamLoader
 				}
 			}
 
+			if( q instanceof MultipleChoice)
+				((MultipleChoice) q).resetOrderList();
+
 			c = shtQuestions.getRow( i ).getCell( 9 );
 			if(!isBlankCell(c)){
 				File f = new File(c.toString());
@@ -158,10 +164,11 @@ public class ExamLoader
 		}
 		//getQustionList().forEach( qu -> System.out.println(qu) );
 	}
-	
+
 
 	public void loadStdBWlist()throws FileNotFoundException, IOException, EncryptedDocumentException, InvalidFormatException
 	{
+		BWList.clear();
 		Sheet BWSheet = wrkBook.getSheet("BlackWhite List");
 		for (int i=1; i < BWSheet.getPhysicalNumberOfRows(); i++)
 		{
@@ -172,7 +179,7 @@ public class ExamLoader
 
 	public void loadImages()throws FileNotFoundException, IOException, EncryptedDocumentException, InvalidFormatException
 	{
-		imageList = new ArrayList<>();
+		imageList.clear();
 		Sheet shtQuestions = wrkBook.getSheet("Questions");
 		for (int i=2; i < shtQuestions.getPhysicalNumberOfRows(); i++)
 		{			
@@ -188,7 +195,7 @@ public class ExamLoader
 		}
 
 	}
-	
+
 
 	public void loadStudentList() throws EncryptedDocumentException, InvalidFormatException, IOException
 	{
@@ -199,7 +206,7 @@ public class ExamLoader
 		Sheet shtAnswer = wrkBook.getSheet("Answers");
 		if(shtAnswer ==null)
 			return ;
-		
+
 		for (int i=1; i < shtAnswer.getPhysicalNumberOfRows(); i++)
 		{
 			String sid = shtAnswer.getRow(i).getCell(0).toString();
@@ -208,60 +215,67 @@ public class ExamLoader
 
 			ExamSheet examSheet = new ExamSheet();
 			examSheet.setExamConfig(ExamLoader.getInstance().getExamConfig());
-			
-			
-			int[] QIDs = Arrays.asList(shtAnswer.getRow(i).getCell(2).toString().split(","))
-								.stream()
-								.map(String::trim)
-								.mapToInt(Integer::parseInt)
-								.toArray();
-			int base = 3;
-			List<Question> Qlst = new ArrayList<>();
-			
-			
-			for (int j = 0; j < QIDs.length; j++)
-			{
-				int qid = QIDs[j];
-				Question q = ExamLoader.getInstance()
-									   .getQustionList()
-									   .stream()
-									   .filter(q2 -> q2.getId() == qid)
-									   .findFirst()
-									   .get();
-				
-				
-				String c = shtAnswer.getRow(i).getCell(base + (qid-1)*2).toString() ;
-				
-				String[] Answer = c.split("/");
-				
-				if( q instanceof MultipleChoice )
-				{
-					MultipleChoice qmc = (MultipleChoice) q;
-					q.setStudentAnswer( qmc.getChoices().get(Answer[ 3])  );
-					
-					qmc.getOrderList().clear();
-					for (int k = 0; k < Answer[2].length(); k++)
-					{
-						String letter = Answer[2].substring(k,k+1);
-						qmc.getOrderList().add(letter);
-					}
-					
-				}
-				else if(q instanceof BlankField)
-				{
-					q.setStudentAnswer(Answer[2]);
-				}
-				q.setStudentMark(  Double.parseDouble(shtAnswer.getRow(i).getCell(base + (qid-1)*2+1).toString() )  );
-				Qlst.add( q );
-				
-			}
 
-			examSheet.setQustionList(Qlst);
+			//read all answers a
+			examSheet.setQustionList( extractQuestionList(shtAnswer, i) );
+			
 			std.setExamSheet(examSheet);
 			students.add(std);
 		}
 	}
-	
+
+	private List<Question> extractQuestionList(Sheet shtAnswer, int r) throws InputMismatchException
+	{
+		int[] QIDs = Arrays.asList(shtAnswer.getRow(r).getCell(2).toString().split(","))
+				.stream()
+				.map(String::trim)
+				.mapToInt(Integer::parseInt)
+				.toArray();
+		List<Question> Qlst = new ArrayList<>();
+
+		for (int j = 0; j < QIDs.length; j++)
+		{
+			int base = 3;
+			int qid = QIDs[j];
+			Question Qcopy = questionList.stream()
+							 .filter(q -> q.getId() == qid)
+							 .findFirst()
+							 .get();
+
+			String c = shtAnswer.getRow(r).getCell(base + (qid-1)*2).toString() ;
+
+			if( Qcopy instanceof MultipleChoice )
+			{
+				MultipleChoice qmc = new MultipleChoice(c);
+
+				MultipleChoice mcCopy = (MultipleChoice) Qcopy;
+				mcCopy.getChoices()
+				.forEach( (k,v) -> {
+					qmc.getChoices().put(k, v);
+				});
+				qmc.setStudentMark(  Double.parseDouble(shtAnswer.getRow(r).getCell(base + (qid-1)*2+1).toString() )  );
+				Qlst.add( qmc );
+			}
+			else if(Qcopy instanceof BlankField)
+			{
+				BlankField qBlank = new BlankField(c);
+				BlankField  blnkCopy = (BlankField ) Qcopy;
+
+				blnkCopy.getCorrectAnswerList()
+					.stream()
+					.forEach( option -> {
+						qBlank.getCorrectAnswerList().add(option);
+					});
+
+				qBlank.setStudentMark(  Double.parseDouble(shtAnswer.getRow(r).getCell(base + (qid-1)*2+1).toString() )  );
+				Qlst.add( qBlank );
+			}
+
+		}
+		return Qlst;
+		
+	}
+
 	public List<File> getImageFiles() 
 	{
 		return imageList;
@@ -269,7 +283,8 @@ public class ExamLoader
 
 	private boolean isValidQuestionSheet(Sheet shtQuestions)
 	{
-		// TODO: Qestion Sheet validation.
+		// 
+
 		boolean validSheet = true;
 
 		int QuesCount = shtQuestions.getPhysicalNumberOfRows();
@@ -301,7 +316,7 @@ public class ExamLoader
 		}
 
 
-		//2. Make sure no duplicate answers.
+		//3. Make sure no duplicate answers.
 		for (int i=2; i < QuesCount; i++)
 		{
 			cells.clear();
@@ -317,7 +332,7 @@ public class ExamLoader
 			}
 		}
 
-		//3. Make sure no blank answer in middle
+		//4. Make sure no blank answer in middle
 		for (int i=2; i < QuesCount; i++)
 		{
 			cells.clear();
@@ -336,7 +351,7 @@ public class ExamLoader
 			}
 		}
 
-		//4. Make sure all images are exists.
+		//5. Make sure all images are exists.
 		for (int i=2; i < QuesCount; i++)
 		{
 			Cell c = shtQuestions.getRow(i).getCell(9);
@@ -353,29 +368,7 @@ public class ExamLoader
 		}
 
 
-		//5. Make sure no dupblicate images - NO NEED sometimes, same image is used for many questions.
-		//		List<File> l = new ArrayList<>();
-		//		for (int i=2; i < QuesCount; i++)
-		//		{
-		//			Cell c = shtQuestions.getRow(i).getCell(9);
-		//			if( isBlankCell( c ) )
-		//				continue;
-		//			
-		//			File f = new File(shtQuestions.getRow(i).getCell(9).toString()) ;
-		//			l.add(  new File( f.getName() ));
-		//		}
-		//		if(l.stream()
-		//			.filter(f -> Collections.frequency(l, f) >1)
-		//			.collect(Collectors.toSet())
-		//			.stream()
-		//			.count() > 0);
-		//		{
-		//			ErrReport.add("There Are duplicate File names.");
-		//			validSheet = false;
-		//		}
-
-
-		//6. Make sure Every qustion has mark
+		//7. Make sure Every qustion has mark
 		cells.clear();		
 		for (int i=2; i < QuesCount; i++){
 			cells.add(shtQuestions.getRow(i).getCell(10));
@@ -386,7 +379,7 @@ public class ExamLoader
 			validSheet = false;
 		}
 
-		//7. Make sure Every qustion has Time
+		//6. Make sure Every qustion has Time
 		if(examConfig.timingType == TimingType.QUESTION_LEVEL)
 		{
 			cells.clear();
@@ -439,7 +432,7 @@ public class ExamLoader
 			String[] Letter = {"A", "B", "C", "D", "E","F","G","H","I"};
 			((MultipleChoice)q).getChoices().put( Letter[j] , data);
 		}else if(q instanceof BlankField){
-			((BlankField)q).getOptions().add(data);
+			((BlankField)q).getCorrectAnswerList().add(data);
 		}
 
 	}
@@ -472,15 +465,12 @@ public class ExamLoader
 		return examConfig;
 	}
 
-	public List<Question> getQustionList(){
-		return    qustionList;
-	}
-	public void setQustionList(List<Question> qustionList){
-		this.qustionList = qustionList;
-	}
+	public List<Question> getQustionList(){return questionList;}
+	public void setQustionList(List<Question> lst){this.questionList = lst;}
+
 	public List<Question> getCloneOfQustionList()
 	{
-		return new Cloner().deepClone(qustionList);
+		return new Cloner().deepClone(questionList);
 	}
 
 	public String getQuestionStatistics()
@@ -488,10 +478,10 @@ public class ExamLoader
 		String[] l = {"No. of Questions", "", "", "No. of Images", "No. of Recorded Sheets"};
 
 		String[] d = {
-				qustionList.size()+"", 
-				qustionList.stream().filter(q-> q instanceof MultipleChoice).count()+" "+ Question.MULTIPLE_CHOICE,
-				qustionList.stream().filter(q-> q instanceof BlankField).count() +" " + Question.BLANK_FIELD,
-				qustionList.stream().filter(q-> !q.getImgFileName().equals("") ).count() +"" ,
+				questionList.size()+"", 
+				questionList.stream().filter(q-> q instanceof MultipleChoice).count()+" "+ Question.MULTIPLE_CHOICE,
+				questionList.stream().filter(q-> q instanceof BlankField).count() +" " + Question.BLANK_FIELD,
+				questionList.stream().filter(q-> !q.getImgFileName().equals("") ).count() +"" ,
 				students.size() + ""
 		};
 
@@ -515,7 +505,7 @@ public class ExamLoader
 
 	public int getQuestionCount()
 	{
-		return qustionList.size();
+		return questionList.size();
 	}
 
 
@@ -523,5 +513,5 @@ public class ExamLoader
 	public ObservableList<Student> getStudentList() {
 		return students;
 	}
-	
+
 }//ExamLoader

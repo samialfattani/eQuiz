@@ -2,23 +2,64 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="317.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frawla.equiz.server.FxExamConfigController">
-   <children>
-      <TextArea fx:id="txtInfo" layoutX="19.0" layoutY="67.0" prefHeight="192.0" prefWidth="562.0" text="None" AnchorPane.bottomAnchor="58.0" AnchorPane.leftAnchor="19.0" AnchorPane.rightAnchor="19.0" AnchorPane.topAnchor="67.0">
-         <font>
-            <Font name="Consolas" size="16.0" />
-         </font></TextArea>
-      <Button fx:id="btnOpen" layoutX="19.0" layoutY="266.0" mnemonicParsing="false" onAction="#btnOpen_click" text="Open..." AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="19.0" />
-      <Button fx:id="btnNew" layoutX="95.0" layoutY="266.0" mnemonicParsing="false" onAction="#btnNew_click" text="New Template..." AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="95.0" />
-      <Button fx:id="btnStart" layoutX="463.0" layoutY="266.0" mnemonicParsing="false" onAction="#btnStart_click" prefHeight="39.0" prefWidth="119.0" text="Start Exam" AnchorPane.bottomAnchor="12.0" AnchorPane.rightAnchor="18.0" />
-      <Label fx:id="lblFile" contentDisplay="TOP" layoutX="19.0" layoutY="14.0" prefHeight="48.0" prefWidth="562.0" style="-fx-background-color: lightyellow;" text="File" wrapText="true" AnchorPane.leftAnchor="19.0" AnchorPane.rightAnchor="19.0" AnchorPane.topAnchor="14.0">
-         <font>
-            <Font name="Consolas Bold" size="18.0" />
-         </font>
-      </Label>
-   </children>
-</AnchorPane>
+<BorderPane xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frawla.equiz.server.FxExamConfigController">
+   <center>
+      <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0">
+         <children>
+            <TextArea fx:id="txtInfo" layoutX="19.0" layoutY="67.0" prefHeight="192.0" prefWidth="562.0" text="None" AnchorPane.bottomAnchor="58.0" AnchorPane.leftAnchor="19.0" AnchorPane.rightAnchor="19.0" AnchorPane.topAnchor="67.0">
+               <font>
+                  <Font name="Consolas" size="16.0" />
+               </font>
+            </TextArea>
+            <Button fx:id="btnStart" layoutX="463.0" layoutY="266.0" mnemonicParsing="false" onAction="#btnStart_click" prefHeight="39.0" prefWidth="119.0" text="Start Exam" AnchorPane.bottomAnchor="12.0" AnchorPane.rightAnchor="18.0" />
+            <Label fx:id="lblFile" contentDisplay="TOP" layoutX="19.0" layoutY="14.0" prefHeight="48.0" prefWidth="562.0" style="-fx-background-color: lightyellow;" text="File" wrapText="true" AnchorPane.leftAnchor="19.0" AnchorPane.rightAnchor="19.0" AnchorPane.topAnchor="14.0">
+               <font>
+                  <Font name="Consolas Bold" size="18.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+   </center>
+   <top>
+      <MenuBar BorderPane.alignment="CENTER">
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+            <items>
+              <MenuItem fx:id="mnutmOpen" mnemonicParsing="false" onAction="#mnutmOpen_click" text="Open...">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator>
+                  </MenuItem>
+                  <MenuItem fx:id="mnutmNew" mnemonicParsing="false" onAction="#mnutmNew_click" text="New Template...">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator>
+                  </MenuItem>
+                  <MenuItem fx:id="mnutmSheetGenerator" mnemonicParsing="false" onAction="#mnutmSheetGenerator_click" text="Generate Random Sheets..." />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem fx:id="mnutmExit2" mnemonicParsing="false" onAction="#mnutmExit_click" text="Exit">
+                     <accelerator>
+                        <KeyCodeCombination alt="DOWN" code="F4" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator>
+                  </MenuItem>
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem fx:id="mnutmAbout" mnemonicParsing="false" onAction="#mnutmAbout_click" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </top>
+</BorderPane>

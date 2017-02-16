@@ -1,8 +1,8 @@
 package frawla.equiz.server;
 
 
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -17,13 +17,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.hssf.usermodel.HSSFFormulaEvaluator;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-
-import com.itextpdf.text.DocumentException;
 
 import frawla.equiz.util.Channel;
 import frawla.equiz.util.Heap;
@@ -127,6 +126,7 @@ public class FxMonitorController implements Initializable
 	@FXML private Label lblTotalHeap;
 	@FXML private ProgressBar prgHeap;
 	@FXML private ToggleButton btnAutoBackup;
+	@FXML private Button btnRecordOnExcel;
 	
 	private ExamTableView examTable;
 	private ServerListener listenter;
@@ -148,9 +148,7 @@ public class FxMonitorController implements Initializable
 		lblPort.setText("10000");
 		examTable = new ExamTableView();
 		pnlTable.setCenter(examTable);
-		
-		//TODO: Later
-		//Students = examConfig.getStudentList();
+		btnRecordOnExcel.setDisable(true);
 		
 		examTable.setContextMenu(mnuStudents);
 		examTable.setStudentList(Students);
@@ -158,8 +156,6 @@ public class FxMonitorController implements Initializable
 		examTable.setOnMouseClicked( e -> {
 			examTable.requestFocus();
 		});
-		
-		
 		
 		
 		//never put less than 5 min. it will lead to very low performance and 
@@ -210,8 +206,6 @@ public class FxMonitorController implements Initializable
 	protected void StartTakingBackupForAll() throws InterruptedException, ExecutionException 
 	{
 		log("Start Taking Backup for All Students...");
-    	//TODO: remove this
-    	//System.out.println("Start Taking Backup for All Students...");
 
 		Runnable task = () -> 
 		{
@@ -252,9 +246,10 @@ public class FxMonitorController implements Initializable
 			sendExam(st );
 		});
 		
-		//TODO: comment this for Test.
 		backupTimer.play();
 		btnAutoBackup.setSelected(true);
+		btnRecordOnExcel.setDisable(true);
+		
 		log("Exam Sheets are sent to 'Ready' and 'Resume' Students");
 		examIsRunning = true;
 	}
@@ -274,6 +269,7 @@ public class FxMonitorController implements Initializable
 
 		examIsRunning = false;
 		log("make sure that all students has been finished");
+		btnRecordOnExcel.setDisable(false);
 	}
 	
 	public void btnRecordOnExcel_click() 
@@ -281,7 +277,7 @@ public class FxMonitorController implements Initializable
 		if(Students
 				.stream()
 				.allMatch( s -> !s.isREADY() && !s.isRESUMED() )
-		){	
+		){
 			RecordOnExcel();
 			log("Finished and Recorded !");
 		}else{
@@ -301,6 +297,8 @@ public class FxMonitorController implements Initializable
 			ExcelRecorder.RecordAnswers(wrkBook, Students, quesCount);
 			ExcelRecorder.RecordTimer(wrkBook, Students, quesCount);
 			HSSFFormulaEvaluator.evaluateAllFormulaCells(wrkBook);
+			File f = new File(FilenameUtils.removeExtension(examConfig.SourceFile.getAbsolutePath()) + ".txt");
+			Util.Save(txtLog.getText(),  f);
 			 
 	        wrkBook.write( fout );
 	        fout.flush();
@@ -426,8 +424,6 @@ public class FxMonitorController implements Initializable
 					student = findStudent(chnl);
 					student.setExamSheet(examData);
 					student.setLastUpdate(new Date());
-					//TODO: remove this
-					//System.out.println("copy-" + student.getId());
 					log("copy-" + student.getId()); 
 					backupLock.notify();
 				}
@@ -439,16 +435,6 @@ public class FxMonitorController implements Initializable
 				log("Final Copy has been taken from "+ student.getName() );
 				chnl.sendMessage(new Message<>(Message.FINAL_COPY_IS_RECIEVED));
 
-				//TODO: remove this
-//				synchronized (Students)
-//				{
-//					//if All student has finised
-//					if( Students.stream()
-//								.allMatch( s -> !s.isREADY() && !s.isRESUMED() ) )
-//						Students.notify();						
-//				}
-			break;
-			case  Message.I_HAVE_FINISHED:
 				student = findStudent(chnl);
 				student.setStatus( Student.FINISHED );
 				log("Finished -> "+ student.getName() );
@@ -609,11 +595,7 @@ public class FxMonitorController implements Initializable
 		
 		Util.getFileChooserForSavePDF()
 			.ifPresent( (f) -> {
-				try{
-					exp.exportToPDF(f);
-				}catch(FileNotFoundException | DocumentException ex){
-					Util.showError(ex,ex.getMessage() );
-				}
+					exp.exportToPDF(f, true);
 		});
 		
 	}
@@ -646,6 +628,13 @@ public class FxMonitorController implements Initializable
 	{
 		Students = stdlst;
 		examTable.setStudentList(Students);
+	}
+	
+	
+	public void mntmOpenExcelFile_click(){
+		
+		Util.RunApplication( examConfig.SourceFile);
+		
 	}
 
 }//end MonitorController

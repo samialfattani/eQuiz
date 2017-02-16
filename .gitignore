@@ -8,3 +8,4 @@ publish
 *.lnk
 .gradle
 Thumb.mdb
+/bin/

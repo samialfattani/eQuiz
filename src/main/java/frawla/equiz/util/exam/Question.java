@@ -3,8 +3,6 @@ package frawla.equiz.util.exam;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 
-import javax.xml.bind.annotation.XmlType;
-
 import javafx.util.Duration;
 
 public abstract class Question implements Serializable
@@ -22,7 +20,7 @@ public abstract class Question implements Serializable
 	private Duration consumedTime = Duration.ZERO; 
 	private double mark = 0;
 	
-	public String studentAnswer = "";
+	protected String studentAnswer = "";
 	private double StudentMark =0 ;
 	
 

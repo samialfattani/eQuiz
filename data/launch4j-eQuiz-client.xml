@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>D:\Dropbox\Sami-Programming\JAVA\eQuiz\Publish\eQuiz-2.3.1.50.jar</jar>
+  <outfile>OK\eQuiz-Client.exe</outfile>
+  <errTitle>Java is not Supported on this Computer</errTitle>
+  <cmdLine></cmdLine>
+  <chdir>.</chdir>
+  <priority>normal</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl></supportUrl>
+  <stayAlive>true</stayAlive>
+  <manifest></manifest>
+  <icon>..\src\main\resources\images\exam.ico</icon>
+  <classPath>
+    <mainClass>frawla.equiz.client.Main</mainClass>
+    <cp>.</cp>
+    <cp>.\lib\cloning-1.9.2.jar</cp>
+    <cp>.\lib\objenesis-2.1.jar</cp>
+    <cp>.\lib\poi-3.14-20160307.jar</cp>
+    <cp>.\lib\poi-ooxml-3.14-20160307.jar</cp>
+    <cp>.\lib\poi-ooxml-schemas-3.14-20160307.jar</cp>
+    <cp>.\lib\poi-scratchpad-3.14-20160307.jar</cp>
+    <cp>.\lib\xmlbeans-2.6.0.jar</cp>
+  </classPath>
+  <jre>
+    <path></path>
+    <bundledJre64Bit>false</bundledJre64Bit>
+    <minVersion>1.8.0_1</minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+    <runtimeBits>64/32</runtimeBits>
+  </jre>
+  <splash>
+    <file>D:\Dropbox\Sami-Programming\JAVA\eQuiz\src\main\resources\images\splash-client.bmp</file>
+    <waitForWindow>true</waitForWindow>
+    <timeout>60</timeout>
+    <timeoutErr>true</timeoutErr>
+  </splash>
+  <versionInfo>
+    <fileVersion>2.3.1.50</fileVersion>
+    <txtFileVersion>Sami A. alfattani</txtFileVersion>
+    <fileDescription>Electronic Quizes</fileDescription>
+    <copyright>All Copyright are recieved (c) 2016, This is a program for e-quizes in order to make exams for students and mark registeration.</copyright>
+    <productVersion>2.3.1.50</productVersion>
+    <txtProductVersion>Sami A. alfattani</txtProductVersion>
+    <productName>Electronic Quizes</productName>
+    <companyName>Sami</companyName>
+    <internalName>Electronic Quizes</internalName>
+    <originalFilename>eQuiz.exe</originalFilename>
+  </versionInfo>
+  <messages>
+    <startupErr>An error occurred while starting the application.
+حدث خطأ أثناء تشغيل البرنامج</startupErr>
+    <bundledJreErr>This application was configured to use a bundled Java Runtime Environment but the runtime is missing or corrupted.
+</bundledJreErr>
+    <jreVersionErr>This application requires a Java Runtime Environment
+خطأ في اصدار نسخة الجافا ، تأكد من تثبيت النسخة المطلوبة</jreVersionErr>
+    <launcherErr>The registry refers to a nonexistent Java Runtime Environment installation or the runtime is corrupted.
+الجافا غير مسجلة بشكل صحيح</launcherErr>
+    <instanceAlreadyExistsMsg>An application instance is already running.
+لايمكن فتح أكثر من نسخة للبرنامج</instanceAlreadyExistsMsg>
+  </messages>
+</launch4jConfig>

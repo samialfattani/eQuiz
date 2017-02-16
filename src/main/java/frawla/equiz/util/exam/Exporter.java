@@ -4,19 +4,19 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Font;
+import com.itextpdf.text.Font.FontFamily;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
-import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfWriter;
 
@@ -24,59 +24,86 @@ import frawla.equiz.util.Util;
 
 public class Exporter
 {
-	Student student;
+	private Student student;
+	private List<ExamSheet> examSheetList;
+
 	public Exporter(Student st)
 	{
+		examSheetList = new ArrayList<>();
 		student = st;
+		examSheetList.add(student.getOptionalExamSheet().get());
 	}
 
-
-	public void exportToPDF(File f) throws FileNotFoundException, DocumentException 
+	public Exporter(ExamSheet exsht)
 	{
+		examSheetList = new ArrayList<>();
+		examSheetList.add(exsht);
+	}
 
-		Document doc = new Document();
-		PdfWriter.getInstance(doc, new FileOutputStream(f));
+	public Exporter(List<ExamSheet> examShtLst)
+	{
+		examSheetList = examShtLst;
+	}
 
-		doc.open();
-		ExamConfig ec = student.getOptionalExamSheet().get().getExamConfig();
+	public void exportToPDF(File f, boolean WithCorrection) 
+	{
+		try{
+			Document doc = new Document();
+			PdfWriter.getInstance(doc, new FileOutputStream(f));
+
+			doc.open();
+			examSheetList.stream()
+			.forEach( sht -> {
+				try{
+					exportToPDF(sht, doc, WithCorrection);
+					doc.newPage();
+				}catch (DocumentException e){ Util.showError(e, e.getMessage()); }
+			});
+
+			doc.close();
+			Util.RunApplication(f);
+		}
+		catch (FileNotFoundException | DocumentException e){
+			Util.showError(e, e.getMessage());
+		}
+
+	}
+
+	private void exportToPDF(ExamSheet examSheet, Document doc, boolean WithCorrection) throws DocumentException 
+	{
 		String header = "" ;
+		ExamConfig ec = examSheet.getExamConfig();
 		header += "Course: " + ec.courseID + " - " + ec.courseName + ", " +
-				"Section: " + ec.courseSection + ", " +
-				ec.courseYear + "/" + ec.courseSemester + "\n";
+				"Sec(" + ec.courseSection + "), " +
+				ec.courseYear + "/" + ec.courseSemester + " " + 
+				" | " +  ec.courseTitle + " | " +"\n";
 
 
-		header += "Student: " +  student.getId() + " - " + student.getName() + "\n\n";
+		if(student != null)
+			header += "Student: " +  student.getId() + " - " + student.getName() + "\n\n";
+
 		doc.add(new Paragraph( header ));
 
 
-		student.getOptionalExamSheet()
-		.ifPresent( sht -> {
-
-			sht.getQustionList()
-			.forEach( q -> { QuesPrintout(doc , q); } );
-
-			totalPrintout(doc);
+		examSheet.getQuestionList()
+		.forEach( q -> { 
+			if(WithCorrection)
+				printQuestionWithCorrection(examSheet, doc , q);
+			else
+				printQuestion(examSheet, doc , q);
 		});
 
-		//		FontFactory.registerDirectory("fonts" );
-		//        Set<String> fonts = new TreeSet<String>(FontFactory.getRegisteredFonts());
-		//        for (String fontname : fonts) {
-		//            System.out.println(fontname);
-		//        }
-
-		doc.close();
-		Util.RunApplication(f);
+		if(WithCorrection)
+			totalPrintout(examSheet, doc);
 	}
 
 
-	private void totalPrintout(Document doc)
+	private void totalPrintout(ExamSheet examSheet, Document doc)
 	{
 		try
 		{
-			String t = "Total Marks: " + 
-					student.getOptionalExamSheet()
-			.get()
-			.getQustionList()
+			String t = "Total Marks: " + examSheet
+					.getQuestionList()
 			.stream()
 			.mapToDouble( q1 -> q1.getStudentMark())
 			.sum();
@@ -92,7 +119,7 @@ public class Exporter
 	}
 
 
-	private void  QuesPrintout(Document doc, Question q)
+	private void  printQuestion(ExamSheet examSheet, Document doc, Question q)
 	{
 		try
 		{
@@ -102,7 +129,46 @@ public class Exporter
 
 			if(!q.getImgFileName().equals("")){
 
-				String parent = student.getOptionalExamSheet().get().getExamConfig().SourceFile.getParent();
+				String parent = examSheet.getExamConfig().SourceFile.getParent();
+				Image img = Image.getInstance(  new File( parent, q.getImgFileName()).toString() );
+				float ratio  = img.getWidth()/img.getHeight();
+				img.scaleAbsolute( ratio*100, 100);
+				doc.add(img);
+			}
+
+			if(q instanceof MultipleChoice)
+			{
+				MultipleChoice qmc = (MultipleChoice)q;
+				for(String l : qmc.getOrderList()){
+					prg.add( l + ")" + qmc.getChoices().get(l)+ "   " );
+				}
+				prg.add( "\n" );
+			}
+
+			prg.add("Answer: ");
+			prg.setSpacingAfter(6);
+			prg.setSpacingBefore(0);
+			doc.add(prg );
+
+		}
+		catch (DocumentException | IOException e)
+		{
+			Util.showError(e, e.getMessage());
+		}
+
+	}
+
+	private void  printQuestionWithCorrection(ExamSheet examSheet, Document doc, Question q)
+	{
+		try
+		{
+			Paragraph prg =  new Paragraph("", FontFactory.getFont("Consolas"));
+
+			prg.add( "(" +  q.getMark() + ") " + q.getText() + "\n" );
+
+			if(!q.getImgFileName().equals("")){
+
+				String parent = examSheet.getExamConfig().SourceFile.getParent();
 				Image img = Image.getInstance(  new File( parent, q.getImgFileName()).toString() );
 				float ratio  = img.getWidth()/img.getHeight();
 				img.scaleAbsolute( ratio*100, 100);
@@ -114,7 +180,13 @@ public class Exporter
 				MultipleChoice qmc = (MultipleChoice)q;
 
 				for(String l : qmc.getOrderList())
-					prg.add( l + ")" + qmc.getChoices().get(l)+ "   " );
+				{
+					if(l.equals(qmc.getCorrectAnswer()) )
+						prg.add(getCorrectChoicePhrase(qmc , l));
+					else
+						prg.add( l + ")" + qmc.getChoices().get(l)+ "   " );
+
+				}
 
 				prg.add( "\n" );
 			}
@@ -142,5 +214,17 @@ public class Exporter
 		}
 
 	}
+
+
+	private Phrase getCorrectChoicePhrase(MultipleChoice qmc, String l)
+	{
+		Phrase ph = new Phrase();
+		Font fnt = new Font( FontFamily.HELVETICA , 12, Font.BOLD + Font.UNDERLINE);
+		Chunk ch = new Chunk( l + ")" + qmc.getChoices().get(l) , fnt);
+		ph.add(ch);
+		ph.add("   ");
+		return ph;
+	}
+
 
 }

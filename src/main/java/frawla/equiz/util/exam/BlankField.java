@@ -3,21 +3,41 @@ package frawla.equiz.util.exam;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
-
-import javax.xml.bind.annotation.XmlType;
+import java.util.Optional;
 
 public class BlankField extends Question implements Serializable
 {
 	private static final long serialVersionUID = 7874885710303162877L;
-	List<String> Options = new ArrayList<>();
+	List<String> correctAnswerList = new ArrayList<>();
+
+	//This input should be on the follwing format 'Q2/1/Hello'
+	public BlankField(String c) throws InputMismatchException
+	{
+		if(!c.matches("Q\\d+\\/[-+]?[0-9]*\\.?[0-9]*\\/.*"))
+			throw new InputMismatchException("This input should be on the follwing format 'Q2/1/CBEAD/E'");
+
+		String[] Answer = c.split("/", -1);
+		setId( Integer.parseInt( Answer[0].substring(1) ));
+		setMark(Double.parseDouble(Answer[1]));
+
+		Answer[2] = Optional.ofNullable(Answer[2]).orElse("");
+		setStudentAnswer(Answer[2]);
+		
+	}
+
+	public BlankField()
+	{
+		
+	}
 
 	@Override
 	public boolean isCorrectAnswer()
 	{
 		
 		final String ans = studentAnswer;
-		boolean res = Options		
+		boolean res = correctAnswerList		
 		.stream()
 		.anyMatch( op -> {
 			String s1 = op.trim().toLowerCase().replaceAll("\\s+", " ");
@@ -28,8 +48,8 @@ public class BlankField extends Question implements Serializable
 		return res;
 	}
 
-	public List<String> getOptions(){return Options;}
-	public void setOptions(List<String> options){Options = options;}
+	public List<String> getCorrectAnswerList(){return correctAnswerList;}
+	public void setCorrectAnswerList(List<String> options){correctAnswerList = options;}
 	
 	@Override
 	public String toString()

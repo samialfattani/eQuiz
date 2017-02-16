@@ -121,15 +121,19 @@ public class General
 		"Question Order Type | RANDOM" + "\n" +
 		"Student List Type   | ALL_STUDENTS" + "\n" +
 		"Timing Type         | EXAM_LEVEL" + "\n" +
-		"Exam Time           | 2.0 Minutes." + "\n";
+		"Exam Time           | 2.0 Minutes." + "\n" +
+		"Course              | IT100 - Computer Skills" + "\n" +
+		"Section             | 1" + "\n" +
+		"Semester            | 2016/Fall" + "\n" ;
 		
 		assertEquals(m2Str, m2.toString() );
 		
 		String Stat = 
-				"No. of Questions | 7" + "\n" +
-				"                 | 5 Multiple Choice" + "\n" +
-				"                 | 2 Blank Field" + "\n" +
-				"No. of Images    | 2" + "\n" ;
+				"No. of Questions       | 7" + "\n" +
+				"                       | 5 Multiple Choice" + "\n" +
+				"                       | 2 Blank Field" + "\n" +
+				"No. of Images          | 2" + "\n" +
+				"No. of Recorded Sheets | 0" + "\n";
 
 		assertEquals(Stat, ExamLoader.getInstance().getQuestionStatistics());
 	}

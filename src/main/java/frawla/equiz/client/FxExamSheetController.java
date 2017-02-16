@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +42,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -49,6 +49,9 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -101,7 +104,7 @@ public class FxExamSheetController implements Initializable
 	@FXML private RadioButton ch5;
 	@FXML private RadioButton ch6;
 	@FXML private TextArea txtQuestion;
-	@FXML private TextField txtBlankField;
+	@FXML private TextArea txtBlankField;
 	@FXML private ImageView imgConnection;
 	@FXML private ImageView imgFigure;
 	@FXML private Label lblNext;
@@ -115,6 +118,8 @@ public class FxExamSheetController implements Initializable
 	@FXML private VBox pnlChoices;
 	@FXML private Button btnFinish;
 	@FXML private Label lblMark;
+	@FXML private WebView webCompletion;
+	
 
 	private ExamSheet mySheet;
 	public String studentID = ""; 
@@ -229,34 +234,38 @@ public class FxExamSheetController implements Initializable
 	
 	public void lblNext_MouseClicked() throws IOException{
 		setAnswer();
-		int currIndex = mySheet.getQustionList().indexOf(currentQues);		
-		currentQues = mySheet.getQustionList().get(currIndex+1);
+		int currIndex = mySheet.getQuestionList().indexOf(currentQues);		
+		currentQues = mySheet.getQuestionList().get(currIndex+1);
 		loadQuestion( currentQues );
 	}
 	
 	public void lblPrev_MouseClicked() throws IOException{
 		setAnswer();
-		int i = mySheet.getQustionList().indexOf(currentQues);
-		currentQues = mySheet.getQustionList().get(i-1);		
+		int i = mySheet.getQuestionList().indexOf(currentQues);
+		currentQues = mySheet.getQuestionList().get(i-1);		
 		loadQuestion( currentQues );
 	}
 
 	public void setAnswer()
 	{
-		Optional.ofNullable(radioGroup.getSelectedToggle() )
-				.ifPresent( rd -> {
-		        	int i = Radios.indexOf(rd) ;
-		        	currentQues.setStudentAnswer( Radios.get(i).getText() );
-				});
+		if(currentQues instanceof MultipleChoice ) 
+		{
+			Optional.ofNullable(radioGroup.getSelectedToggle() )
+					.ifPresent( rd -> {
+			        	int i = Radios.indexOf(rd) ;
+			        	MultipleChoice qmc = (MultipleChoice)currentQues;
+			        	String key = qmc.getKeyOf(Radios.get(i).getText());
+			        	currentQues.setStudentAnswer( key );
+					});
 		
-		if(currentQues instanceof BlankField ) {
+		}else if(currentQues instanceof BlankField ) {
 			currentQues.setStudentAnswer( txtBlankField.getText() );
 		}
 		endCountingTime = System.currentTimeMillis();
 		currentQues.AppendConsumedTime( Duration.millis(endCountingTime - startCountingTime)  );
 		startCountingTime = System.currentTimeMillis();
 		
-		mySheet.currentQuesIdx = mySheet.getQustionList().indexOf(currentQues);
+		mySheet.currentQuesIdx = mySheet.getQuestionList().indexOf(currentQues);
 	}
 	
 	public void btnFinish_click() throws IOException
@@ -282,9 +291,9 @@ public class FxExamSheetController implements Initializable
 	
 	private void loadQuestion(Question q) 
 	{
-		int idx = mySheet.getQustionList().indexOf(q) +1;
+		int idx = mySheet.getQuestionList().indexOf(q) +1;
 		txtQuestion.setText(q.getText());
-		lblQuesCounter.setText( idx + "/" + mySheet.getQustionList().size() );
+		lblQuesCounter.setText( idx + "/" + mySheet.getQuestionList().size() );
 		imgFigure.setImage(  getImage(q.getImgFileName()) );
 		txtQuestion.requestFocus();
 		
@@ -322,8 +331,8 @@ public class FxExamSheetController implements Initializable
 		}
 		
 		//enable/disable buttons
-		i = mySheet.getQustionList().indexOf(q);
-		lblNext.setDisable(i == mySheet.getQustionList().size()-1);
+		i = mySheet.getQuestionList().indexOf(q);
+		lblNext.setDisable(i == mySheet.getQuestionList().size()-1);
 		lblPrev.setDisable(i == 0);
 		loadAnswer();
 		
@@ -338,8 +347,48 @@ public class FxExamSheetController implements Initializable
 			setDisableAll(true);
 		else
 			setDisableAll(false);
+		
+		updateCompletionText(q);
 
 	}//load question
+
+	private void updateCompletionText(Question q)
+	{
+	
+		int idx = mySheet.getQuestionList().indexOf(q);
+		WebEngine webEngine = webCompletion.getEngine();
+		
+		
+		ArrayList<Text> chunks = new ArrayList<>();
+		StringBuilder content = new StringBuilder();
+		
+		for (int i = 0; i < mySheet.getQuestionList().size(); i++)
+		{
+			//TextBuilder.create().text(word).fill(Paint.valueOf(color)).build();
+			Text t1 = new Text();
+			String style = "";
+			t1.setUnderline(false);
+			style += "font-size: 16; font-weight: bold; font-family: Consolas; "; // 
+			
+			Question qq =mySheet.getQuestionList().get(i); 
+			if( qq.getStudentAnswer() == null || !qq.getStudentAnswer().equals(""))				
+				style += "text-decoration: line-through; ";
+				//t1.setUnderline(true);
+			
+			if(i == idx)
+				style += "color: red; ";
+				//t1.setFill(Paint.valueOf("red") );
+			
+			
+			t1.setStyle(style);
+			t1.setText(i+1 + " ");
+			chunks.add(t1);
+			content.append("<span style='"+style+"'>"+ (i+1) +"</span> ");
+		}
+		webEngine.loadContent(content.toString());
+		//webCompletion.getChildren().addAll(chunks);
+		
+	}
 
 	private void loadAnswer()
 	{
@@ -464,9 +513,11 @@ public class FxExamSheetController implements Initializable
 					stage.getIcons().add(new Image(Util.getResource("images/ok.png").toString() ));					
 					alert.showAndWait();
 
-					myChannel.sendMessage( 
-			    			new Message<String>(Message.I_HAVE_FINISHED, ""));
+					//TODO: remove this
+					//myChannel.sendMessage( 
+			    	//		new Message<String>(Message.I_HAVE_FINISHED, ""));
 					myChannel.getSocket().close();
+					System.exit(0);
 				}
 			break;
 
@@ -527,7 +578,6 @@ public class FxExamSheetController implements Initializable
 
 	public void btnBackup_click()
 	{
-		//TODO: remove this button
 		setAnswer();
     	Message<ExamSheet> msg = new Message<>(
     			Message.BACKUP_COPY_OF_EXAM_WITH_ANSWERS, mySheet);

@@ -4,10 +4,6 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlType;
-
-import com.sun.xml.internal.txw2.annotation.XmlElement;
-
 public class ExamSheet implements Serializable
 {
 	
@@ -19,7 +15,7 @@ public class ExamSheet implements Serializable
 
 	public Question getCurrentQuestion()
 	{
-		return getQustionList().get(currentQuesIdx);
+		return getQuestionList().get(currentQuesIdx);
 	}
 	
 	public void shuffle()
@@ -36,13 +32,8 @@ public class ExamSheet implements Serializable
 		
 	}
 	
-	public void setQustionList(List<Question> qustionList){
-		this.qustionList = qustionList;
-	}
-	public List<Question> getQustionList(){
-		return    qustionList;
-	}
-
+	public void setQustionList(List<Question> lst){this.qustionList = lst;}
+	public List<Question> getQuestionList(){return qustionList;}
 	public ExamConfig getExamConfig(){return examConfig;}
 	public void setExamConfig(ExamConfig examConfig){this.examConfig = examConfig;}
 

@@ -1,14 +1,18 @@
 
 package frawla.equiz.client;
+import com.martiansoftware.jsap.JSAPException;
+
 import javafx.application.Application;
 import javafx.stage.Stage;
 
 
 public class Main extends Application
 {
-	public static void main (String[] args)
+	public static JSAPClient jsap;
+	public static void main (String[] args) throws JSAPException
 	{
-		launch(args);	
+		jsap = new JSAPClient(args);
+		launch(args);
 	}
 
 	@Override
@@ -16,5 +20,5 @@ public class Main extends Application
 	{
 		new FxLogin();
 	}
-	
+
 }

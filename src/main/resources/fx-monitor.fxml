@@ -18,7 +18,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="497.0" prefWidth="759.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frawla.equiz.server.FxMonitorController">
+<BorderPane prefHeight="497.0" prefWidth="759.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frawla.equiz.server.FxMonitorController">
    <center>
       <AnchorPane fx:id="pnlRoot" prefHeight="484.0" prefWidth="723.0" BorderPane.alignment="CENTER">
          <children>
@@ -101,6 +101,7 @@
                   <MenuItem fx:id="mntmRemoveRejected" mnemonicParsing="false" onAction="#mntmRemoveRejected_click" text="Remove Rejected" />
                   <MenuItem fx:id="mntmFinish" mnemonicParsing="false" onAction="#mntmFinish_click" text="Finish Exam" />
                   <MenuItem fx:id="mntmRecordOnExcel" mnemonicParsing="false" onAction="#mntmRecordOnExcel_click" text="Record On Excel" />
+                  <MenuItem fx:id="mntmOpenExcelFile" mnemonicParsing="false" onAction="#mntmOpenExcelFile_click" text="Open Excel File..." />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="mntmRefresh" mnemonicParsing="false" onAction="#mntmRefresh_click" text="Refresh">
                      <accelerator>

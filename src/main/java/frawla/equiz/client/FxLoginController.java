@@ -62,11 +62,11 @@ public class FxLoginController implements Initializable
 	@Override
 	public void initialize(URL location, ResourceBundle resources)
 	{
-		txtIP.setText("localhost");
-		txtPort.setText("10000");
+		txtIP.setText(Main.jsap.getResult().getString("host"));
+		txtPort.setText(Main.jsap.getResult().getInt("port")+"");
 		//txtID.setText("NBE"  +(new Random().nextInt(999-100+1)+100));
-		txtID.setText("");
-		txtName.setText("");
+		txtID.setText(Main.jsap.getResult().getString("id"));
+		txtName.setText(Main.jsap.getResult().getString("user"));
 
 
 		txtID.setTextFormatter( new TextFormatter<String>( change ->

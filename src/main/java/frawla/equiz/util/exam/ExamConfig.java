@@ -5,8 +5,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlType;
-
 import javafx.util.Duration;
 
 public class ExamConfig implements Serializable
@@ -25,17 +23,19 @@ public class ExamConfig implements Serializable
 	public String courseSection;
 	public String courseYear;
 	public String courseSemester;
+	public String courseTitle;
 
 
 	@Override
 	public String toString()	
 	{	
 		String[] l = {"Sharing Folder", "Question Order Type", "Student List Type", "Timing Type", "Exam Time",
-					  "Course", "Section", "Semester"};
+					  "Course", "Section", "Semester", "Title"};
 
 		String[] d = {sharingFolder, questionOrderType+"", studentListType+"", 
 					  timingType+"", examTime.toMinutes()+" Minutes.",
-					  courseID +" - "+ courseName, courseSection, courseYear + "/" + courseSemester};
+					  courseID +" - "+ courseName, courseSection, courseYear + "/" + courseSemester,
+					  courseTitle};
 
 		List<String> labels = Arrays.asList(l);
 		List<String> data = Arrays.asList(d);

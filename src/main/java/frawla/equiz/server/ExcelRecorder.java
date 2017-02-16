@@ -48,7 +48,7 @@ public class ExcelRecorder
 			
 			String s = st.getOptionalExamSheet()
 						.get()
-						.getQustionList()
+						.getQuestionList()
 						.stream()
 						.map( q -> q.getId() + "")
 						.collect(Collectors.joining(", ")) ;
@@ -60,7 +60,7 @@ public class ExcelRecorder
 				final int qid = j+1;
 				Question q = st.getOptionalExamSheet()
 						.get()
-						.getQustionList()
+						.getQuestionList()
 						.stream()
 						.filter( qs -> qs.getId() == qid)
 						.findFirst()
@@ -132,7 +132,7 @@ public class ExcelRecorder
 				final int qid = j+1;
 				Question q = st.getOptionalExamSheet()
 						.get()
-						.getQustionList()
+						.getQuestionList()
 						.stream()
 						.filter( qs -> qs.getId() == qid)
 						.findFirst()
