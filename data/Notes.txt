@@ -1,6 +1,0 @@
-
-
-both eQuiz-Client and eQuiz-Server MUST be packaged with All JAR files.
-
-run-Client.bat is used to run the GUI with console.
-

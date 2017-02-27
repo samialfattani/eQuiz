@@ -1,5 +1,3 @@
 
 * when student reconnect after cutoff.. it gives an eception.
 
-* we should add feature of % completion.
-

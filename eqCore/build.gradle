@@ -1,35 +1,14 @@
-/*----------------
---   eQuiz   --
-------------------*/
-
-	/*
+	
 	apply plugin: 'java'
 	apply plugin: 'eclipse'
 	//project.targetCompatibility = 1.5
-	*/
 	
-	
-	allprojects
-	{
-		repositories
-		{
-			mavenLocal()
-			mavenCentral()
-			jcenter()
-		}
-		version = '2.4.0.0'
-	}
-	
-	subprojects
-	{
-		dependencies
-		{
-			apply plugin: 'java'
-			testCompile 'junit:junit:4.+'
-		}
+	repositories{
+		mavenLocal()
+		mavenCentral()
+		jcenter()
 	}
 
-/*
 	eclipse {
 		classpath {	
 		    //customizing the classes output directory:
@@ -40,4 +19,6 @@
 		    downloadJavadoc = true
 		}
 	}
-*/	
+
+
+	

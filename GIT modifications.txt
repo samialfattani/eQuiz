@@ -1,7 +1,14 @@
+manga v(2.5.0.0) change project structure & bug fixes.
 
-- We include the Launch4j into Gradle. No need to make Jar any more, just we can type 'gradle createExe' andy changing the value of mainClass parameter.
+- fixed the bug of reading "section" and "year" as text and numeric conversion, now wither if it is numberic or text in the excel file, both are accepted successfully.
 
-- JSAP is also included to manage the command line arguments. now you can run the client passing its arguments on the command line like this:
-$ equiz-client.exe -h localhost --port 10000 -u "sami fattani" -i MBA001
+- fixed the bug of not matching question sheet with answer sheet.
 
-- Blank field now can be also used as Essay. I change the textField into textArea. It works fine.
+- CHANGE THE HOLE STRUCTURE: now we have eQuiz project(no src code) and 3 subProjects ('eqServer', 'eqClient', 'eqCore')
+
+- fixed the bug: choices of multiple choice question should be shuffled wither if questions are in-sequence or random mode. now it is fixed to work like this.
+
+- enhance the export of pdf file. 
+
+- add feature of Export All Students to PDF (each student in seperate file).
+
