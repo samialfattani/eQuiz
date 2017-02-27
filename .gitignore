@@ -2,10 +2,9 @@
 .settings
 build
 build-eclipse
-publish
+bin
 .project
 .classpath
 *.lnk
 .gradle
 Thumb.mdb
-/bin/
