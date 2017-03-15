@@ -1,3 +1,7 @@
 
 * when student reconnect after cutoff.. it gives an eception.
 
+
+* in blank field question, answeres is not read correctly if it contains "/"
+
+* status bar is not wroking correctly

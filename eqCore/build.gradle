@@ -1,14 +1,7 @@
 	
 	apply plugin: 'java'
 	apply plugin: 'eclipse'
-	//project.targetCompatibility = 1.5
 	
-	repositories{
-		mavenLocal()
-		mavenCentral()
-		jcenter()
-	}
-
 	eclipse {
 		classpath {	
 		    //customizing the classes output directory:

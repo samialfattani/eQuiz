@@ -6,6 +6,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -19,6 +21,7 @@ import frawla.equiz.util.exam.ExamConfig;
 import frawla.equiz.util.exam.QuesinoOrderType;
 import frawla.equiz.util.exam.TimingType;
 import javafx.embed.swing.JFXPanel;
+import javafx.util.Duration;
 
 public class General
 {
@@ -66,4 +69,23 @@ public class General
 	}
 
 
+	@Test
+	public void LocalTimeTest()
+	{
+		LocalTime lt = LocalTime.parse ( "01:01:00" ); //3660
+		Duration d;
+		double ms = (lt.getHour()*3600 + lt.getMinute()*60 + lt.getSecond())*1000;
+		d = new Duration(ms);
+		
+		assertEquals(d.toSeconds(), 3660 , 0.0);
+
+		lt = LocalTime.parse ( "01:30:00", DateTimeFormatter.ofPattern("HH:mm:ss")   ); //366
+		ms = (lt.getHour()*3600 + lt.getMinute()*60 + lt.getSecond())*1000;
+		d = new Duration(ms);
+		
+		assertEquals(d.toSeconds(), 3600+30*60 , 0.0);
+		
+	}
+	
+	
 }//end class

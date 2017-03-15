@@ -9,12 +9,6 @@
 	apply plugin: 'eclipse'
 	//project.targetCompatibility = 1.5
 	
-/*	repositories{
-		mavenLocal()
-		mavenCentral()
-		jcenter()
-	}
-*/
 	configurations.all {
 	    resolutionStrategy {
 	        force 'xml-apis:xml-apis:1.0.b2'
@@ -34,7 +28,6 @@
 		//compile 'org.apache.poi:ooxml-schemas:1.3'
 		
 		//iText
-		//compile	'org.apache.commons:commons-imaging:1.0-SNAPSHOT'
 		compile 'com.itextpdf:itextpdf:5.5.10'
 		compile 'com.itextpdf:itext-pdfa:5.5.10'
 		//compile 'com.itextpdf:itext-xtra:5.5.10'
@@ -49,6 +42,10 @@
 		
 		//JAXB
 		//compile 'javax.xml.bind:jaxb-api:2.2.+'
+		
+		//javax for Send Emails
+		//compile 'javax:javaee-api:6.0'
+		//compile 'javax.javaee:javaee:6.0-alpha-1'
 		
 	}
 	
@@ -66,6 +63,7 @@
 	apply plugin: 'application' //adds 'run' task	
 	mainClassName = 'frawla.equiz.server.Main'
 
+/*
 	jar {
     	manifest {
     	 attributes(
@@ -75,7 +73,7 @@
             'Main-Class': mainClassName)
     	}
 	}
-
+*/
 
 	// launch4j: put all configuration of launch4j here 
 	createExe {
@@ -83,11 +81,12 @@
 		fileDescription	"Electronic Quizes"
 		copyright = "All Copyright are recieved (c) 2016, This is a program for e-quizes in order to make exams for students and mark registeration."
 		companyName = "Sami"
-		println '---------' + new File("").absolutePath
 		 
 	    println mainClassName 
 	    mainClassName = "frawla.equiz.server.Main"
-	    icon = new File('src/main/resources/images/servericon_256px.ico').absolutePath
+	    
+	    def projPath = projectDir.absolutePath;	    
+	    icon = new File(projPath  + '/src/main/resources/images/servericon.ico').absolutePath
 		maxHeapSize = 4096
 		maxHeapPercent = 50
 		headerType = "console" //no splash with console

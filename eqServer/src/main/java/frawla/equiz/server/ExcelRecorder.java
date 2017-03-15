@@ -12,10 +12,37 @@ import frawla.equiz.util.Util;
 import frawla.equiz.util.exam.Question;
 import frawla.equiz.util.exam.Student;
 import javafx.collections.ObservableList;
+import javafx.util.Duration;
 
 public class ExcelRecorder
 {
 
+	public static void AutoCorrectAnswers(ObservableList<Student> Students, int QuesCount)
+	{
+		for (int i=0; i < Students.size() ; i++)
+		{
+			Student st = Students.get(i);			
+
+			if(!st.getOptionalExamSheet().isPresent())
+				continue;
+			
+			for (int j=0; j < QuesCount ; j++)
+			{
+				final int qid = j+1;
+				Question q = st.getOptionalExamSheet()
+						.get()
+						.getQuestionList()
+						.stream()
+						.filter( qs -> qs.getId() == qid)
+						.findFirst()
+						.get();
+				q.setStudentMark(q.correctAndGetTheMark());		
+				
+			}//end for
+		}//end for
+	
+	}//AutoCorrectAnswers
+	
 	public static void RecordAnswers(Workbook wrkBook, ObservableList<Student> Students, int QuesCount)
 	{
 		Optional.ofNullable(wrkBook.getSheet("Answers"))
@@ -66,7 +93,7 @@ public class ExcelRecorder
 						.findFirst()
 						.get();
 				row.createCell(Base + (2*j+0)).setCellValue( q.toString() );
-				q.setStudentMark(q.correctAndGetTheMark());
+				
 				row.createCell(Base + (2*j+1)).setCellValue( q.getStudentMark());
 			}//end for
 		}//end for
@@ -137,6 +164,7 @@ public class ExcelRecorder
 						.filter( qs -> qs.getId() == qid)
 						.findFirst()
 						.get();
+				
 				row.createCell(Base + j).setCellValue( Util.formatTime( q.getConsumedTime() )  );
 			}//end for
 			
@@ -152,16 +180,17 @@ public class ExcelRecorder
 			if(!st.getOptionalExamSheet().isPresent())
 				continue;
 
-			String cStart = CellReference.convertNumToColString(Base + 0 );
-			String cEnd = CellReference.convertNumToColString(  Base + (QuesCount-1) );
-			// SUM(C2:P2)
-			String cf = " SUM("+ 
-					cStart + (i+1) + ":" + 
-					cEnd   + (i+1) + ")";
+			double totalTime = st.getOptionalExamSheet()
+								  .get()
+								  .getQuestionList()
+								  .stream()
+								  .mapToDouble( q -> q.getConsumedTime().toSeconds() )
+								  .sum();
 
+			String tt = Util.formatTime(new Duration(totalTime*1000));
 			mySheet.getRow(i)
-			.createCell( Base + QuesCount )
-			.setCellFormula(cf);
+			   .createCell( Base + QuesCount )
+		       .setCellValue(  tt );
 		}
 
 		//autoSize all columns

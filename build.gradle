@@ -1,14 +1,15 @@
 /*----------------
 --   eQuiz   --
 ------------------*/
-
-	/*
-	apply plugin: 'java'
-	apply plugin: 'eclipse'
-	//project.targetCompatibility = 1.5
+	/* this allows you to get the version number form the last tag of your Git repo
+		using gitVersion()
+		1. make sure that last commit is tagged
+		2. build your project normally
 	*/
-	
-	
+	plugins {
+	     id "com.palantir.git-version" version "0.6.0"
+	}
+
 	allprojects
 	{
 		repositories
@@ -17,7 +18,8 @@
 			mavenCentral()
 			jcenter()
 		}
-		version = '2.4.0.0'
+		//version = '2.6.0.1'
+		version = gitVersion()
 	}
 	
 	subprojects
@@ -28,16 +30,15 @@
 			testCompile 'junit:junit:4.+'
 		}
 	}
-
-/*
-	eclipse {
-		classpath {	
-		    //customizing the classes output directory:
-		    defaultOutputDir = file('build-eclipse')
+	
+	task simo { doLast {
 		
-		    //default settings for downloading sources and Javadoc:
-		    downloadSources = false
-		    downloadJavadoc = true
-		}
-	}
-*/	
+		def details = versionDetails()
+		println "Version = " + gitVersion()
+		println "lastTag = $details.lastTag"
+		println "commitDistance = $details.commitDistance"
+		println "gitHash = $details.gitHash"
+		println "branchName = $details.branchName"
+	}}
+	
+	

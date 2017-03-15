@@ -256,11 +256,11 @@ public class Exporter
 		ch = new Chunk("", fnt);
 		String correctionMark  = "";
 		if (q.getStudentMark() == 0)
-			correctionMark  = "X";
+			correctionMark  = "X" + "   " + q.getTeacherNote();
 		else if (q.getStudentMark() == q.getMark())
-			correctionMark  = '\u221A' + "    "  + q.getStudentMark();
+			correctionMark  = '\u221A' + "    "  + q.getStudentMark()  + "   " + q.getTeacherNote();
 		else
-			correctionMark = '\u221A' + "X   " + q.getStudentMark();
+			correctionMark = '\u221A' + "X   " + q.getStudentMark()  + "   " + q.getTeacherNote();
 		
 		ch.append(correctionMark );
 		return ch;
