@@ -1,2 +1,2 @@
-eQuiz-Server
+..\eqServer\build\exe\eqServer-server
 pause

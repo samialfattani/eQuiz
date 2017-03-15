@@ -9,17 +9,8 @@
 		id 'edu.sc.seis.launch4j' version '2.3.0'
 	}
 	
-	apply plugin: 'java'
 	apply plugin: 'eclipse'
-	//project.targetCompatibility = 1.5
 	
-/*	repositories{
-		mavenLocal()
-		mavenCentral()
-		jcenter()
-	}
-*/
-
 	dependencies
 	{
 		compile project (":eqCore")
@@ -55,16 +46,17 @@
 
 	// launch4j: put all configuration of launch4j here 
 	createExe {
-		outputDir = "exe"
+		outputDir = "EQuiz"
 		fileDescription	"Electronic Quizes"
 		copyright = "All Copyright are recieved (c) 2016, This is a program for e-quizes in order to make exams for students and mark registeration."
 		companyName = "Sami"
-		println '---------' + new File("").absolutePath
 		 
 	    mainClassName = "frawla.equiz.client.Main"
-	    icon = new File('src/main/resources/images/exam.ico').absolutePath
+	    // = new File('../A') project(':eqClient')
+	    def projPath = projectDir.absolutePath;
+	    icon = new File(projPath + '/src/main/resources/images/exam.ico').absolutePath
 	    headerType = "gui" //no splash with console
-		splashFileName = new File('src/main/resources/images/splash-client.bmp').absolutePath
+		splashFileName = new File(projPath + '/src/main/resources/images/splash-client.bmp').absolutePath
 		outfile = project.name + '-client.exe'
 		productName	= project.name + '-client'
 		internalName = project.name + '-client'

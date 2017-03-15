@@ -321,7 +321,22 @@ public class General
 		
 		assertEquals("32.10", String.format("%.2f", 32.1));
 		assertEquals("32.00", String.format("%.2f", 32.0));
-		assertEquals("32.00", String.format("%.#2f", 32.0));
+		assertEquals("32.00", String.format("%.2f", 32.0));
 		
 	}
+	
+	
+	@Test
+	public void stringJoinTest(){
+		
+		String[] A = {"not included", "" , "Hello", "//", null, "c"};
+		
+		A = Arrays.copyOfRange(A, 2, A.length);
+		String res = Arrays.asList(A)
+			  .stream()
+			  .map( x -> {return (x==null)?"":x ;}  )
+			  .collect( Collectors.joining(""));
+		assertEquals("Hello//c", res);
+		
+	}	
 }//end class

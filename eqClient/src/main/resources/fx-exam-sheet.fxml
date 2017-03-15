@@ -12,7 +12,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.web.WebView?>
 
-<AnchorPane fx:id="pnlRoot" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="620.0" minWidth="914.0" prefHeight="722.0" prefWidth="1025.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frawla.equiz.client.FxExamSheetController">
+<AnchorPane fx:id="pnlRoot" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="620.0" minWidth="914.0" prefHeight="722.0" prefWidth="1025.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frawla.equiz.client.FxExamSheetController">
    <children>
       <TextArea fx:id="txtQuestion" editable="false" layoutX="14.0" layoutY="84.0" prefHeight="187.0" prefWidth="806.0" promptText="put the question herer" text="put the question herer" wrapText="true" AnchorPane.bottomAnchor="451.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="205.0" AnchorPane.topAnchor="84.0">
          <font>
@@ -63,7 +63,7 @@
             <Font name="Consolas Bold" size="20.0" />
          </font>
       </Button>
-      <Label fx:id="lblQuesCounter" layoutX="262.0" layoutY="9.0" prefHeight="24.0" prefWidth="68.0" style="-fx-background-color: lightyellow; -fx-border-color: blue; -fx-alignment: center;" text="?/?" textAlignment="CENTER" wrapText="true" AnchorPane.leftAnchor="262.0" AnchorPane.topAnchor="9.0">
+      <Label fx:id="lblQuesCounter" layoutX="272.0" layoutY="5.0" prefHeight="24.0" prefWidth="68.0" style="-fx-background-color: lightyellow; -fx-border-color: blue; -fx-alignment: center;" text="?/?" textAlignment="CENTER" wrapText="true" AnchorPane.leftAnchor="272.0" AnchorPane.topAnchor="5.0">
          <font>
             <Font name="Consolas Bold" size="22.0" />
          </font>
@@ -79,22 +79,22 @@
          </image>
       </ImageView>
       <Button fx:id="btnBackup" layoutX="629.0" layoutY="7.0" mnemonicParsing="false" onAction="#btnBackup_click" text="btnBackup" visible="false" />
-      <Label fx:id="lblName" layoutX="481.0" layoutY="10.0" prefHeight="25.0" prefWidth="265.0" style="-fx-background-color: lightyellow; -fx-border-color: blue;" text="--" textAlignment="CENTER" wrapText="true" AnchorPane.leftAnchor="481.0" AnchorPane.topAnchor="10.0">
+      <Label fx:id="lblName" layoutX="491.0" layoutY="6.0" prefHeight="25.0" prefWidth="265.0" style="-fx-background-color: lightyellow; -fx-border-color: blue;" text="--" textAlignment="CENTER" wrapText="true" AnchorPane.leftAnchor="491.0" AnchorPane.topAnchor="6.0">
          <font>
             <Font name="Consolas Bold" size="20.0" />
          </font>
       </Label>
-      <Label fx:id="lblID" layoutX="377.0" layoutY="10.0" prefHeight="25.0" prefWidth="99.0" style="-fx-background-color: lightyellow; -fx-border-color: blue;" text="NAE002" textAlignment="CENTER" wrapText="true" AnchorPane.leftAnchor="377.0" AnchorPane.topAnchor="10.0">
+      <Label fx:id="lblID" layoutX="387.0" layoutY="6.0" prefHeight="25.0" prefWidth="99.0" style="-fx-background-color: lightyellow; -fx-border-color: blue;" text="NAE002" textAlignment="CENTER" wrapText="true" AnchorPane.leftAnchor="387.0" AnchorPane.topAnchor="6.0">
          <font>
             <Font name="Consolas Bold" size="20.0" />
          </font>
       </Label>
-      <Label fx:id="lblNext" contentDisplay="CENTER" depthTest="DISABLE" layoutX="338.0" layoutY="7.0" onMouseClicked="#lblNext_MouseClicked" styleClass="btn" text="-&gt;" AnchorPane.leftAnchor="338.0" AnchorPane.topAnchor="7.0">
+      <Label fx:id="lblNext" contentDisplay="CENTER" depthTest="DISABLE" layoutX="348.0" layoutY="3.0" onMouseClicked="#lblNext_MouseClicked" styleClass="btn" text="-&gt;" AnchorPane.leftAnchor="348.0" AnchorPane.topAnchor="3.0">
          <font>
             <Font size="22.0" />
          </font>
       </Label>
-      <Label fx:id="lblPrev" contentDisplay="CENTER" depthTest="DISABLE" layoutX="227.0" layoutY="6.0" onMouseClicked="#lblPrev_MouseClicked" styleClass="btn" text="&lt;-" AnchorPane.leftAnchor="227.0" AnchorPane.topAnchor="6.0">
+      <Label fx:id="lblPrev" contentDisplay="CENTER" depthTest="DISABLE" layoutX="237.0" layoutY="2.0" onMouseClicked="#lblPrev_MouseClicked" styleClass="btn" text="&lt;-" AnchorPane.leftAnchor="237.0" AnchorPane.topAnchor="2.0">
          <font>
             <Font size="22.0" />
          </font>

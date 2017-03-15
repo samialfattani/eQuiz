@@ -77,7 +77,7 @@
                   </TextArea>
                </items>
             </SplitPane>
-            <Button fx:id="btnRecordOnExcel" layoutX="618.0" layoutY="9.0" mnemonicParsing="false" onAction="#btnRecordOnExcel_click" prefHeight="32.0" prefWidth="90.0" text="Record" textAlignment="CENTER" wrapText="true" AnchorPane.rightAnchor="51.0" AnchorPane.topAnchor="9.0">
+            <Button fx:id="btnRecordOnExcel" layoutX="618.0" layoutY="9.0" mnemonicParsing="false" onAction="#btnRecordOnExcel_click" prefHeight="61.0" prefWidth="127.0" text="Auto Correct &amp; Record" textAlignment="CENTER" wrapText="true" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="9.0">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>
@@ -100,9 +100,11 @@
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="mntmRemoveRejected" mnemonicParsing="false" onAction="#mntmRemoveRejected_click" text="Remove Rejected" />
                   <MenuItem fx:id="mntmFinish" mnemonicParsing="false" onAction="#mntmFinish_click" text="Finish Exam" />
-                  <MenuItem fx:id="mntmRecordOnExcel" mnemonicParsing="false" onAction="#mntmRecordOnExcel_click" text="Record On Excel" />
-                  <MenuItem fx:id="mntmExportAllToPDF" mnemonicParsing="false" onAction="#mntmExportAllToPDF_click" text="Export All to PDF" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem fx:id="mntmRecordOnExcel" mnemonicParsing="false" onAction="#mntmRecordOnExcel_click" text="Record On Excel &amp; Auto Correct" />
+                  <MenuItem fx:id="mntmRecordOnExcelWithoutAutoCorrect" mnemonicParsing="false" onAction="#mntmRecordOnExcelWithoutAutoCorrect_click" text="Record On Excel (without auto correct)" />
                   <MenuItem fx:id="mntmOpenExcelFile" mnemonicParsing="false" onAction="#mntmOpenExcelFile_click" text="Open Excel File..." />
+                  <MenuItem fx:id="mntmExportAllToPDF" mnemonicParsing="false" onAction="#mntmExportAllToPDF_click" text="Export All to PDF" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="mntmRefresh" mnemonicParsing="false" onAction="#mntmRefresh_click" text="Refresh">
                      <accelerator>
@@ -131,6 +133,11 @@
                         <KeyCodeCombination alt="DOWN" code="F5" control="UP" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
                   </MenuItem>
+                  <MenuItem fx:id="mntmTest" mnemonicParsing="false" onAction="#mntmTest_click" text="Test">
+                     <accelerator>
+                        <KeyCodeCombination alt="DOWN" code="F5" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator>
+                  </MenuItem>
               </items>
             </ContextMenu>
          </contextMenu>
@@ -153,6 +160,14 @@
                   <Font size="9.0" />
                </font>
             </Button>
+            <Label fx:id="lblTotalStudents" graphicTextGap="5.0" prefHeight="19.0" prefWidth="129.0" style="-fx-background-color: lightyellow; -fx-border-color: red;" text="# Students">
+               <font>
+                  <Font name="Consolas Bold" size="14.0" />
+               </font>
+               <padding>
+                  <Insets left="3.0" />
+               </padding>
+            </Label>
          </children>
          <BorderPane.margin>
             <Insets bottom="5.0" left="14.0" />

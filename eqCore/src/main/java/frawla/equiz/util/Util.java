@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -300,17 +301,21 @@ public class Util
 		}    	
 	}
 
-	public static void Save(String str, File f)
+	public static void Save(String str, File f, boolean append)
 	{
-		PrintWriter out;
+		
+		FileWriter out;
 		try
 		{
-			out = new PrintWriter(f);
-			out.println(str);	
+			if (!f.exists()) 
+				f.createNewFile();
+
+			out = new FileWriter(f, append);
+			out.write(str);	
 			out.flush();
 			out.close();
 		}
-		catch (FileNotFoundException e)
+		catch (IOException e)
 		{
 			Util.showError(e, e.getMessage());
 		}
