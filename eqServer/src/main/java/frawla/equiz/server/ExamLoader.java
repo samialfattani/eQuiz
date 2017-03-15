@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -14,6 +15,7 @@ import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
@@ -21,17 +23,10 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import com.rits.cloning.Cloner;
 
 import frawla.equiz.util.Util;
-import frawla.equiz.util.exam.BlankField;
-import frawla.equiz.util.exam.ExamConfig;
-import frawla.equiz.util.exam.ExamSheet;
-import frawla.equiz.util.exam.MultipleChoice;
-import frawla.equiz.util.exam.QuesinoOrderType;
-import frawla.equiz.util.exam.Question;
-import frawla.equiz.util.exam.Student;
-import frawla.equiz.util.exam.StudentListType;
-import frawla.equiz.util.exam.TimingType;
+import frawla.equiz.util.exam.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXMLLoader;
 import javafx.util.Duration;
 
 public class ExamLoader
@@ -64,6 +59,7 @@ public class ExamLoader
 
 		FileInputStream fin = new FileInputStream(srcFile);
 		wrkBook = WorkbookFactory.create( fin );
+		students = FXCollections.observableArrayList();
 
 		sourceFile = srcFile;
 		examConfig.SourceFile =srcFile; 
@@ -77,6 +73,7 @@ public class ExamLoader
 		fin.close();
 
 	}
+
 
 	private void LoadFileConfig() throws IOException
 	{
@@ -176,7 +173,7 @@ public class ExamLoader
 	}
 
 
-	public void loadStdBWlist()throws FileNotFoundException, IOException, EncryptedDocumentException, InvalidFormatException
+	private void loadStdBWlist()throws FileNotFoundException, IOException, EncryptedDocumentException, InvalidFormatException
 	{
 		BWList.clear();
 		Sheet BWSheet = wrkBook.getSheet("BlackWhite List");
@@ -187,7 +184,7 @@ public class ExamLoader
 		}
 	}
 
-	public void loadImages()throws FileNotFoundException, IOException, EncryptedDocumentException, InvalidFormatException
+	private void loadImages()throws FileNotFoundException, IOException, EncryptedDocumentException, InvalidFormatException
 	{
 		imageList.clear();
 		Sheet shtQuestions = wrkBook.getSheet("Questions");
@@ -207,13 +204,10 @@ public class ExamLoader
 	}
 
 
-	public void loadStudentList() throws EncryptedDocumentException, InvalidFormatException, IOException
+	private void loadStudentList() throws EncryptedDocumentException, InvalidFormatException, IOException
 	{
-		students = FXCollections.observableArrayList();
-		FileInputStream fin = new FileInputStream(sourceFile);
-		Workbook wrkBook = WorkbookFactory.create( fin );
-
 		Sheet shtAnswer = wrkBook.getSheet("Answers");
+		Sheet shtTimer = wrkBook.getSheet("Timer");
 		if(shtAnswer ==null)
 			return ;
 
@@ -222,21 +216,24 @@ public class ExamLoader
 			String sid = shtAnswer.getRow(i).getCell(0).toString();
 			Student std = new Student(sid);			
 			std.setName(shtAnswer.getRow(i).getCell(1).toString());
+			std.setStatus(Student.FINISHED);
 
 			ExamSheet examSheet = new ExamSheet();
 			examSheet.setExamConfig( getExamConfig() );
 
 			//read all answers a
-			examSheet.setQustionList( extractQuestionList(shtAnswer, i) );
+			List<Question> Qlst = extractQuestionList( shtAnswer.getRow(i), shtTimer.getRow(i) );
+			examSheet.setQustionList(  Qlst );
 			
 			std.setExamSheet(examSheet);
 			students.add(std);
 		}
 	}
 
-	private List<Question> extractQuestionList(Sheet shtAnswer, int r) throws InputMismatchException
+
+	private List<Question> extractQuestionList(Row stRow, Row timerRow) throws InputMismatchException
 	{
-		int[] QIDs = Arrays.asList(shtAnswer.getRow(r).getCell(2).toString().split(","))
+		int[] QIDs = Arrays.asList(stRow.getCell(2).toString().split(","))
 				.stream()
 				.map(String::trim)
 				.mapToInt(Integer::parseInt)
@@ -252,14 +249,16 @@ public class ExamLoader
 							 .findFirst()
 							 .get();
 
-			String cellContent = shtAnswer.getRow(r).getCell(base + (qid-1)*2).toString() ;
+			String timeCellContent = timerRow.getCell( 2 + (qid-1) ).toString();
+			String cellContent = stRow.getCell(base + (qid-1)*2).toString() ;
 
 			if( qj instanceof MultipleChoice )
 			{
 				MultipleChoice mcCopy = new MultipleChoice(cellContent);
 				mcCopy.setText(qj.getText());
 				mcCopy.copyChoices(qj);
-				mcCopy.setStudentMark(  Double.parseDouble(shtAnswer.getRow(r).getCell(base + (qid-1)*2+1).toString() )  );
+				mcCopy.setStudentMark(  Double.parseDouble(stRow.getCell(base + (qid-1)*2+1).toString() )  );
+				mcCopy.setConsumedTime( toDuration(timeCellContent)  );
 				Qlst.add( mcCopy );
 			}
 			else if(qj instanceof BlankField)
@@ -267,13 +266,22 @@ public class ExamLoader
 				BlankField qbCopy = new BlankField(cellContent);
 				qbCopy.setText(qj.getText());
 				qbCopy.copyOptions(qj);
-				qbCopy.setStudentMark(  Double.parseDouble(shtAnswer.getRow(r).getCell(base + (qid-1)*2+1).toString() )  );
+				qbCopy.setStudentMark(  Double.parseDouble(stRow.getCell(base + (qid-1)*2+1).toString() )  );
+				qbCopy.setConsumedTime( toDuration(timeCellContent)  );
 				Qlst.add( qbCopy );
 			}
 
 		}
 		return Qlst;
 		
+	}
+
+	private Duration toDuration(String timeCellContent)
+	{
+		LocalTime lt = LocalTime.parse("00:" + timeCellContent);
+		double ms = (lt.getHour()*3600 + lt.getMinute()*60 + lt.getSecond()) *1000 ;
+		Duration d = new Duration( ms );
+		return d;
 	}
 
 	public List<File> getImageFiles() 
@@ -396,12 +404,12 @@ public class ExamLoader
 
 	}// end sheet Validation
 
-	public static String cellToLower(Cell c){
+	private static String cellToLower(Cell c){
 		return c.toString().toLowerCase();
 
 	}
 
-	public static boolean isBlankCell(Cell c)
+	private static boolean isBlankCell(Cell c)
 	{
 		if(c == null )
 			return true;
@@ -437,7 +445,7 @@ public class ExamLoader
 
 	}
 
-	public boolean isValidStudent(String id)
+	public  boolean isValidStudent(String id)
 	{
 		boolean allow = false;
 		switch(examConfig.studentListType){
@@ -468,8 +476,7 @@ public class ExamLoader
 	public List<Question> getQustionList(){return questionList;}
 	public void setQustionList(List<Question> lst){this.questionList = lst;}
 
-	public List<Question> getCloneOfQustionList()
-	{
+	public List<Question> getCloneOfQustionList(){
 		return new Cloner().deepClone(questionList);
 	}
 
@@ -507,8 +514,6 @@ public class ExamLoader
 	{
 		return questionList.size();
 	}
-
-
 
 	public ObservableList<Student> getStudentList() {
 		return students;

@@ -26,6 +26,9 @@ import frawla.equiz.util.exam.TimingType;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -133,8 +136,8 @@ public class FxExamSheetController implements Initializable
 	private Question currentQues;
 	private Map<String, byte[]> myImageList;
 	private boolean ExamFinished = false;
-	long startCountingTime = 0;
-	long endCountingTime = 0;
+	private long startCountingTime = 0;
+	private long endCountingTime = 0;
 	
 	public void disconnect()
 	{
@@ -164,7 +167,7 @@ public class FxExamSheetController implements Initializable
 		Radios.forEach(ch -> ch.setToggleGroup(radioGroup) );
 		
 		imgFigure.setSmooth(false);
-		imgFigure.setFitWidth(200);
+		imgFigure.setFitWidth(imgFigure.getFitWidth()-10);
 		imgFigure.setPreserveRatio(true);
 		imgFigure.setCache(true);
 		
@@ -204,6 +207,13 @@ public class FxExamSheetController implements Initializable
 			}
 		}));
 		
+		
+		txtBlankField.textProperty().addListener((v, ov, nv) ->{
+			if(v.getValue().contains("`")){
+				 ((StringProperty)v).setValue(ov);
+				 Util.showError("You can't Enter a Text contains (`) !"); 
+			}
+		});
 		
 	}//--------------- inilizse
 

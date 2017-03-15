@@ -2,13 +2,11 @@
 --   eQuiz   --
 ------------------*/
 
-	/*
-	apply plugin: 'java'
-	apply plugin: 'eclipse'
-	//project.targetCompatibility = 1.5
-	*/
-	
-	
+/*	plugins {
+		id "com.zoltu.git-versioning" version "3.0.3"
+	}
+*/
+
 	allprojects
 	{
 		repositories
@@ -17,7 +15,7 @@
 			mavenCentral()
 			jcenter()
 		}
-		version = '2.4.0.0'
+		version = '2.6.0.1'
 	}
 	
 	subprojects
@@ -28,16 +26,3 @@
 			testCompile 'junit:junit:4.+'
 		}
 	}
-
-/*
-	eclipse {
-		classpath {	
-		    //customizing the classes output directory:
-		    defaultOutputDir = file('build-eclipse')
-		
-		    //default settings for downloading sources and Javadoc:
-		    downloadSources = false
-		    downloadJavadoc = true
-		}
-	}
-*/	

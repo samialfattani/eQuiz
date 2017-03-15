@@ -19,6 +19,7 @@ public abstract class Question implements Serializable
 	private Duration time = Duration.ZERO;
 	private Duration consumedTime = Duration.ZERO; 
 	private double mark = 0;
+	private String teacherNote="";
 	
 	protected String studentAnswer = "";
 	private double StudentMark =0 ;
@@ -48,6 +49,9 @@ public abstract class Question implements Serializable
 	public double getMark(){return mark;}
 	public void setMark(double mark){this.mark = mark;}
 
+	public String getTeacherNote(){return teacherNote;}
+	public void setTeacherNote(String tne){teacherNote = tne;}
+
 	public Duration getConsumedTime(){return consumedTime;}
 	public void setConsumedTime(Duration consumedTime){this.consumedTime = consumedTime;}
 	public void AppendConsumedTime(Duration t){
@@ -64,7 +68,7 @@ public abstract class Question implements Serializable
 	public String toString()
 	{	
 		String res = "";
-		res = id + "/" + text + " ["
+		res = id + "`" + text + " ["
 				+  time  + " min, " +
 				 new DecimalFormat("#.##").format( getMark()) + " marks]";
 		return res;

@@ -1,9 +1,6 @@
-
+	
 package frawla.equiz.client;
 import com.martiansoftware.jsap.JSAPException;
-
-import javax.activation.*;
-
 
 import javafx.application.Application;
 import javafx.stage.Stage;

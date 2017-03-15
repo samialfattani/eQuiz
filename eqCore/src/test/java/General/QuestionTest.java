@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -42,7 +43,7 @@ public class QuestionTest
 		qmc.setStudentAnswer("B");
 		assertFalse(qmc.isCorrectAnswer());
 
-		assertEquals("Q5/0/ABCD/B", qmc.toString());
+		assertEquals("Q5`0`ABCD`B", qmc.toString());
 		assertEquals("{A=A answer, B=B answer, C=C answer, D=D answer}",qmc.getChoices().toString());
 		assertEquals("[A, B, C, D]" , qmc.getOrderList().toString());
 
@@ -53,6 +54,8 @@ public class QuestionTest
 	{
 		MultipleChoice qmc = new MultipleChoice("Q2/1/CBEAD/E");
 
+		assertEquals(2, qmc.getId());
+		assertEquals(1, qmc.getMark(), 0.1);
 		qmc.setCorrectAnswer("A");
 		qmc.setStudentAnswer("C");
 		assertEquals("C", qmc.getStudentAnswer());
@@ -63,25 +66,67 @@ public class QuestionTest
 		qmc.setStudentAnswer("B");
 		assertFalse(qmc.isCorrectAnswer());
 
-		assertEquals("Q2/1/CBEAD/B", qmc.toString());
+		assertEquals("Q2`1`CBEAD`B", qmc.toString());
 		assertEquals("{}",qmc.getChoices().toString());
 		assertEquals("[C, B, E, A, D]" , qmc.getOrderList().toString());
-	}
+		
+		
+		qmc = new MultipleChoice("Q2/1/CBEAD/");
+		assertFalse(qmc.isCorrectAnswer());
+		assertEquals("Q2`1`CBEAD`-", qmc.toString());
+		assertEquals("{}",qmc.getChoices().toString());
+		
+		assertFalse(qmc.isCorrectAnswer());		
+		assertEquals("-",qmc.getStudentAnswer());
+		assertEquals("", qmc.getTeacherNote());
+
+		qmc = new MultipleChoice("Q2/1/CBEAD/-");
+		assertFalse(qmc.isCorrectAnswer());		
+		assertEquals("-",qmc.getStudentAnswer());
+		assertEquals("", qmc.getTeacherNote());
+		
+		// ----- NEW PATTEREN
+		
+		qmc = new MultipleChoice("Q2`1`CBEAD`E`teacher notes");
+		assertFalse(qmc.isCorrectAnswer());
+		assertEquals("E",qmc.getStudentAnswer());
+		assertEquals("teacher notes", qmc.getTeacherNote());
+		
+		qmc = new MultipleChoice("Q2`1`CBEAD`-`teacher notesefe efefef/ efefef/ef/efe");
+		assertFalse(qmc.isCorrectAnswer());
+		assertEquals("-",qmc.getStudentAnswer());
+		assertEquals("teacher notesefe efefef/ efefef/ef/efe", qmc.getTeacherNote());
+
+		qmc = new MultipleChoice("Q2`1`CBEAD``teacher notes");
+		assertFalse(qmc.isCorrectAnswer());
+		assertEquals("-",qmc.getStudentAnswer());
+		assertEquals("teacher notes", qmc.getTeacherNote());
+
+		qmc = new MultipleChoice("Q2`1`CBEAD``");
+		assertFalse(qmc.isCorrectAnswer());		
+		assertEquals("-",qmc.getStudentAnswer());
+		assertEquals("", qmc.getTeacherNote());
+
+		qmc = new MultipleChoice("Q2`1`CBEAD`-`teacher notes\r\n rgrg\n5165165");
+		assertFalse(qmc.isCorrectAnswer());		
+		assertEquals("-",qmc.getStudentAnswer());
+		assertEquals("teacher notes\r\n rgrg\n5165165", qmc.getTeacherNote());
+
+
+	}// end MultipleChoiceSpecialConstructorTest
 
 	@Test
 	public void BlankFieldTest()
 	{
 		BlankField qbf = new BlankField();
 		qbf.setId(5);
-
-		assertEquals(5, qbf.getId());
-
 		qbf.setMark(2.0);
-
-
 		qbf.setCorrectAnswerList(Arrays.asList("Hi","Hello", "Welcome back Brother"));
-
-		qbf.setStudentAnswer("  hi  ");		
+				
+		assertEquals(5, qbf.getId());
+		assertEquals(2, qbf.getMark(), 0.1);
+		
+		qbf.setStudentAnswer("  hi  ");
 		assertTrue(qbf.isCorrectAnswer());
 
 		qbf.setStudentAnswer("  hellO ");		
@@ -89,7 +134,6 @@ public class QuestionTest
 
 		qbf.setStudentAnswer("welcome back brother");		
 		assertTrue(qbf.isCorrectAnswer());
-
 
 		qbf.setStudentAnswer("welcomebackbrother");		
 		assertFalse(qbf.isCorrectAnswer());
@@ -103,7 +147,8 @@ public class QuestionTest
 	{
 
 		BlankField qbf = new BlankField("Q5/1.5/Hello");
-		qbf.setCorrectAnswerList(Arrays.asList("Hi","Hello", "Welcome back Brother"));
+		List<String> correctAns = Arrays.asList("Hi","Hello", "Welcome back \nBrother\n1/1");
+		qbf.setCorrectAnswerList(correctAns);
 
 		assertEquals(5, qbf.getId());
 		assertEquals(1.5, qbf.getMark(),0.1);
@@ -111,13 +156,44 @@ public class QuestionTest
 		assertTrue(qbf.isCorrectAnswer());
 		
 		qbf = new BlankField("Q5/1.5/ss");
-		qbf.setCorrectAnswerList(Arrays.asList("Hi","Hello", "Welcome back Brother"));
+		qbf.setCorrectAnswerList(correctAns);
 		assertFalse(qbf.isCorrectAnswer());
 
-		qbf = new BlankField("Q5/1.5/ss\nrgergrgqwrg3eg'll'ervkr\"efff");
-		qbf.setCorrectAnswerList(Arrays.asList("Hi","Hello", "Welcome back Brother"));
-		assertFalse(qbf.isCorrectAnswer());
-	
-	}
+		qbf = new BlankField("Q5/1.5/Welcome \n back \nBrother 1/1");
+		qbf.setCorrectAnswerList(correctAns);
+		assertTrue(qbf.isCorrectAnswer());
+
+		//------- NEW PATTERN ------
+		
+		qbf = new BlankField("Q5`1.5`");
+		assertEquals("-", qbf.getStudentAnswer());
+		
+		qbf = new BlankField("Q5`1.5``");
+		assertEquals("-", qbf.getStudentAnswer());
+		assertEquals("", qbf.getTeacherNote());
+		
+		qbf = new BlankField("Q5`1.5`Hi`jji");
+		qbf.setCorrectAnswerList(correctAns);
+
+		assertEquals(5, qbf.getId());
+		assertEquals(1.5, qbf.getMark(),0.1);
+		assertEquals("Hi", qbf.getStudentAnswer());
+		assertTrue(qbf.isCorrectAnswer());
+
+		qbf = new BlankField("Q5`1.5`Welcome back\n brother\n1/1`teacher notes");
+		qbf.setCorrectAnswerList(correctAns);
+		assertTrue(qbf.isCorrectAnswer());
+
+		qbf = new BlankField("Q5`1.5`Welcome back\n brother\n1/1");
+		qbf.setCorrectAnswerList(correctAns);
+		assertTrue(qbf.isCorrectAnswer());
+
+		qbf = new BlankField("Q5`1.5`Welcome back\n brother\n1/1`");
+		qbf.setCorrectAnswerList(correctAns);
+		assertTrue(qbf.isCorrectAnswer());
+		
+	}// BlankFieldSpecialConstructorTest
 
 }
+
+
