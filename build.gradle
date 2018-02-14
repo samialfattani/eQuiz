@@ -12,14 +12,12 @@
 
 	allprojects
 	{
-		repositories
-		{
+		repositories{
 			mavenLocal()
 			mavenCentral()
 			jcenter()
 		}
-
-		//version = '2.6.0.1'
+		//version = '2.9.0.0'
 		version = gitVersion()
 	}
 	

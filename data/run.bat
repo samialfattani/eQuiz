@@ -1,1 +1,0 @@
-START /B eqClient-client -h 10.4.10.191

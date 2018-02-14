@@ -131,7 +131,7 @@ public class General
 	public void ImageToByteArrayTest() throws IOException
 	{
 		byte[] imgData;
-		File imgFile = new File(Util.getResource("sami.jpg"));//new File( "data/sami.jpg");
+		File imgFile = new File(Util.getResourceAsURI("sami.jpg"));//new File( "data/sami.jpg");
 		FileInputStream fis = new FileInputStream( imgFile  );
 		int imgSize = (int)imgFile.length();
 		imgData = new byte[imgSize];

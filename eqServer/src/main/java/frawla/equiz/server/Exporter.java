@@ -251,7 +251,7 @@ public class Exporter
 	private Chunk getCorrectionMark(Question q) throws DocumentException, IOException
 	{
 		Chunk ch;
-		BaseFont bf = BaseFont.createFont(Util.getResource("fonts/FreeSans.ttf").toString(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+		BaseFont bf = BaseFont.createFont(Util.getResourceAsURI("fonts/FreeSans.ttf").toString(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
 		Font fnt = new Font(bf, 12, Font.BOLD, BaseColor.RED);
 		ch = new Chunk("", fnt);
 		String correctionMark  = "";

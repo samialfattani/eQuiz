@@ -27,14 +27,14 @@ class FxLogin
 	public FxLogin(){		
 		try
 		{
-			fxmlLoader = new FXMLLoader(Util.getResource("fx-login.fxml").toURL());			
+			fxmlLoader = new FXMLLoader(Util.getResourceAsURI("fx-login.fxml").toURL());			
 
 			AnchorPane root = (AnchorPane) fxmlLoader.load();
 			myController = (FxLoginController) fxmlLoader.getController();
 
 			Stage window = new Stage( );
 			window.setScene(new Scene(root, 400, 280));
-			window.getIcons().add(new Image(Util.getResource("images/aplus.png").toString() ));
+			window.getIcons().add(new Image(Util.getResourceAsURI("images/aplus.png").toString() ));
 			window.setTitle("eQuiz-CLIENT");
 			window.setOnCloseRequest(event -> System.exit(0) );
 			window.show();

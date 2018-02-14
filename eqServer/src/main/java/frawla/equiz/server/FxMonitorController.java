@@ -78,7 +78,7 @@ class FxMonitor
 	{		
 		try
 		{
-			fxmlLoader = new FXMLLoader(Util.getResource("fx-monitor.fxml").toURL());			
+			fxmlLoader = new FXMLLoader(Util.getResourceAsURI("fx-monitor.fxml").toURL());			
 
 			Parent root = (Parent) fxmlLoader.load();
 			myController = (FxMonitorController) fxmlLoader.getController();
@@ -87,7 +87,7 @@ class FxMonitor
 			window.setScene(new Scene(root, 720, 500));
 			window.setMinWidth(720);
 			window.setMinHeight(500);			
-			window.getIcons().add(new Image(Util.getResource("images/servericon.png").toString() ));
+			window.getIcons().add(new Image(Util.getResourceAsURI("images/servericon.png").toString() ));
 			window.setTitle("Exam Monitor");
 			window.setOnCloseRequest(event -> {
 				myController.disconnectServer();
@@ -563,8 +563,8 @@ public class FxMonitorController implements Initializable
 	{
 		TextInputDialog dialog = new TextInputDialog("10000");
 		Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
-		stage.getIcons().add(new Image(Util.getResource("images/servericon.png").toString() ));
-		ImageView iv = new ImageView ( Util.getResource("images/port1.png").toString());
+		stage.getIcons().add(new Image(Util.getResourceAsURI("images/servericon.png").toString() ));
+		ImageView iv = new ImageView ( Util.getResourceAsURI("images/port1.png").toString());
 		iv.setFitWidth(70); iv.setFitHeight(70);
 		dialog.setGraphic( iv );		
 		dialog.setTitle("Change port");		

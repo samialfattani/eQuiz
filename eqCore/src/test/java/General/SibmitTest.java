@@ -31,11 +31,11 @@ public class SibmitTest
         byte[] imgData;
         images = new HashMap<>();
         
-		imgFile =  new File(Util.getResource("sami.jpg")); //new File("data/sami.jpg");
+		imgFile =  new File(Util.getResourceAsURI("sami.jpg")); //new File("data/sami.jpg");
         imgData = fileToByteArray(imgFile);
         images.put(imgFile.getName(), imgData);
         
-		imgFile = new File(Util.getResource("sami2.jpg")); //new File("data/sami2.jpg");
+		imgFile = new File(Util.getResourceAsURI("sami2.jpg")); //new File("data/sami2.jpg");
         imgData = fileToByteArray(imgFile);
         images.put(imgFile.getName(), imgData);
 		

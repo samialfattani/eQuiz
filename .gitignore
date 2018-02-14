@@ -3,8 +3,10 @@
 build
 build-eclipse
 bin
+/exe
 .project
 .classpath
 *.lnk
-.gradle
 Thumb.mdb
+GIT modifications.txt
+ERRORS.txt

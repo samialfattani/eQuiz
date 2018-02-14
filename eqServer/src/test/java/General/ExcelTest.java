@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.Optional;
 
 import org.apache.poi.EncryptedDocumentException;
-import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFFormulaEvaluator;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -18,23 +17,22 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import frawla.equiz.util.Util;
 
 public class ExcelTest 
 {
-	private File myFile = new File(Util.getResource("test.xlsx")); //new File("data/test.xlsx");
-	private Workbook wrkBook;
-	@Before
-	public void before() throws EncryptedDocumentException, InvalidFormatException, IOException
+	private static File myFile = new File(Util.getResourceAsURI("IT100-2.xlsx")); //new File("data/test.xlsx");
+	private static Workbook wrkBook;
+	
+	@BeforeClass
+	public static void before() throws EncryptedDocumentException, InvalidFormatException, IOException
 	{
 		FileInputStream fin = new FileInputStream(myFile);
 		wrkBook = WorkbookFactory.create( fin );
-		fin.close();
-		
 	}
 	
 	
@@ -42,7 +40,7 @@ public class ExcelTest
 	public void ReadWriteTest()  throws Exception
 	{
 
-		Sheet mySheet = wrkBook.getSheet( "Sheet1" );
+		Sheet mySheet = wrkBook.getSheet( "test" );
 		double[] values = {45, 10, 20, 55, 100};
 
 		//read from Excel file
@@ -84,17 +82,17 @@ public class ExcelTest
 
 		assertEquals(timerSheet, wrkBook.getSheet("Timer"));
 
+	}
+
+	@AfterClass
+	public static void afterClass() throws IOException
+	{
 		FileOutputStream fout = new FileOutputStream( myFile ); 
 		wrkBook.write( fout );
 		fout.flush();
 
-		fout.close();
-	}
-
-	@After
-	public void after() throws IOException{
 		wrkBook.close();
-		
+		fout.close();
 	}
 
 }

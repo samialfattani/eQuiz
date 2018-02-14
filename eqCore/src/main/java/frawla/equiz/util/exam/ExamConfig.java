@@ -25,7 +25,6 @@ public class ExamConfig implements Serializable
 	public String courseSemester;
 	public String courseTitle;
 
-
 	@Override
 	public String toString()	
 	{	

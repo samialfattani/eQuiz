@@ -8,9 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.poi.EncryptedDocumentException;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-
 import frawla.equiz.util.Util;
 import frawla.equiz.util.exam.ExamConfig;
 import frawla.equiz.util.exam.ExamSheet;
@@ -36,14 +33,14 @@ class FxExamConfig
 	{		
 		try
 		{
-			fxmlLoader = new FXMLLoader( Util.getResource("fx-exam-config.fxml").toURL() );			
+			fxmlLoader = new FXMLLoader( Util.getResourceAsURI("fx-exam-config.fxml").toURL() );			
 
 			Parent root = (Parent) fxmlLoader.load();
 			myController = (FxExamConfigController) fxmlLoader.getController();
 
 			Stage window = new Stage( );
 			window.setScene(new Scene(root, 700, 450));
-			window.getIcons().add(new Image(Util.getResource("images/servericon.png").toString() ));
+			window.getIcons().add(new Image(Util.getResourceAsURI("images/servericon.png").toString() ));
 			window.setTitle("eQuiz-SERVER");
 			window.setOnCloseRequest(event -> System.exit(0));
 			window.show();
@@ -92,7 +89,7 @@ public class FxExamConfigController
 			txtInfo.appendText("\n" + ExamLoader.getInstance().getQuestionStatistics());
 			txtInfo.appendText("\n\nexamConfig Object has been configured");
 		}
-		catch (EncryptedDocumentException | InvalidFormatException | IOException e){
+		catch (Exception e){
 			Util.showError(e, e.getMessage());
 		}
 
@@ -113,7 +110,8 @@ public class FxExamConfigController
 		Util.getFileChooserForSaveExcel()
 		.filter( f -> !f.exists() )
 		.ifPresent( f -> {
-			Util.copyFile(new File(Util.getResource("Template.xlsx")),  f);
+			//getClass().getClassLoader()
+			Util.copyFile( Util.getResourceAsFile("Template.xlsx") ,  f);
 			Util.RunApplication(f);
 		});
 
@@ -139,9 +137,9 @@ public class FxExamConfigController
 	{
 		TextInputDialog dialog = new TextInputDialog("3");
 		Stage window = (Stage) dialog.getDialogPane().getScene().getWindow();
-		window.getIcons().add(new Image(Util.getResource("images/servericon.png").toString() ));
+		window.getIcons().add(new Image(Util.getResourceAsURI("images/servericon.png").toString() ));
 		window.setWidth(500);
-		ImageView iv = new ImageView ( Util.getResource("images/sheets.png").toString());
+		ImageView iv = new ImageView ( Util.getResourceAsURI("images/sheets.png").toString());
 		iv.setFitWidth(70); iv.setFitHeight(70);
 		dialog.setGraphic( iv );
 		

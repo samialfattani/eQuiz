@@ -5,12 +5,9 @@ package General;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import java.io.IOException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-import org.apache.poi.EncryptedDocumentException;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,14 +28,14 @@ public class General
 
 
 	@Test
-	public void messageTest() throws EncryptedDocumentException, InvalidFormatException, IOException 
+	public void messageTest() throws Exception 
 	{
 		Message<String> m1 = new Message<>(Message.PLAIN_TEXT_FROM_CLIENT);
 		m1.setData("this name String");
 		assertEquals("49 - this name String", m1.toString());
 
 		Message<ExamConfig> m2 = new Message<>(Message.EXAM_OBJECT);
-		File f = new File (Util.getResource("example.xlsx"));
+		File f = new File (Util.getResourceAsURI("example.xlsx"));
 		ExamLoader.getInstance().load(f); //new File("example.xlsx")
 		ExamConfig e = ExamLoader.getInstance().getExamConfig();
 		e.questionOrderType = QuesinoOrderType.RANDOM;

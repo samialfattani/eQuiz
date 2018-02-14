@@ -47,9 +47,9 @@
 
 	// launch4j: put all configuration of launch4j here 
 	createExe {
-		outputDir = "EQuiz"
-		fileDescription	"Electronic Quizes"
-		copyright = "All Copyright are recieved (c) 2016, This is a program for e-quizes in order to make exams for students and mark registeration."
+		outputDir = "../../exe/client"
+		fileDescription	 = "Electronic Quizes - Client"
+		copyright = "All Copyright are recieved (c) 2016~2018, This is a program for e-quizes in order to make exams for students and mark registeration."
 		companyName = "Sami"
 		 
 	    mainClassName = "frawla.equiz.client.Main"
@@ -57,16 +57,24 @@
 	    def projPath = projectDir.absolutePath;
 	    icon = new File(projPath + '/src/main/resources/images/exam.ico').absolutePath
 	    headerType = "gui" //no splash with console
+		
 		splashFileName = new File(projPath + '/src/main/resources/images/splash-client.bmp').absolutePath
-		outfile = project.name + '-client.exe'
-		productName	= project.name + '-client'
-		internalName = project.name + '-client'
+		version = gitVersion() 
+		//project.name
+		outfile = 'eQuiz-client-' + version +'.exe'
+		productName	= 'eQuiz-client-' + version
+		internalName = 'eQuiz-client-' + version
 
-		messagesStartupError "An error occurred while starting the application.\n" + "ÍÏË ÎØÃ ÃËäÇÁ ÊÔÛíá ÇáÈÑäÇãÌ" 
-		messagesBundledJreError "This application was configured to use a bundled Java Runtime Environment but the runtime is missing or corrupted.\n" + "åĞÇ ÇáÈÑäÇãÌ ãÕãã áßí íÚãá ÊÍÊ ÈíÆÉ ÌÇİÇ ÇáÊÔÛíáíÉ¡ íÈÏæ Ãä ÇáÌÇİÇ ÛíÑ ãæÌæÏÉ Çæ ãÚØáÉ"
-		messagesJreVersionError "This application requires a Java Runtime Environment\n" + "ÎØÃ İí ÇÕÏÇÑ äÓÎÉ ÇáÌÇİÇ ¡ ÊÃßÏ ãä ÊËÈíÊ ÇáäÓÎÉ ÇáãØáæÈÉ"
-		messagesLauncherError "The registry refers to a nonexistent Java Runtime Environment installation or the runtime is corrupted.\n" + "ÇáÌÇİÇ ÛíÑ ãÓÌáÉ ÈÔßá ÕÍíÍ"
-		messagesInstanceAlreadyExists "An application instance is already running.\n" + "áÇíãßä İÊÍ ÃßËÑ ãä äÓÎÉ ááÈÑäÇãÌ"
+		// initialHeapSize = 0 //Optional
+		// maxHeapSize = 4096
+		// maxHeapPercent = 50
+		errTitle = "Java is not Supported on this Computer"
+		downloadUrl = 'http://java.com/download'
+		messagesStartupError "An error occurred while starting the application.\n" + "ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" 
+		messagesBundledJreError "This application was configured to use a bundled Java Runtime Environment but the runtime is missing or corrupted.\n" + "ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½"
+		messagesJreVersionError "This application requires a Java Runtime Environment\n" + "ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
+		messagesLauncherError "The registry refers to a nonexistent Java Runtime Environment installation or the runtime is corrupted.\n" + "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½"
+		messagesInstanceAlreadyExists "An application instance is already running.\n" + "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
 		//see more: https://github.com/TheBoegl/gradle-launch4j
 	}
 

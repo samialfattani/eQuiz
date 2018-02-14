@@ -1,6 +1,7 @@
 package General;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,10 +14,11 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import frawla.equiz.server.ExamLoader;
+import frawla.equiz.server.ExamLoaderXLSX;
 import frawla.equiz.util.Util;
 import frawla.equiz.util.exam.ExamConfig;
 import frawla.equiz.util.exam.QuesinoOrderType;
@@ -25,15 +27,15 @@ import frawla.equiz.util.exam.TimingType;
 import javafx.embed.swing.JFXPanel;
 import javafx.util.Duration;
 
-public class ExamLoaderTest
+public class ExamLoaderXLSXTest
 {
-	ExamConfig exConfig;
+	static ExamConfig exConfig;
 
-	@Before
-	public void before() throws EncryptedDocumentException, InvalidFormatException, IOException
+	@BeforeClass
+	public static void before() throws Exception
 	{
 		new JFXPanel();
-		File f = new File( Util.getResource("IT100-2.xlsx"));
+		File f = new File( Util.getResourceAsURI("IT100-2.xlsx"));
 		ExamLoader.getInstance().load( f ); //new File("./data/IT100-2.xlsx")
 		exConfig = ExamLoader.getInstance().getExamConfig();
 	}
@@ -86,7 +88,7 @@ public class ExamLoaderTest
 	public void duplicateAnswersTest() throws EncryptedDocumentException, InvalidFormatException, IOException{
 		
 		Workbook wrkBook;
-		File f = new File(Util.getResource("test.xlsx"));
+		File f = new File(Util.getResourceAsURI("test.xlsx"));
         wrkBook = WorkbookFactory.create( f); //new File("data/test.xlsx") 
 		Sheet mySheet = wrkBook.getSheet( "Sheet1" );
 		List<Cell> cells = new ArrayList<>();
@@ -96,10 +98,10 @@ public class ExamLoaderTest
 		cells.add( mySheet.getRow(0).getCell(3) );
 		cells.add( mySheet.getRow(0).getCell(4) );
 		
-		assertEquals(false, ExamLoader.isThereAnyDuplicate(cells) );
+		assertEquals(false, ExamLoaderXLSX.isThereAnyDuplicate(cells) );
 		
 		cells.add( mySheet.getRow(0).getCell(5) );
-		assertEquals(true, ExamLoader.isThereAnyDuplicate(cells) );
+		assertEquals(true, ExamLoaderXLSX.isThereAnyDuplicate(cells) );
         wrkBook.close();
 	}
 	

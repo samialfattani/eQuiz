@@ -1,10 +1,8 @@
 package General;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-
-import frawla.equiz.client.FxExamSheetController;
 
 public class FxExamSheetControllerTest
 {

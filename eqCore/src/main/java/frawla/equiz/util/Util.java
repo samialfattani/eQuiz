@@ -61,12 +61,12 @@ public class Util
 
 	public static Image getConnectedImage(){
 		if(CONNECTED_IMAGE == null)
-			CONNECTED_IMAGE = new Image(getResource("images/connect.jpg").toString());
+			CONNECTED_IMAGE = new Image(getResourceAsURI("images/connect.jpg").toString());
 		return CONNECTED_IMAGE;
 	}
 	public static Image getDisconnectedImage(){
 		if(DISCONNECTED_IMAGE == null)
-			DISCONNECTED_IMAGE = new Image(getResource("images/disconnect.jpg").toString());
+			DISCONNECTED_IMAGE = new Image(getResourceAsURI("images/disconnect.jpg").toString());
 		return DISCONNECTED_IMAGE;
 	}
 	 
@@ -89,7 +89,14 @@ public class Util
 		}
 	}
 
-	public static URI getResource(String s)
+	public static File getResourceAsFile(String s)
+	{
+		File f =null;
+		ClassLoader c = new Util().getClass().getClassLoader();
+		f = new File( c.getResource(s).getFile() );
+		return f ;
+	}
+	public static URI getResourceAsURI(String s)
 	{
 		URI uri =null;
 		try{
@@ -161,6 +168,7 @@ public class Util
 		fc.getExtensionFilters().addAll(
 				new ExtensionFilter("MS-Excel Files", "*.xlsx"),
 				new ExtensionFilter("MS-Excel(97-2003) Files", "*.xls"),
+				new ExtensionFilter("Open-office SpreadSheet Files", "*.ods"),
 				new ExtensionFilter("All Files", "*.*"));
 		fc.setTitle("Open MS-Excel files");
 		fc.setInitialDirectory(new File("."));
@@ -353,7 +361,7 @@ public class Util
 		Platform.runLater( ()->{
 			Alert alert = new Alert(AlertType.ERROR);
 			Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-			stage.getIcons().add(new Image(getResource("images/error.png").toString()));
+			stage.getIcons().add(new Image(getResourceAsStream("images/error.png") ));
 			alert.setTitle("Error - " + System.getProperty("program.name"));
 			alert.setHeaderText(null);
 			alert.setContentText(string);
@@ -371,7 +379,7 @@ public class Util
 		new JFXPanel(); //initialize graphics
 		Alert alert = new Alert(AlertType.ERROR);
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-		stage.getIcons().add(new Image(getResource("images/error.png").toString()));
+		stage.getIcons().add(new Image( getResourceAsStream("images/error.png") ));
 		alert.setTitle("Exception - " + System.getProperty("program.name"));
 		alert.setHeaderText("Suddenly a problem has been occured, Please Contact the customer support");
 		alert.setContentText(string);

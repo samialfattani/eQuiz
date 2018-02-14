@@ -26,8 +26,6 @@ import frawla.equiz.util.exam.TimingType;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -67,18 +65,18 @@ class FxExamSheet
 	{
 		try
 		{
-			fxmlLoader = new FXMLLoader(Util.getResource("fx-exam-sheet.fxml").toURL());			
+			fxmlLoader = new FXMLLoader(Util.getResourceAsURI("fx-exam-sheet.fxml").toURL());			
 			
 			AnchorPane root = (AnchorPane) fxmlLoader.load();
 			myController = (FxExamSheetController) fxmlLoader.getController();
 
 			Scene scene = new Scene(root, 1000, 700);
-			scene.getStylesheets().add(Util.getResource("mystyle.css").toURL().toExternalForm());
+			scene.getStylesheets().add(Util.getResourceAsURI("mystyle.css").toURL().toExternalForm());
 			 
 			
 			Stage window = new Stage( );
 			window.setScene(scene);
-			window.getIcons().add(new Image(Util.getResource("images/exam.png").toString() ));
+			window.getIcons().add(new Image(Util.getResourceAsURI("images/exam.png").toString() ));
 			window.setTitle("Exam Sheet");
 			window.setOnCloseRequest(event -> myController.disconnect());
 			window.setMinWidth(1050);
@@ -452,7 +450,7 @@ public class FxExamSheetController implements Initializable
 	}
 	
 	public void imgFigure_mouseEntered(){
-		Image image = new Image( Util.getResource("images/zoom.png").toString() );  //pass in the image path
+		Image image = new Image( Util.getResourceAsURI("images/zoom.png").toString() );  //pass in the image path
 		pnlRoot.getScene().setCursor(new ImageCursor(image));
 	}
 	public void imgFigure_mouseExited(){
@@ -513,14 +511,14 @@ public class FxExamSheetController implements Initializable
 			case Message.FINAL_COPY_IS_RECIEVED:
 				if(ExamFinished){
 					Alert alert = new Alert(AlertType.INFORMATION);
-					ImageView iv = new ImageView ( Util.getResource("images/ok.png").toString());
+					ImageView iv = new ImageView ( Util.getResourceAsURI("images/ok.png").toString());
 					iv.setFitWidth(64); iv.setFitHeight(64);
 					alert.setGraphic( iv );
 					alert.setTitle("Exam Sheet is Submitted");
 					alert.setHeaderText(null);
 					alert.setContentText("Your Answer is being recieved Successfully!\nThe link to Server will be Disconnected");
 					Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-					stage.getIcons().add(new Image(Util.getResource("images/ok.png").toString() ));					
+					stage.getIcons().add(new Image(Util.getResourceAsURI("images/ok.png").toString() ));					
 					alert.showAndWait();
 
 					//TODO: remove this
@@ -566,7 +564,7 @@ public class FxExamSheetController implements Initializable
 		
 		
 		if(myImageList.get(fileName) == null) //no image in the list			
-			return Util.getResource("images/imagebox.png");
+			return Util.getResourceAsURI("images/imagebox.png");
 		
 		File myDir = new File(Util.getTempDir() + fs +  "equiz");
 		if(!myDir.exists())
