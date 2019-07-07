@@ -1,25 +1,27 @@
 package frawla.equiz.server;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.ParseException;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.InputMismatchException;
 import java.util.List;
 
 import org.apache.poi.EncryptedDocumentException;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import com.rits.cloning.Cloner;
 
+import frawla.equiz.util.EQDate;
+import frawla.equiz.util.Log;
 import frawla.equiz.util.Util;
 import frawla.equiz.util.exam.BlankField;
 import frawla.equiz.util.exam.ExamConfig;
@@ -34,7 +36,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.util.Duration;
 
-public class ExamLoaderXLSX
+public class ExamLoaderXLSX extends ExamLoader
 {
 
 	private File sourceFile;
@@ -44,27 +46,36 @@ public class ExamLoaderXLSX
 	private List<String> ErrReport = new ArrayList<>();
 	private ExamConfig examConfig = new ExamConfig();
 	private List<File> imageList = new ArrayList<>();
-	private Workbook wrkBook;
 	private static ObservableList<Student> students;
 
-	public ExamLoaderXLSX(Workbook wrkBook, File f) throws IOException, EncryptedDocumentException, InvalidFormatException
+	private List<Log> logList;
+
+	public ExamLoaderXLSX(File srcFile) 
 	{ 
-		students = FXCollections.observableArrayList();
+		try(FileInputStream fin = new FileInputStream(srcFile);
+			Workbook wrkBook = WorkbookFactory.create( fin );) 
+		{
+			
+			sourceFile = srcFile;
+			
+			examConfig   = LoadFileConfig( wrkBook);
+			questionList = loadQuestionList( wrkBook);
+			imageList    = loadImages( wrkBook);
+			BWList       = loadStdBWlist( wrkBook);
+			students     = loadStudentList( wrkBook);
+			logList      = loadLog( wrkBook);
+			
+		} catch (IOException | EncryptedDocumentException |  ParseException e) {
+			e.printStackTrace();
+		}
 		
-		this.wrkBook =wrkBook;
-		sourceFile = f;
-		
-		LoadFileConfig();
-		loadQuestionList();
-		loadImages();
-		loadStdBWlist();
-		loadStudentList();
 	}
 
-
-	private void LoadFileConfig() throws IOException
+	private ExamConfig LoadFileConfig(Workbook wrkBook) 
 	{
 		Sheet mySheet = wrkBook.getSheet( "Config" );
+		ExamConfig examConfig = new ExamConfig();
+		examConfig.SourceFile = sourceFile;
 
 		String data = "";
 
@@ -92,14 +103,15 @@ public class ExamLoaderXLSX
 		examConfig.courseYear = String.format("%.0f", Double.parseDouble(mySheet.getRow( 9 ).getCell( 1 ).toString()) );
 		examConfig.courseSemester = mySheet.getRow( 10 ).getCell( 1 ).getStringCellValue().toString();
 		examConfig.courseTitle = mySheet.getRow( 11 ).getCell( 1 ).getStringCellValue().toString();
-
+		
+		return examConfig;
 	}
 
-	private void loadQuestionList() 
+	private List<Question> loadQuestionList(Workbook wrkBook) 
 	{
-		String data = "";
+		List<Question> questionList = new ArrayList<>();
 		Sheet shtQuestions = wrkBook.getSheet("Questions");
-		getQustionList().clear();
+		questionList.clear();
 
 		if( !isValidQuestionSheet(shtQuestions)){
 			StringBuilder s = new StringBuilder("INVALID QUESTION SHEET\n");
@@ -109,70 +121,103 @@ public class ExamLoaderXLSX
 
 			Util.showError( s.toString() );
 			ErrReport.clear();
-			return;
+			return null;
 		}
 
 
 		for (int i=2; i < shtQuestions.getPhysicalNumberOfRows(); i++)
-		{			
-			shtQuestions.getRow( i ).getCell( 0 ).setCellValue(i-1); //put question number.
+		{
+			Row row = shtQuestions.getRow( i );
+			row.getCell( 0 ).setCellValue(i-1); //put question number.
 
 			Question q =null;
-			String qtype = shtQuestions.getRow( i ).getCell( 2 ).getStringCellValue(); //question Type
+			String qtype = row.getCell( 2 ).getStringCellValue(); //question Type
+
+			//fill question with options
 			if(qtype.equals(Question.MULTIPLE_CHOICE))
-				q = new MultipleChoice();
+				q = getQuestionFromRow( new MultipleChoice(),  row );
 			else if(qtype.equals(Question.BLANK_FIELD))
-				q = new BlankField();
+				q = getQuestionFromRow( new BlankField(),  row );
 
 			q.setType(qtype);
 			q.setId(i-1); //1 ,2, 3, 4...etc
-			q.setText(shtQuestions.getRow( i ).getCell( 1 ).getStringCellValue()); //Question Text
-			Cell c ;
-			for(int j=0; j<6; j++)
-			{
-				c = shtQuestions.getRow( i ).getCell( j+3 );
-				if(!isBlankCell(c)) 
-				{
-					data = shtQuestions.getRow( i ).getCell( j+3 ).toString();
-					addChoice(q, data, j);					
-				}
-			}
-
-			if( q instanceof MultipleChoice)
-				((MultipleChoice) q).resetOrderList();
-
-			c = shtQuestions.getRow( i ).getCell( 9 );
+			q.setText(row.getCell( 1 ).getStringCellValue()); //Question Text
+		
+			//image cell
+			Cell c = row.getCell( 9 );
 			if(!isBlankCell(c)){
 				File f = new File(c.toString());
 				q.setImgFileName(f.getName());
 			}
 
-			q.setMark(shtQuestions.getRow( i ).getCell( 10 ).getNumericCellValue());
+			//mark cell
+			q.setMark(row.getCell( 10 ).getNumericCellValue());
 
+			//time cell
 			if(examConfig.timingType == TimingType.QUESTION_LEVEL){
-				double min = shtQuestions.getRow( i ).getCell( 11 ).getNumericCellValue(); 
+				double min = row.getCell( 11 ).getNumericCellValue(); 
 				q.setTime( Duration.minutes(min) );
 			}
-			getQustionList().add(q);
+			questionList.add(q);
 
 		}
 		//getQustionList().forEach( qu -> System.out.println(qu) );
+		return questionList;
 	}
 
-
-	private void loadStdBWlist()throws FileNotFoundException, IOException, EncryptedDocumentException, InvalidFormatException
+	private MultipleChoice getQuestionFromRow(MultipleChoice q, Row row)
 	{
+		Cell c ;
+		q.setCorrectAnswer("A");
+		for(int j=0; j<6; j++)
+		{
+			//option text
+			c = row.getCell( j+3 );
+			if(!isBlankCell(c)) {
+				String[] key = {"A", "B", "C", "D", "E","F","G","H","I"};
+				q.getChoices().put( key[j] , c.getStringCellValue() );				
+			}
+		}
+
+		q.resetOrderList();
+		return q;
+	}
+
+	private BlankField getQuestionFromRow(BlankField q, Row row)
+	{
+		Cell c ;
+		for(int j=0; j<6; j++)
+		{
+			//option text
+			c = row.getCell( j+3 );
+			if(!isBlankCell(c)) {
+				q.getCorrectAnswerList().add( c.getStringCellValue() );
+			}
+		}
+		return q;
+	}
+
+	private List<String> loadStdBWlist(Workbook wrkBook)
+	{
+		List<String> BWList = new ArrayList<>();
 		BWList.clear();
-		Sheet BWSheet = wrkBook.getSheet("BlackWhite List");
+		Sheet BWSheet = wrkBook.getSheet("BlackWhite_List");
+		if( BWSheet == null) {
+			Util.showError("Sheet of 'BlckWhite_List' is not found");
+			return null;
+		}
+		
 		for (int i=1; i < BWSheet.getPhysicalNumberOfRows(); i++)
 		{
 			String s = BWSheet.getRow(i).getCell(0).toString();
 			BWList.add(s);
 		}
+		return BWList;
 	}
 
-	private void loadImages()throws FileNotFoundException, IOException, EncryptedDocumentException, InvalidFormatException
+	private List<File> loadImages(Workbook wrkBook)
 	{
+		List<File> imageList = new ArrayList<>();
 		imageList.clear();
 		Sheet shtQuestions = wrkBook.getSheet("Questions");
 		for (int i=2; i < shtQuestions.getPhysicalNumberOfRows(); i++)
@@ -187,47 +232,72 @@ public class ExamLoaderXLSX
 				imageList.add( f );
 			}
 		}
-
+		return imageList;
 	}
 
 
-	private void loadStudentList() throws EncryptedDocumentException, InvalidFormatException, IOException
+	private ObservableList<Student> loadStudentList(Workbook wrkBook)
 	{
+		ObservableList<Student> students = FXCollections.observableArrayList();
 		Sheet shtAnswer = wrkBook.getSheet("Answers");
 		Sheet shtTimer = wrkBook.getSheet("Timer");
 		if(shtAnswer ==null)
-			return ;
+			return students;
 
 		for (int i=1; i < shtAnswer.getPhysicalNumberOfRows(); i++)
 		{
 			String sid = shtAnswer.getRow(i).getCell(0).toString();
 			Student std = new Student(sid);			
 			std.setName(shtAnswer.getRow(i).getCell(1).toString());
-			std.setStatus(Student.FINISHED);
 
 			ExamSheet examSheet = new ExamSheet();
 			examSheet.setExamConfig( getExamConfig() );
 
-			//read all answers a
+			//read all answers and timers
 			List<Question> Qlst = extractQuestionList( shtAnswer.getRow(i), shtTimer.getRow(i) );
 			examSheet.setQustionList(  Qlst );
 			
 			std.setExamSheet(examSheet);
 			students.add(std);
 		}
+		return students;
 	}
 
-
-	private List<Question> extractQuestionList(Row stRow, Row timerRow) throws InputMismatchException
+	private List<Log> loadLog(Workbook wrkBook) throws ParseException
 	{
+		logList = new ArrayList<>();
+		
+		Sheet shtLog = wrkBook.getSheet("Log");
+		if(shtLog == null)
+			return logList;
+
+		for (int i=1; i < shtLog.getPhysicalNumberOfRows(); i++)
+		{
+			String time = shtLog.getRow(i).getCell(0).toString();
+			String text = shtLog.getRow(i).getCell(1).toString();
+			
+			Log log = new Log( new EQDate(Util.MY_DATE_FORMAT, time) , text);
+			logList.add( log );
+		}
+		return logList;
+	}
+
+	//TODO: read times not implemented yet.
+	private List<Question> extractQuestionList(Row stRow, Row timerRow) 
+	{
+		List<Question> Qlst = new ArrayList<>();
+		
+		if( stRow.getCell(2).toString().isEmpty() )
+			return Qlst;
+		
+		//5,4,2,1,3
 		int[] QIDs = Arrays.asList(stRow.getCell(2).toString().split(","))
 				.stream()
 				.map(String::trim)
 				.mapToInt(Integer::parseInt)
 				.toArray();
-		List<Question> Qlst = new ArrayList<>();
 
-		for (int j = 0; j < QIDs.length; j++)
+		for (int j=0; j < QIDs.length; j++)
 		{
 			int base = 3;
 			int qid = QIDs[j];
@@ -241,6 +311,7 @@ public class ExamLoaderXLSX
 
 			if( qj instanceof MultipleChoice )
 			{
+				
 				MultipleChoice mcCopy = new MultipleChoice(cellContent);
 				mcCopy.setText(qj.getText());
 				mcCopy.copyChoices(qj);
@@ -271,15 +342,9 @@ public class ExamLoaderXLSX
 		return d;
 	}
 
-	public List<File> getImageList() 
-	{
-		return imageList;
-	}
-
 	private boolean isValidQuestionSheet(Sheet shtQuestions)
 	{
 		// 
-
 		boolean validSheet = true;
 
 		int QuesCount = shtQuestions.getPhysicalNumberOfRows();
@@ -405,9 +470,11 @@ public class ExamLoaderXLSX
 		if(c.toString().trim().replaceAll("\\s+", "").equals(""))
 			return true;
 
-		return c.getCellTypeEnum() ==  CellType.BLANK;
+		return c.getCellType( ) == CellType.BLANK ;
 	}
 
+	
+	//---------------------------------------------
 	public static boolean isThereAnyDuplicate(List<Cell> cells)
 	{
 		boolean isUnique; 
@@ -419,50 +486,20 @@ public class ExamLoaderXLSX
 		return !isUnique;
 	}
 
-	private void addChoice(Question q, String data, int j)
-	{
-		if(q instanceof MultipleChoice){			
-			if(j ==0)
-				((MultipleChoice)q).setCorrectAnswer("A");
-
-			String[] Letter = {"A", "B", "C", "D", "E","F","G","H","I"};
-			((MultipleChoice)q).getChoices().put( Letter[j] , data);
-		}else if(q instanceof BlankField){
-			((BlankField)q).getCorrectAnswerList().add(data);
-		}
-
-	}
-
-
-	public ExamConfig getExamConfig(){
-		return examConfig;
-	}
-
-	public List<Question> getQustionList(){return questionList;}
-	public void setQustionList(List<Question> lst){this.questionList = lst;}
 
 	public List<Question> getCloneOfQustionList(){
 		return new Cloner().deepClone(questionList);
 	}
 
-	public int getQuestionCount(){
-		return questionList.size();
-	}
-
-	public ObservableList<Student> getStudentList() {
-		return students;
-	}
-
-
-	public List<String> getBWList()
-	{
-		return BWList;
-	}
-
-
-	public List<String> getErrReport()
-	{
-		return ErrReport;
-	}
+	public List<File> getImageList(){return imageList;}
+	@Override public List<String> getBWList(){return BWList;}
+	
+	@Override public List<Question> getQustionList(){return questionList;}
+	@Override public ExamConfig getExamConfig(){return examConfig;}
+	@Override public ObservableList<Student> getStudentList() {return students;}
+	
+	@Override public List<String> getErrReport(){return ErrReport;}
+	@Override public List<Log> getLog(){return logList;}
+	@Override public List<File> getImageFiles() {return imageList;}
 
 }//ExamLoader

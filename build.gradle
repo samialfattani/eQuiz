@@ -17,7 +17,7 @@
 			mavenCentral()
 			jcenter()
 		}
-		//version = '2.9.0.0'
+		//version = '2.10.0.0'
 		version = gitVersion()
 	}
 	
@@ -30,9 +30,14 @@
 		}
 	}
 	
+	task getjava{
+		println System.getProperty('java.home')
+	}
+	
 	task simo { doLast {
 		
 		def details = versionDetails()
+		println "This is Version Information --------------"
 		println "Version = " + gitVersion()
 		println "lastTag = $details.lastTag"
 		println "commitDistance = $details.commitDistance"

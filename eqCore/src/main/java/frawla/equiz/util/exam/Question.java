@@ -26,8 +26,7 @@ public abstract class Question implements Serializable
 	
 
 
-	public Question(){
-	}
+	public Question(){ }
 
 	public Question(String text){
 		this.text = text;
@@ -67,6 +66,7 @@ public abstract class Question implements Serializable
 	@Override
 	public String toString()
 	{	
+		//2`what is your name? [55 min, 2.5 marks]
 		String res = "";
 		res = id + "`" + text + " ["
 				+  time  + " min, " +

@@ -1,4 +1,4 @@
-package General;
+package general;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -31,8 +31,8 @@ public class ExamLoaderODSTest
 	public static void before() throws Exception
 	{
 		new JFXPanel();
-		File f = new File( Util.getResourceAsURI("open-office-example.ods"));
-		ExamLoader.getInstance().load( f ); 
+		File f = new File( Util.getResourceAsURI("IT100-2-open-office.ods"));
+		ExamLoader.getInstance(f); 
 		exConfig = ExamLoader.getInstance().getExamConfig();
 	}
 
@@ -55,7 +55,7 @@ public class ExamLoaderODSTest
 	@Test
 	public void LoadTest() 
 	{
-		assertEquals(7, ExamLoader.getInstance().getQustionList().size());
+		assertEquals(5, ExamLoader.getInstance().getQustionList().size());
 	}
 
 	@Test
@@ -86,7 +86,7 @@ public class ExamLoaderODSTest
 	{
 		
 		
-		File f = new File(Util.getResourceAsURI("open-office-example.ods"));
+		File f = new File(Util.getResourceAsURI("IT100-2-open-office.ods"));
 		SpreadsheetDocument wrkBook = SpreadsheetDocument.loadDocument(f);
 		
 		Table mySheet = wrkBook.getTableByName( "test" );

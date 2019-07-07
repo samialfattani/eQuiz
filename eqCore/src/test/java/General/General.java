@@ -1,4 +1,4 @@
-package General;
+package general;
 
 
 import static org.junit.Assert.assertEquals;
@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -53,6 +54,12 @@ public class General
 
 		b = new File("D:\\", "../some/relative/path");
 		assertEquals("D:\\some\\relative\\path", b.getCanonicalPath());
+
+		Path basePath  = Paths.get("D:\\Dropbox\\Sami-Programming\\JAVA\\eQuiz\\eQuiz-Server\\src\\main\\resources\\template.xlsx");
+		// use getParent() if basePath is a file (not a directory)
+		Path resolvedPath = basePath.getParent().resolve("..\\..\\..\\..\\..\\..\\..\\IMG_20150723_054905.jpg");  
+		Path abolutePath = resolvedPath .normalize();
+		assertEquals("D:\\Dropbox\\IMG_20150723_054905.jpg", abolutePath.toString());		
 	}
 	
 	@Test
@@ -116,15 +123,6 @@ public class General
 		char choiceID = 'A';
 		String actual =  (char)(choiceID+1) + "ffef" ;
 		assertEquals("Bffef", actual); 
-	}
-	
-	@Test
-	public void RelativePathTest(){
-		Path basePath  = Paths.get("D:\\Dropbox\\Sami-Programming\\JAVA\\eQuiz\\eQuiz-Server\\src\\main\\resources\\template.xlsx");
-		// use getParent() if basePath is a file (not a directory)
-		Path resolvedPath = basePath.getParent().resolve("..\\..\\..\\..\\..\\..\\..\\IMG_20150723_054905.jpg");  
-		Path abolutePath = resolvedPath .normalize();
-		assertEquals("D:\\Dropbox\\IMG_20150723_054905.jpg", abolutePath.toString());		
 	}
 	
 	@Test
@@ -277,22 +275,15 @@ public class General
 	}
 
 	@Test
-	public void DurationTest() {
-		try{
-			
-
-        long s = System.currentTimeMillis();
-        Thread.sleep(2000);
-        long e = System.currentTimeMillis();
-
-		
+	public void DurationTest() 
+	{
         new JFXPanel(); // initializes JavaFX environment
-		Duration d = Duration.millis(e-s);
-		assertEquals( "00:02", Util.formatTime(d) ); 
+        Duration d;
+		d = Duration.millis(3*1000);
+		assertEquals( "00:00", Util.formatTime(d) ); 
 
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
+		d = Duration.millis( 3*60*1000 );
+		assertEquals( "00:03", Util.formatTime(d) ); 
 	}
 
 	@Test
@@ -321,7 +312,12 @@ public class General
 		
 		assertEquals("32.10", String.format("%.2f", 32.1));
 		assertEquals("32.00", String.format("%.2f", 32.0));
-		assertEquals("32.00", String.format("%.2f", 32.0));
+		
+		DecimalFormat formatter = new DecimalFormat("0.##");
+		assertEquals("32.5", formatter.format( 32.5));
+		assertEquals("32.55", formatter.format( 32.5499));
+		assertEquals("0.5", formatter.format( 0.5));
+
 		
 	}
 	

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<diagram program="umlet" version="14.1.0">
+<diagram program="umlet" version="14.3.0">
   <zoom_level>12</zoom_level>
   <element>
     <id>UMLClass</id>
     <coordinates>
       <x>48</x>
       <y>36</y>
-      <w>120</w>
+      <w>252</w>
       <h>168</h>
     </coordinates>
     <panel_attributes>/AbstractClass/
@@ -24,18 +24,18 @@ studentAnswer: String
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>192</x>
+      <x>336</x>
       <y>36</y>
-      <w>252</w>
-      <h>228</h>
+      <w>360</w>
+      <h>312</h>
     </coordinates>
     <panel_attributes>MultipleChoice
 Package::frawla.equiz.exam
 --
-_-ClassAttribute: Long_
+- ClassAttribute: Long_
 --
-#Operation(i: int): int
-/+isCorrectAnswer()/
+# Operation(i: int): int
++ isCorrectAnswer()
 --
 Responsibilities
 -- Resp1

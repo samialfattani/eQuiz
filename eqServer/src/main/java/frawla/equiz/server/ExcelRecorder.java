@@ -1,5 +1,7 @@
+
 package frawla.equiz.server;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -8,6 +10,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellReference;
 
+import frawla.equiz.util.Log;
 import frawla.equiz.util.Util;
 import frawla.equiz.util.exam.Question;
 import frawla.equiz.util.exam.Student;
@@ -17,32 +20,36 @@ import javafx.util.Duration;
 public class ExcelRecorder
 {
 
-	public static void AutoCorrectAnswers(ObservableList<Student> Students, int QuesCount)
+	public static void AutoCorrectAnswers(ObservableList<Student> Students)
 	{
-		for (int i=0; i < Students.size() ; i++)
-		{
-			Student st = Students.get(i);			
-
-			if(!st.getOptionalExamSheet().isPresent())
-				continue;
-			
-			for (int j=0; j < QuesCount ; j++)
-			{
-				final int qid = j+1;
-				Question q = st.getOptionalExamSheet()
-						.get()
-						.getQuestionList()
-						.stream()
-						.filter( qs -> qs.getId() == qid)
-						.findFirst()
-						.get();
-				q.setStudentMark(q.correctAndGetTheMark());		
-				
-			}//end for
-		}//end for
-	
+		Students.stream()
+		        .filter(st -> st.isFINISHED() )
+		        .forEach(st -> {
+		        	correctAndGradeHim(st);
+		        });
 	}//AutoCorrectAnswers
 	
+	private static void correctAndGradeHim(Student st) 
+	{
+		if(!st.getOptionalExamSheet().isPresent())
+			return;
+		
+		int QuesCount = st.getOptionalExamSheet().get().getQuestionList().size();
+		for (int j=0; j < QuesCount ; j++)
+		{
+			final int qid = j+1;
+			Question q = st.getOptionalExamSheet()
+					.get()
+					.getQuestionList()
+					.stream()
+					.filter( qs -> qs.getId() == qid)
+					.findFirst()
+					.get();
+			q.setStudentMark(q.correctAndGetTheMark());		
+			
+		}//end for
+	}//correctAndGradeHims
+
 	public static void RecordAnswers(Workbook wrkBook, ObservableList<Student> Students, int QuesCount)
 	{
 		Optional.ofNullable(wrkBook.getSheet("Answers"))
@@ -58,8 +65,9 @@ public class ExcelRecorder
 
 		//Header: 1, 2, 3, 
 		for (int j=0; j < QuesCount ; j++){
+			String mark = wrkBook.getSheet("Questions").getRow(j+2).getCell(10).toString();
 			row.createCell(Base + (2*j+0)).setCellValue( "Q" + (j+1) );
-			row.createCell(Base + (2*j+1)).setCellValue( "" ) ;
+			row.createCell(Base + (2*j+1)).setCellValue( mark ) ;
 		}
 
 		//Body
@@ -73,15 +81,18 @@ public class ExcelRecorder
 			if(!st.getOptionalExamSheet().isPresent())
 				continue;
 			
-			String s = st.getOptionalExamSheet()
+			//5,2,4,1,3
+			String quesList = st.getOptionalExamSheet()
 						.get()
 						.getQuestionList()
 						.stream()
 						.map( q -> q.getId() + "")
 						.collect(Collectors.joining(", ")) ;
-
 			
-			row.createCell(2).setCellValue( s  );
+			row.createCell(2).setCellValue( quesList  );
+			
+			//record answer "Q2`2`ABCDE`E`teacher note"
+			//record mark 
 			for (int j=0; j < QuesCount ; j++)
 			{
 				final int qid = j+1;
@@ -96,6 +107,7 @@ public class ExcelRecorder
 				
 				row.createCell(Base + (2*j+1)).setCellValue( q.getStudentMark());
 			}//end for
+			st.setStatus(Student.GRADED);
 		}//end for
 
 		mySheet.getRow(0)
@@ -201,5 +213,26 @@ public class ExcelRecorder
 	}//end RecordTimer
 
 
+	public static void RecordLogs(Workbook wrkBook, List<Log> logList) 
+	{
+		Optional.ofNullable(wrkBook.getSheet("Log"))
+			.ifPresent( sh -> wrkBook.removeSheetAt(wrkBook.getSheetIndex("Log") ));
+		
+		Sheet mySheet = wrkBook.createSheet("Log");
+		
+		//Header: 1, 2, 3,
+		Row row = mySheet.createRow(0);
 
+		row.createCell(0).setCellValue("Time");
+		row.createCell(1).setCellValue("Description");
+		int Base = 0;
+		
+		//Body
+		for (int i=0; i < logList.size() ; i++){
+			row = mySheet.createRow(i+1);
+			row.createCell(Base + 0).setCellValue( logList.get(i).getTime().format() ) ;
+			row.createCell(Base + 1).setCellValue( logList.get(i).getText() ) ;
+		}
+		
+	}
 }//end class

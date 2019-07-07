@@ -13,27 +13,23 @@ public class ExamSheet implements Serializable
 	private ExamConfig examConfig;
 	
 
-	public Question getCurrentQuestion()
-	{
+	public Question getCurrentQuestion(){
 		return getQuestionList().get(currentQuesIdx);
 	}
 
-	public Question getNextQuestion()
-	{
+	public Question getNextQuestion(){
 		if(currentQuesIdx == qustionList.size()-1)
 			return getCurrentQuestion();
 		return getQuestionList().get(++currentQuesIdx);
 	}
 	
-	public Question getPreviousQuestion()
-	{
+	public Question getPreviousQuestion(){
 		if(currentQuesIdx == 0)
 			return getCurrentQuestion();
 		return getQuestionList().get(--currentQuesIdx);
 	}
 	
-	public void shuffle()
-	{
+	public void shuffle(){
 		//shuffle All questions
 		Collections.shuffle(qustionList);
 	}

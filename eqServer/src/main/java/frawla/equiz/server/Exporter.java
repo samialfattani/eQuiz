@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.itextpdf.text.BadElementException;
@@ -31,33 +31,10 @@ import frawla.equiz.util.exam.Student;
 
 public class Exporter
 {
-	private List<ExamSheet> examSheetList;
-	private List<Student> studentList;
 
-	public Exporter(){}
-	public Exporter(Student st){
-		examSheetList = new ArrayList<>();
-		examSheetList.add(st.getOptionalExamSheet().get());
-	}
-
-	public Exporter(ExamSheet exsht){
-		examSheetList = new ArrayList<>();
-		examSheetList.add(exsht);
-	}
-
-	public Exporter(List<ExamSheet> alist){
-		examSheetList = alist;
-		
-	}
-	public void setStudentList(List<Student> alist){
-		studentList = alist;
-	}
-
-	public void exportToPDF(File f, boolean WithCorrection) 
+	//export all Exam Sheet into single PDF File
+	public void GeneratePDF(List<ExamSheet> examSheetList, File f, boolean WithCorrection) 
 	{
-		if(f.isDirectory())
-			exportAllToPDF(f, WithCorrection);
-		
 		try{
 			Document doc = new Document();
 			PdfWriter.getInstance(doc, new FileOutputStream(f));
@@ -65,7 +42,7 @@ public class Exporter
 			doc.open();
 			for(ExamSheet sht: examSheetList)
 			{
-				exportToPDF(null, sht, doc, WithCorrection);
+				writeBody(sht, WithCorrection, doc);
 				doc.newPage();
 			}
 			doc.close();
@@ -77,46 +54,61 @@ public class Exporter
 
 	}
 
-	public void exportAllToPDF(File selectedDir, boolean WithCorrection)
+	public void exportToPDF(List<Student> studentList, File selectedDir, boolean WithCorrection) throws DocumentException, FileNotFoundException
 	{
-		try{
-			for(Student st: studentList)
-			{
-				ExamConfig econf = st.getOptionalExamSheet().get().getExamConfig();
-				String prefex = econf.courseID + "-" + econf.courseTitle;
-				String fileName  = prefex + "-" + st.getId() + "_" + st.getName() + ".pdf"; 
-				Document doc = new Document();
-				File f = new File(selectedDir.getAbsolutePath()+File.separator+fileName);
-				
-				PdfWriter.getInstance(doc, new FileOutputStream(f));
-
-				doc.open();
-				exportToPDF(st, st.getOptionalExamSheet().get(), doc, WithCorrection);
-				
-				doc.close();
-			}
-			Util.RunApplication(selectedDir);
+		for(Student st: studentList)
+		{
+			ExamConfig econf = st.getOptionalExamSheet().get().getExamConfig();
+			String prefex = econf.courseID + "-" + econf.courseTitle;
+			String fileName  = prefex + "-" + st.getId() + "_" + st.getName() + ".pdf"; 
+			
+			File f = new File(selectedDir.getAbsolutePath()+File.separator+fileName);
+			
+			exportToPDF(st, f, WithCorrection);
 		}
-		catch (FileNotFoundException | DocumentException e){
-			Util.showError(e, e.getMessage());
-		}
+		Util.RunApplication(selectedDir);
 	}
 
-	private void exportToPDF(Student student, ExamSheet examSheet, Document doc, boolean WithCorrection) throws DocumentException 
+	public void exportToPDF(Student student, File f, boolean WithCorrection) throws DocumentException, FileNotFoundException 
 	{
-		String header = "" ;
+		
+		Document doc = new Document();				
+		PdfWriter.getInstance(doc, new FileOutputStream(f));
+		doc.open();
+
+		String header = "Student: " +  
+				student.getId().toUpperCase() + " - " + 
+				student.getName() + "\n\n";
+		
+		Paragraph p = new Paragraph();
+		p.setFont(new Font(Font.FontFamily.COURIER, 16));
+		p.add(header);
+		
+		doc.add(p);
+		ExamSheet examSheet = student.getOptionalExamSheet().get();
+
+		writeBody(examSheet , WithCorrection, doc);
+		
+		doc.close();
+	}
+
+	public void writeBody(ExamSheet examSheet, boolean WithCorrection, Document doc) throws DocumentException
+	{
 		ExamConfig ec = examSheet.getExamConfig();
-		header += "Course: " + ec.courseID + " - " + ec.courseName + ", " +
-				"Sec(" + ec.courseSection + "), " +
-				ec.courseYear + "/" + ec.courseSemester + " " + 
-				" | " +  ec.courseTitle + " | " +"\n";
+		
+		String header = "" ;
+		header += String.format("-- %s -- \n", ec.courseTitle );
+		header += String.format("Course: %s - %s,  Sec(%s), %s/%s\n", 
+						ec.courseID, ec.courseName , ec.courseSection ,
+						ec.courseYear, ec.courseSemester);
+		
+		//header += String.format("-- %s -- \n", ec.courseTitle );
 
-
-		if(student != null)
-			header += "Student: " +  student.getId() + " - " + student.getName() + "\n\n";
-
-		doc.add(new Paragraph( header ));
-
+		header += "\n\n";
+		
+		Paragraph p = new Paragraph( header );
+		p.setFont( new Font(Font.FontFamily.COURIER, 16));
+		doc.add(p);
 
 		examSheet.getQuestionList()
 		.forEach( q -> { 
@@ -128,6 +120,9 @@ public class Exporter
 
 		if(WithCorrection)
 			totalPrintout(examSheet, doc);
+		
+		String d = Util.MY_DATE_FORMAT.format(new Date());
+		doc.add(new Paragraph( "issue date: " +  d));
 	}
 
 
@@ -142,7 +137,9 @@ public class Exporter
 					.stream().mapToDouble( q1 -> q1.getMark())
 					.sum();
 			
-			String t = String.format("Total Marks: %.2f / %.2f", stMark , totalMark);  
+			String t = String.format("Total Marks: %s / %s", 
+					Util.MARK_FORMATTER.format(stMark) , 
+					Util.MARK_FORMATTER.format(totalMark) );  
 			Font f = FontFactory.getFont(FontFactory.COURIER, 16, Font.BOLD, BaseColor.RED  );
 			doc.add(new Paragraph(  t, f));
 		}
@@ -255,13 +252,17 @@ public class Exporter
 		Font fnt = new Font(bf, 12, Font.BOLD, BaseColor.RED);
 		ch = new Chunk("", fnt);
 		String correctionMark  = "";
-		if (q.getStudentMark() == 0)
+		String mark = Util.MARK_FORMATTER.format( q.getStudentMark() );
+		if (q.getStudentMark() == 0) {
 			correctionMark  = "X" + "   " + q.getTeacherNote();
-		else if (q.getStudentMark() == q.getMark())
-			correctionMark  = '\u221A' + "    "  + q.getStudentMark()  + "   " + q.getTeacherNote();
-		else
-			correctionMark = '\u221A' + "X   " + q.getStudentMark()  + "   " + q.getTeacherNote();
-		
+		}else if (q.getStudentMark() == q.getMark()) {
+			
+			correctionMark  = '\u221A' + "    "  + mark  + "   " + q.getTeacherNote();
+			correctionMark  = '\uDDF8' + "    "  + mark + "   " + q.getTeacherNote() +
+			String.format("%c", '\uD83C') + '\uDDF7';
+		}else {
+			correctionMark = '\u221A' + "X   " + mark  + "   " + q.getTeacherNote();
+		}
 		ch.append(correctionMark );
 		return ch;
 	}

@@ -2,87 +2,79 @@ package frawla.equiz.server;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
+import frawla.equiz.util.Log;
 import frawla.equiz.util.Util;
 import frawla.equiz.util.exam.ExamConfig;
 import frawla.equiz.util.exam.ExamSheet;
 import frawla.equiz.util.exam.Student;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
+import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
-class FxExamConfig
-{
-	private FXMLLoader fxmlLoader;
-	private FxExamConfigController myController;
 
-	public FxExamConfig()
-	{		
-		try
-		{
-			fxmlLoader = new FXMLLoader( Util.getResourceAsURI("fx-exam-config.fxml").toURL() );			
-
-			Parent root = (Parent) fxmlLoader.load();
-			myController = (FxExamConfigController) fxmlLoader.getController();
-
-			Stage window = new Stage( );
-			window.setScene(new Scene(root, 700, 450));
-			window.getIcons().add(new Image(Util.getResourceAsURI("images/servericon.png").toString() ));
-			window.setTitle("eQuiz-SERVER");
-			window.setOnCloseRequest(event -> System.exit(0));
-			window.show();
-		}
-		catch (IOException e){
-			Util.showError(e, e.getMessage());
-		}            
-
-	}
-
-	public FxExamConfigController getMyController(){
-		return myController;
-	}
-
-}
-
-
-public class FxExamConfigController
+public class FxExamConfigController implements Initializable
 {
 	@FXML private Label lblFile; 
 	@FXML private TextArea txtInfo;
+	@FXML private Pane PanRoot;
 
-
-	//private static AnchorPane root ;
 	private ExamConfig examConfig;
 	private Map<String, byte[]> imageMap = new HashMap<>();
-	ObservableList<Student> Students;
+	private ObservableList<Student> Students;
+	private List<Log> Logs;
+	private File lastDirectory = new File("");
 
+	@Override
+	public void initialize(URL location, ResourceBundle resources) 
+	{
+		//to be executed after initialize()
+		Platform.runLater(() -> {
+			Stage window = new Stage( );
+			Scene scene = new Scene(PanRoot, PanRoot.getPrefWidth(), PanRoot.getPrefHeight());
+			window.setScene(scene);
+
+			window.getIcons().add(new Image(Util.getResourceAsURL("images/servericon.png").toString() ));
+			window.setTitle("eQuiz-SERVER");
+			window.setOnCloseRequest(event -> System.exit(0) );
+			window.show();
+		});        
+		
+	}//initialize
+	
 	public void setExamFile(File examFile) 
 	{
 		try
 		{
+			lastDirectory = new File(examFile.getParent() );
 			txtInfo.setText("");
-			ExamLoader.getInstance().load(examFile);
+			ExamLoader.getInstance(examFile);
 			examConfig = ExamLoader.getInstance().getExamConfig();
 
-			for(File f : ExamLoader.getInstance().getImageFiles())
+			for(File f : ExamLoader.getInstance().getImageFiles()) 
 			{
 				imageMap.put(f.getName(), Util.fileToByteArray(f));	
 			}
 
 			Students = ExamLoader.getInstance().getStudentList();
+			Logs = ExamLoader.getInstance().getLog();
 
 			lblFile.setText(examFile.getAbsolutePath());
 			txtInfo.setText(examConfig.toString() );
@@ -100,7 +92,8 @@ public class FxExamConfigController
 
 	public void mnutmOpen_click() 
 	{
-		Util.getFileChooserForOpen()
+		
+		Util.getFileChooserForOpen(lastDirectory)
 		.filter( f -> f.exists() )
 		.ifPresent( f -> setExamFile(f) );
 	}
@@ -119,21 +112,25 @@ public class FxExamConfigController
 
 	public void btnStart_click()
 	{
-		Optional.ofNullable(examConfig).ifPresent( examConf ->
-		{
-			FxMonitor monitor = new FxMonitor();
-			monitor.getMyController().setExamConfig(examConf);
-			monitor.getMyController().setImageList(imageMap);
-			monitor.getMyController().setStudentList(Students);
-
+		if (examConfig == null)
+			return;
+		
+		try {
+			FXMLLoader loader = new FXMLLoader( Util.getResourceAsURL("fx-monitor.fxml") );
+			loader.load();
+		
+			FxMonitorController monitor = (FxMonitorController) loader.getController();
+			monitor.setExamData(examConfig, imageMap,Students, Logs);
+	
 			//hide this current window
 			txtInfo.getScene().getWindow().hide();
-
-		});
-
+			
+		} catch (IOException e) {
+			Util.showError(e, e.getMessage());
+		}
 	}
-
-	public void mnutmSheetGenerator_click()
+	
+	public void btnSheetGenerator_click()
 	{
 		TextInputDialog dialog = new TextInputDialog("3");
 		Stage window = (Stage) dialog.getDialogPane().getScene().getWindow();
@@ -162,8 +159,8 @@ public class FxExamConfigController
 			
 			Util.getFileChooserForSavePDF().ifPresent( f -> 
 			{
-				Exporter exp = new Exporter(examSheetList);
-				exp.exportToPDF(f, false);
+				Exporter exp = new Exporter();
+				exp.GeneratePDF(examSheetList, f, false);
 			});
 		});
 
@@ -195,5 +192,9 @@ public class FxExamConfigController
 	{
 		return examConfig;
 	}
+
+
+
+
 
 }//end class

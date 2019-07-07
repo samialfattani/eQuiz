@@ -12,26 +12,9 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frawla.equiz.server.FxExamConfigController">
-   <center>
-      <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0">
-         <children>
-            <TextArea fx:id="txtInfo" layoutX="19.0" layoutY="67.0" prefHeight="192.0" prefWidth="562.0" text="None" AnchorPane.bottomAnchor="58.0" AnchorPane.leftAnchor="19.0" AnchorPane.rightAnchor="19.0" AnchorPane.topAnchor="67.0">
-               <font>
-                  <Font name="Consolas" size="16.0" />
-               </font>
-            </TextArea>
-            <Button fx:id="btnStart" layoutX="463.0" layoutY="266.0" mnemonicParsing="false" onAction="#btnStart_click" prefHeight="39.0" prefWidth="119.0" text="Start Exam" AnchorPane.bottomAnchor="12.0" AnchorPane.rightAnchor="18.0" />
-            <Label fx:id="lblFile" contentDisplay="TOP" layoutX="19.0" layoutY="14.0" prefHeight="48.0" prefWidth="562.0" style="-fx-background-color: lightyellow;" text="File" wrapText="true" AnchorPane.leftAnchor="19.0" AnchorPane.rightAnchor="19.0" AnchorPane.topAnchor="14.0">
-               <font>
-                  <Font name="Consolas Bold" size="18.0" />
-               </font>
-            </Label>
-         </children>
-      </AnchorPane>
-   </center>
+<BorderPane fx:id="PanRoot" prefHeight="394.0" prefWidth="492.0" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frawla.equiz.server.FxExamConfigController">
    <top>
-      <MenuBar BorderPane.alignment="CENTER">
+      <MenuBar prefHeight="25.0" prefWidth="518.0" BorderPane.alignment="CENTER">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
@@ -45,7 +28,7 @@
                         <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
                   </MenuItem>
-                  <MenuItem fx:id="mnutmSheetGenerator" mnemonicParsing="false" onAction="#mnutmSheetGenerator_click" text="Generate Random Sheets..." />
+                  <MenuItem fx:id="mnutmSheetGenerator" mnemonicParsing="false" onAction="#btnSheetGenerator_click" text="Generate Random Sheets..." />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="mnutmExit2" mnemonicParsing="false" onAction="#mnutmExit_click" text="Exit">
                      <accelerator>
@@ -62,4 +45,29 @@
         </menus>
       </MenuBar>
    </top>
+   <center>
+      <AnchorPane prefHeight="455.0" prefWidth="464.0" BorderPane.alignment="CENTER">
+         <children>
+            <TextArea fx:id="txtInfo" layoutX="19.0" layoutY="67.0" prefHeight="204.0" prefWidth="562.0" text="None..." AnchorPane.bottomAnchor="61.0" AnchorPane.leftAnchor="19.0" AnchorPane.rightAnchor="19.0" AnchorPane.topAnchor="67.0">
+               <font>
+                  <Font name="Consolas" size="16.0" />
+               </font>
+            </TextArea>
+            <Button fx:id="btnStart" layoutX="463.0" layoutY="266.0" mnemonicParsing="false" onAction="#btnStart_click" prefHeight="39.0" prefWidth="119.0" text="Start Exam" AnchorPane.bottomAnchor="12.0" AnchorPane.rightAnchor="19.0">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font></Button>
+            <Label fx:id="lblFile" contentDisplay="TOP" layoutX="19.0" layoutY="14.0" prefHeight="48.0" prefWidth="509.0" style="-fx-background-color: lightyellow;" text="File" wrapText="true" AnchorPane.leftAnchor="19.0" AnchorPane.rightAnchor="19.0" AnchorPane.topAnchor="14.0">
+               <font>
+                  <Font name="Consolas Bold" size="18.0" />
+               </font>
+            </Label>
+            <Button fx:id="btnSheetGenerator" layoutX="19.0" layoutY="349.0" mnemonicParsing="false" onAction="#btnSheetGenerator_click" prefHeight="39.0" prefWidth="206.0" text="Generate Shuffled Sheets" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="18.0">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+         </children>
+      </AnchorPane>
+   </center>
 </BorderPane>

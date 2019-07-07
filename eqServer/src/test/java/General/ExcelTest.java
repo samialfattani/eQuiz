@@ -1,4 +1,4 @@
-package General;
+package general;
 
 import static org.junit.Assert.assertEquals;
 
@@ -66,8 +66,8 @@ public class ExcelTest
 		HSSFFormulaEvaluator.evaluateAllFormulaCells(wrkBook);
 		//evaluator.notifyUpdateCell( c );
 		
-		assertEquals (c.getCellTypeEnum() , CellType.FORMULA);
-		assertEquals (c.getCachedFormulaResultTypeEnum() , CellType.NUMERIC);
+		assertEquals (c.getCellType() , CellType.FORMULA);
+		assertEquals (c.getCachedFormulaResultType() , CellType.NUMERIC);
 		assertEquals (232 , c.getNumericCellValue(), 0);
 	}
 

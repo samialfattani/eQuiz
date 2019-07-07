@@ -16,18 +16,15 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
 import javax.swing.JOptionPane;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
-import frawla.equiz.util.exam.Student;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.control.Alert;
@@ -48,6 +45,7 @@ public class Util
 {
 
 	public static SimpleDateFormat MY_DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+	public static DecimalFormat MARK_FORMATTER = new DecimalFormat("0.##");
 	private static Image CONNECTED_IMAGE ;
 	private static Image DISCONNECTED_IMAGE;
 
@@ -98,15 +96,18 @@ public class Util
 	}
 	public static URI getResourceAsURI(String s)
 	{
-		URI uri =null;
 		try{
-			uri = Util.class.getClassLoader().getResource(s).toURI();
+			return Util.class.getClassLoader().getResource(s).toURI();
 		}catch (URISyntaxException e){
 			Util.showError(e , e.getMessage());
 		}
-		return uri ;
+		return null;
 	}
 
+	public static URL getResourceAsURL(String s)
+	{
+		return Util.class.getClassLoader().getResource(s);
+	}
 	public static InputStream getResourceAsStream(String s)
 	{		
 		return Util.class.getClassLoader().getResourceAsStream(s);
@@ -161,9 +162,13 @@ public class Util
 		return new File("").getAbsolutePath();
 	}
 
-	public static Optional<File> getFileChooserForOpen()
+	public static Optional<File> getFileChooserForOpen(){
+		return getFileChooserForOpen(new File(""));
+	}
+	public static Optional<File> getFileChooserForOpen(File initialDir)
 	{
-		FileChooser fc = new FileChooser();
+		FileChooser fc = new FileChooser() ;
+		fc.setInitialDirectory(initialDir);
 		fc.setTitle("Open File");
 		fc.getExtensionFilters().addAll(
 				new ExtensionFilter("MS-Excel Files", "*.xlsx"),
@@ -171,7 +176,7 @@ public class Util
 				new ExtensionFilter("Open-office SpreadSheet Files", "*.ods"),
 				new ExtensionFilter("All Files", "*.*"));
 		fc.setTitle("Open MS-Excel files");
-		fc.setInitialDirectory(new File("."));
+		//fc.setInitialDirectory(new File("."));
 		File selectedFile = fc.showOpenDialog( null );
 		return Optional.ofNullable(selectedFile);
 	}
@@ -199,6 +204,10 @@ public class Util
 				new ExtensionFilter("All Files", "*.*"));
 		fc.setTitle("Save PDF files");
 		fc.setInitialDirectory(new File("."));
+		
+		
+		
+		
 		File selectedFile = fc.showSaveDialog( null );
 		return Optional.ofNullable(selectedFile);
 	}
@@ -212,13 +221,13 @@ public class Util
 		int seconds = (int) Math.floor(d.toSeconds());
 		int h = seconds / 3600;
 		int m = (seconds - h * 3600) / 60;
-		int s = seconds - h * 3600 - m * 60;
+		//int s = seconds - h * 3600 - m * 60;
 		//int mi = ((int)(d.toMillis()) - seconds*1000)/100;
 
 		if (h <= 0)
-			return String.format("%02d:%02d", m, s );
+			return String.format("00:%02d", m);
 		else
-			return String.format("%d:%02d:%02d", h, m, s);
+			return String.format("%d:%02d", h, m);
 	}
 
 	public static void copyFile(File source, File dest) 
@@ -428,34 +437,34 @@ public class Util
 	}  
 
 
-	public static void jaxbStudentToXML(Student st, File f) {
-
-		try {
-			JAXBContext context = JAXBContext.newInstance(Student.class);
-			Marshaller m = context.createMarshaller();
-			//for pretty-print XML in JAXB
-			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-
-			// Write to System.out for debugging
-			// m.marshal(emp, System.out);
-
-			// Write to File
-			m.marshal(st, f);
-		} catch (JAXBException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static Student jaxbXMLToStudent(File f) {
-		try {
-			JAXBContext context = JAXBContext.newInstance(Student.class);
-			Unmarshaller un = context.createUnmarshaller();
-			Student st = (Student) un.unmarshal(f);
-			return st;
-		} catch (JAXBException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+//	public static void jaxbStudentToXML(Student st, File f) {
+//
+//		try {
+//			JAXBContext context = JAXBContext.newInstance(Student.class);
+//			Marshaller m = context.createMarshaller();
+//			//for pretty-print XML in JAXB
+//			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+//
+//			// Write to System.out for debugging
+//			// m.marshal(emp, System.out);
+//
+//			// Write to File
+//			m.marshal(st, f);
+//		} catch (JAXBException e) {
+//			e.printStackTrace();
+//		}
+//	}
+//
+//	public static Student jaxbXMLToStudent(File f) {
+//		try {
+//			JAXBContext context = JAXBContext.newInstance(Student.class);
+//			Unmarshaller un = context.createUnmarshaller();
+//			Student st = (Student) un.unmarshal(f);
+//			return st;
+//		} catch (JAXBException e) {
+//			e.printStackTrace();
+//		}
+//		return null; 
+//	}
 
 }

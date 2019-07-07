@@ -20,8 +20,8 @@
 		compile project (":eqCore")
 
 		//Excel (.xlsx)
-		compile 'org.apache.poi:poi:3.15'
-		compile 'org.apache.poi:poi-ooxml:3.15'
+		compile 'org.apache.poi:poi:4.1.0'
+		compile 'org.apache.poi:poi-ooxml:4.1.0'
 		//compile 'org.apache.poi:poi-scratchpad:3.15'
 		//compile 'org.apache.poi:poi-ooxml-schemas:3.15'
 		//compile 'org.apache.poi:ooxml-schemas:1.3'
@@ -34,7 +34,10 @@
 		compile 'com.itextpdf:itextpdf:5.5.10'
 		compile 'com.itextpdf:itext-pdfa:5.5.10'
 		//compile 'com.itextpdf:itext-xtra:5.5.10'
-		//compile 'com.itextpdf.tool:xmlworker:5.5.10'		
+		//compile 'com.itextpdf.tool:xmlworker:5.5.10'
+		
+		//Emoji :)
+		compile 'com.vdurmont:emoji-java:4.0.0'
 
 		//Cloning
 		compile 'uk.com.robust-it:cloning:1.9.2'
@@ -43,8 +46,8 @@
 		compile 'commons-io:commons-io:2.5'
 		compile 'org.apache.xmlgraphics:fop:2.1'
 		
-		//JAXB
-		//compile 'javax.xml.bind:jaxb-api:2.2.+'
+		//mokito
+		testCompile "org.mockito:mockito-core:2.28.+"
 		
 		//javax for Send Emails
 		//compile 'javax:javaee-api:6.0'
@@ -53,13 +56,13 @@
 	}
 	
 	eclipse {
-		classpath {	
+		classpath {
 		    //customizing the classes output directory:
-		    defaultOutputDir = file('build-eclipse')
+		    defaultOutputDir = file('build')
 		
 		    //default settings for downloading sources and Javadoc:
 		    downloadSources = false
-		    downloadJavadoc = true
+		    downloadJavadoc = false
 		}
 	}
 
@@ -82,7 +85,7 @@
 	createExe {
 		outputDir = "../../exe/server"
 		fileDescription =	"Electronic Quizes - Server"
-		copyright = "All Copyright are recieved (c) 2016~2018, This is a program for e-quizes in order to make exams for students and mark registeration."
+		copyright = "All Copyright are recieved (c) 2016~2019, This is a program for EQuizes in order to make exams for students and mark registeration."
 		companyName = "Sami"
 		 
 	    println mainClassName 
@@ -104,8 +107,8 @@
 
 		errTitle = "Java is not Supported on this Computer"
 		downloadUrl = 'http://java.com/download'
-		messagesStartupError "An error occurred while starting the application.\n" + "ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" 
-		messagesBundledJreError "This application was configured to use a bundled Java Runtime Environment but the runtime is missing or corrupted.\n" + "ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½"
+		messagesStartupError "An error occurred while starting the application.\n" + "ÍÕáÊ ãÔßáÉ ÃËäÇÁ ÊÔÛíá ÇáÈÑäÇãÌ" 
+		messagesBundledJreError "This application was configured to use a bundled Java Runtime Environment but the runtime is missing or corrupted.\n" + "åÐÇ ÇáÈÑäÇãÌ íÊØáÈ æÌæÏ ÇáÌÇÝÇ¡ æáßä íÈÏæ Ãä ÇáÌÇÝÇ ÛíÑ ãæÌæÏÉ Çæ ÊÍÊÇÌ Åáì ÇÚÇÏÉ ÊÍãíá"
 		messagesJreVersionError "This application requires a Java Runtime Environment\n" + "ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
 		messagesLauncherError "The registry refers to a nonexistent Java Runtime Environment installation or the runtime is corrupted.\n" + "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½"
 		messagesInstanceAlreadyExists "An application instance is already running.\n" + "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"

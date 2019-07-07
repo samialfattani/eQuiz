@@ -1,114 +1,185 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.web.WebView?>
 
-<AnchorPane fx:id="pnlRoot" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="620.0" minWidth="914.0" prefHeight="722.0" prefWidth="1025.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frawla.equiz.client.FxExamSheetController">
-   <children>
-      <TextArea fx:id="txtQuestion" editable="false" layoutX="14.0" layoutY="84.0" prefHeight="187.0" prefWidth="806.0" promptText="put the question herer" text="put the question herer" wrapText="true" AnchorPane.bottomAnchor="451.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="205.0" AnchorPane.topAnchor="84.0">
-         <font>
-            <Font name="Consolas" size="22.0" />
-         </font>
-      </TextArea>
-      <ImageView fx:id="imgFigure" fitHeight="187.0" fitWidth="194.0" layoutX="811.0" layoutY="84.0" onMouseClicked="#imgFigure_click" onMouseEntered="#imgFigure_mouseEntered" onMouseExited="#imgFigure_mouseExited" pickOnBounds="true" preserveRatio="true" style="-fx-background-color: red;" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="84.0">
-         <image>
-            <Image url="@images/imagebox.png" />
-         </image>
-      </ImageView>
-      <VBox fx:id="pnlChoices" layoutX="15.0" layoutY="310.0" prefHeight="432.0" prefWidth="951.0" spacing="5.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="53.0">
+<BorderPane fx:id="PanRoot" prefHeight="597.0" prefWidth="737.0" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frawla.equiz.client.FxExamSheetController">
+   <top>
+      <VBox spacing="5.0" BorderPane.alignment="CENTER">
          <children>
-            <RadioButton fx:id="ch1" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="65.0" prefWidth="1008.0" style="-fx-border-color: blue; -fx-padding: 4;" text="hello this is my hil lkjem meokm okemom e koemkoemkemckmck mk mkm kmkm k mk mk mkm imim km ;klm;kl m " wrapText="true">
-               <font>
-                  <Font name="Consolas Bold" size="18.0" />
-               </font>
-            </RadioButton>
-            <RadioButton fx:id="ch2" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="65.0" prefWidth="1008.0" style="-fx-border-color: blue; -fx-padding: 4;" text="hello this is my hil lkjem meokm okemom e koemkoemkemckmck mk mkm kmkm k mk mk mkm imim km ;klm;kl m " wrapText="true">
-               <font>
-                  <Font name="Consolas Bold" size="18.0" />
-               </font>
-            </RadioButton>
-            <RadioButton fx:id="ch3" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="65.0" prefWidth="1008.0" style="-fx-border-color: blue; -fx-padding: 4;" text="hello this is my hil lkjem meokm okemom e koemkoemkemckmck mk mkm kmkm k mk mk mkm imim km ;klm;kl m " wrapText="true">
-               <font>
-                  <Font name="Consolas Bold" size="18.0" />
-               </font>
-            </RadioButton>
-            <RadioButton fx:id="ch4" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="65.0" prefWidth="1008.0" style="-fx-border-color: blue; -fx-padding: 4;" text="hello this is my hil lkjem meokm okemom e koemkoemkemckmck mk mkm kmkm k mk mk mkm imim km ;klm;kl m " wrapText="true">
-               <font>
-                  <Font name="Consolas Bold" size="18.0" />
-               </font>
-            </RadioButton>
-            <RadioButton fx:id="ch5" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="65.0" prefWidth="1008.0" style="-fx-border-color: blue; -fx-padding: 4;" text="hello this is my hil lkjem meokm okemom e koemkoemkemckmck mk mkm kmkm k mk mk mkm imim km ;klm;kl m " wrapText="true">
-               <font>
-                  <Font name="Consolas Bold" size="18.0" />
-               </font></RadioButton>
-            <RadioButton fx:id="ch6" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="65.0" prefWidth="1008.0" style="-fx-border-color: blue; -fx-padding: 4;" text="hello this is my hil lkjem meokm okemom e koemkoemkemckmck mk mkm kmkm k mk mk mkm imim km ;klm;kl m " wrapText="true">
-               <font>
-                  <Font name="Consolas Bold" size="18.0" />
-               </font>
-            </RadioButton>
+            <MenuBar>
+               <menus>
+                  <Menu mnemonicParsing="false" text="Navigate">
+                    <items>
+                      <MenuItem fx:id="mnitmNext" mnemonicParsing="false" onAction="#lblNext_MouseClicked" text="Next Question">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="PAGE_DOWN" control="ANY" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator>
+                        </MenuItem>
+                        <MenuItem fx:id="mnitmPrev" mnemonicParsing="false" onAction="#lblPrev_MouseClicked" text="Previouse Question">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="PAGE_UP" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator>
+                        </MenuItem>
+                    </items>
+                  </Menu>
+               </menus>
+            </MenuBar>
+            <HBox alignment="CENTER_LEFT" prefHeight="0.0" prefWidth="727.0" spacing="5.0">
+               <children>
+                  <Label fx:id="lblPrev" alignment="CENTER_RIGHT" contentDisplay="CENTER" depthTest="DISABLE" onMouseClicked="#lblPrev_MouseClicked" prefHeight="32.0" prefWidth="50.0" styleClass="btn" text="&lt;-" textAlignment="RIGHT">
+                     <font>
+                        <Font size="22.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="lblQuesCounter" prefHeight="24.0" prefWidth="100.0" style="-fx-background-color: lightyellow; -fx-border-color: blue; -fx-alignment: center;" text="?/?" textAlignment="CENTER" wrapText="true">
+                     <font>
+                        <Font name="Consolas Bold" size="22.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="lblNext" contentDisplay="CENTER" depthTest="DISABLE" onMouseClicked="#lblNext_MouseClicked" prefHeight="32.0" prefWidth="50.0" styleClass="btn" text="-&gt;">
+                     <font>
+                        <Font size="22.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="lblID" prefHeight="25.0" prefWidth="99.0" style="-fx-background-color: lightyellow; -fx-border-color: blue;" text="NAE002" textAlignment="CENTER" wrapText="true">
+                     <font>
+                        <Font name="Consolas Bold" size="20.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="lblName" prefHeight="25.0" prefWidth="265.0" style="-fx-background-color: lightyellow; -fx-border-color: blue;" text="--" textAlignment="CENTER" wrapText="true">
+                     <font>
+                        <Font name="Consolas Bold" size="20.0" />
+                     </font>
+                  </Label>
+                  <ImageView fx:id="imgConnection" fitHeight="35.0" fitWidth="46.0" pickOnBounds="true" preserveRatio="true" style="-fx-background-color: red;">
+                     <image>
+                        <Image url="@images/imagebox.png" />
+                     </image>
+                  </ImageView>
+                  <Label fx:id="lblID1" prefHeight="25.0" prefWidth="65.0" style="-fx-background-color: lightyellow; -fx-border-color: blue;" text="v20" textAlignment="CENTER" wrapText="true">
+                     <font>
+                        <Font name="Consolas Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Button fx:id="btnBackup" mnemonicParsing="false" onAction="#btnBackup_click" text="btnBackup" visible="false" />
+               </children>
+            </HBox>
+            <HBox prefHeight="22.0" prefWidth="727.0" spacing="6.0">
+               <children>
+                  <VBox>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                     <children>
+                        <Label fx:id="lblTime" maxWidth="1.7976931348623157E308" text="Time 0:00" textAlignment="CENTER">
+                           <font>
+                              <Font name="Consolas Bold" size="16.0" />
+                           </font>
+                        </Label>
+                        <ProgressBar fx:id="prgTime" maxHeight="1.7976931348623157E308" prefHeight="37.0" prefWidth="166.0" progress="0.0" />
+                     </children>
+                  </VBox>
+                  <WebView fx:id="webCompletion" prefHeight="37.0" prefWidth="393.0" style="-fx-padding: 0; -fx-margin: 0;" />
+                  <Button fx:id="btnFinish" focusTraversable="false" maxHeight="1.7976931348623157E308" mnemonicParsing="false" onAction="#btnFinish_click" text="Finish Exam" textAlignment="CENTER" wrapText="true" HBox.hgrow="NEVER">
+                     <font>
+                        <Font name="Consolas Bold" size="20.0" />
+                     </font>
+                  </Button>
+               </children>
+            </HBox>
          </children>
+         <BorderPane.margin>
+            <Insets bottom="5.0" />
+         </BorderPane.margin>
       </VBox>
-      <ProgressBar fx:id="prgTime" layoutX="15.0" layoutY="36.0" prefHeight="28.0" prefWidth="200.0" progress="0.0" />
-      <Button fx:id="btnFinish" focusTraversable="false" layoutX="811.0" layoutY="9.0" mnemonicParsing="false" onAction="#btnFinish_click" prefHeight="65.0" prefWidth="123.0" text="Finish Exam" textAlignment="CENTER" wrapText="true" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="9.0">
-         <font>
-            <Font name="Consolas Bold" size="20.0" />
-         </font>
-      </Button>
-      <Label fx:id="lblQuesCounter" layoutX="272.0" layoutY="5.0" prefHeight="24.0" prefWidth="68.0" style="-fx-background-color: lightyellow; -fx-border-color: blue; -fx-alignment: center;" text="?/?" textAlignment="CENTER" wrapText="true" AnchorPane.leftAnchor="272.0" AnchorPane.topAnchor="5.0">
-         <font>
-            <Font name="Consolas Bold" size="22.0" />
-         </font>
-      </Label>
-      <Label fx:id="lblTime" layoutX="15.0" layoutY="2.0" prefHeight="34.0" prefWidth="232.0" text="Exam Time 0:00:00" textAlignment="CENTER">
-         <font>
-            <Font name="Consolas Bold" size="22.0" />
-         </font>
-      </Label>
-      <ImageView fx:id="imgConnection" fitHeight="54.0" fitWidth="110.0" layoutX="826.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true" style="-fx-background-color: red;" AnchorPane.rightAnchor="145.0">
-         <image>
-            <Image url="@images/imagebox.png" />
-         </image>
-      </ImageView>
-      <Button fx:id="btnBackup" layoutX="629.0" layoutY="7.0" mnemonicParsing="false" onAction="#btnBackup_click" text="btnBackup" visible="false" />
-      <Label fx:id="lblName" layoutX="491.0" layoutY="6.0" prefHeight="25.0" prefWidth="265.0" style="-fx-background-color: lightyellow; -fx-border-color: blue;" text="--" textAlignment="CENTER" wrapText="true" AnchorPane.leftAnchor="491.0" AnchorPane.topAnchor="6.0">
-         <font>
-            <Font name="Consolas Bold" size="20.0" />
-         </font>
-      </Label>
-      <Label fx:id="lblID" layoutX="387.0" layoutY="6.0" prefHeight="25.0" prefWidth="99.0" style="-fx-background-color: lightyellow; -fx-border-color: blue;" text="NAE002" textAlignment="CENTER" wrapText="true" AnchorPane.leftAnchor="387.0" AnchorPane.topAnchor="6.0">
-         <font>
-            <Font name="Consolas Bold" size="20.0" />
-         </font>
-      </Label>
-      <Label fx:id="lblNext" contentDisplay="CENTER" depthTest="DISABLE" layoutX="348.0" layoutY="3.0" onMouseClicked="#lblNext_MouseClicked" styleClass="btn" text="-&gt;" AnchorPane.leftAnchor="348.0" AnchorPane.topAnchor="3.0">
-         <font>
-            <Font size="22.0" />
-         </font>
-      </Label>
-      <Label fx:id="lblPrev" contentDisplay="CENTER" depthTest="DISABLE" layoutX="237.0" layoutY="2.0" onMouseClicked="#lblPrev_MouseClicked" styleClass="btn" text="&lt;-" AnchorPane.leftAnchor="237.0" AnchorPane.topAnchor="2.0">
-         <font>
-            <Font size="22.0" />
-         </font>
-      </Label>
-      <Label fx:id="lblMark" layoutX="657.0" layoutY="246.0" prefHeight="25.0" prefWidth="165.0" style="-fx-alignment: center; -fx-background-color: lightgray;" text="?" wrapText="true" AnchorPane.bottomAnchor="451.0" AnchorPane.rightAnchor="203.0">
-         <font>
-            <Font name="Consolas Bold" size="18.0" />
-         </font>
-      </Label>
-      <WebView fx:id="webCompletion" layoutX="221.0" layoutY="39.0" prefHeight="45.0" prefWidth="599.0" style="-fx-padding: 0; -fx-margin: 0;" AnchorPane.leftAnchor="221.0" AnchorPane.rightAnchor="205.0" />
-      <TextArea fx:id="txtBlankField" layoutX="15.0" layoutY="278.0" prefHeight="416.0" prefWidth="806.0" promptText="don't care about letter case or spaces" AnchorPane.bottomAnchor="28.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="204.0">
-         <font>
-            <Font name="Consolas Bold" size="18.0" />
-         </font>
-      </TextArea>
-   </children>
-</AnchorPane>
+   </top>
+   <center>
+      <SplitPane dividerPositions="0.4" orientation="VERTICAL" prefHeight="632.0" prefWidth="790.0" BorderPane.alignment="CENTER">
+         <items>
+            <AnchorPane prefHeight="249.0" prefWidth="743.0">
+               <children>
+                  <TextArea fx:id="txtQuestion" editable="false" prefHeight="263.0" prefWidth="572.0" promptText="put the question herer" text="put the question herer" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="205.0" AnchorPane.topAnchor="0.0">
+                     <font>
+                        <Font name="Consolas" size="22.0" />
+                     </font>
+                  </TextArea>
+                  <Label fx:id="lblMark" layoutX="432.0" layoutY="168.0" prefHeight="25.0" prefWidth="165.0" style="-fx-alignment: center; -fx-background-color: lightgray;" text="?" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="205.0">
+                     <font>
+                        <Font name="Consolas Bold" size="18.0" />
+                     </font>
+                  </Label>
+                  <ImageView fx:id="imgFigure" fitHeight="299.0" fitWidth="200.0" onMouseClicked="#imgFigure_click" onMouseEntered="#imgFigure_mouseEntered" onMouseExited="#imgFigure_mouseExited" pickOnBounds="true" preserveRatio="true" style="-fx-background-color: red;" AnchorPane.bottomAnchor="-5.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <image>
+                        <Image url="@images/imagebox.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </AnchorPane>
+            <AnchorPane>
+               <children>
+                  <TextArea fx:id="txtBlankField" promptText="don't care about letter case or spaces" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <font>
+                        <Font name="Consolas Bold" size="18.0" />
+                     </font>
+                  </TextArea>
+                  <VBox fx:id="pnlChoices" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <RadioButton fx:id="ch1" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="65.0" prefWidth="725.0" style="-fx-border-color: blue; -fx-padding: 2;" text="hello this is my hil lkjem meokm okemom e koemkoemkemckmck mk mkm kmkm k mk mk mkm imim km ;klm;kl m " wrapText="true">
+                           <font>
+                              <Font name="Consolas Bold" size="18.0" />
+                           </font>
+                        </RadioButton>
+                        <RadioButton fx:id="ch2" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="65.0" prefWidth="1008.0" style="-fx-border-color: blue; -fx-padding: 2;" text="hello this is my hil lkjem meokm okemom e koemkoemkemckmck mk mkm kmkm k mk mk mkm imim km ;klm;kl m " wrapText="true">
+                           <font>
+                              <Font name="Consolas Bold" size="18.0" />
+                           </font>
+                        </RadioButton>
+                        <RadioButton fx:id="ch3" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="65.0" prefWidth="1008.0" style="-fx-border-color: blue; -fx-padding: 2;" text="hello this is my hil lkjem meokm okemom e koemkoemkemckmck mk mkm kmkm k mk mk mkm imim km ;klm;kl m " wrapText="true">
+                           <font>
+                              <Font name="Consolas Bold" size="18.0" />
+                           </font>
+                        </RadioButton>
+                        <RadioButton fx:id="ch4" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="65.0" prefWidth="1008.0" style="-fx-border-color: blue; -fx-padding: 2;" text="hello this is my hil lkjem meokm okemom e koemkoemkemckmck mk mkm kmkm k mk mk mkm imim km ;klm;kl m " wrapText="true">
+                           <font>
+                              <Font name="Consolas Bold" size="18.0" />
+                           </font>
+                        </RadioButton>
+                        <RadioButton fx:id="ch5" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="65.0" prefWidth="1008.0" style="-fx-border-color: blue; -fx-padding: 2;" text="hello this is my hil lkjem meokm okemom e koemkoemkemckmck mk mkm kmkm k mk mk mkm imim km ;klm;kl m " wrapText="true">
+                           <font>
+                              <Font name="Consolas Bold" size="18.0" />
+                           </font>
+                        </RadioButton>
+                        <RadioButton fx:id="ch6" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="65.0" prefWidth="1008.0" style="-fx-border-color: blue; -fx-padding: 2;" text="hello this is my hil lkjem meokm okemom e koemkoemkemckmck mk mkm kmkm k mk mk mkm imim km ;klm;kl m " wrapText="true">
+                           <font>
+                              <Font name="Consolas Bold" size="18.0" />
+                           </font>
+                        </RadioButton>
+                     </children>
+                  </VBox>
+               </children>
+            </AnchorPane>
+         </items>
+      </SplitPane>
+   </center>
+   <padding>
+      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+   </padding>
+</BorderPane>

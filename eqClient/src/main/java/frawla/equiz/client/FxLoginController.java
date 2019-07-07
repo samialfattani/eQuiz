@@ -6,8 +6,8 @@ import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import frawla.equiz.util.Channel;
 import frawla.equiz.util.Util;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -15,39 +15,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.image.Image;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-
-
-class FxLogin
-{
-	private FXMLLoader fxmlLoader;
-	private FxLoginController myController;
-
-	public FxLogin(){		
-		try
-		{
-			fxmlLoader = new FXMLLoader(Util.getResourceAsURI("fx-login.fxml").toURL());			
-
-			AnchorPane root = (AnchorPane) fxmlLoader.load();
-			myController = (FxLoginController) fxmlLoader.getController();
-
-			Stage window = new Stage( );
-			window.setScene(new Scene(root, 400, 280));
-			window.getIcons().add(new Image(Util.getResourceAsURI("images/aplus.png").toString() ));
-			window.setTitle("eQuiz-CLIENT");
-			window.setOnCloseRequest(event -> System.exit(0) );
-			window.show();
-		}
-		catch (IOException e){
-			Util.showError(e, e.getMessage());
-		}            
-	}
-
-	public FxLoginController getMyController(){
-		return myController;
-	}
-}
 
 public class FxLoginController implements Initializable
 {
@@ -55,13 +24,26 @@ public class FxLoginController implements Initializable
 	@FXML private TextField txtPort;
 	@FXML private TextField txtID;
 	@FXML private TextField txtName;
-	@FXML private AnchorPane pnlRoot;
+	@FXML private Pane PanRoot;
 
 	private Socket mySocket;	
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources)
 	{
+
+		//to be executed after initialize()
+		Platform.runLater(() -> {
+			Stage window = new Stage( );
+			Scene scene = new Scene(PanRoot, PanRoot.getPrefWidth(), PanRoot.getPrefHeight());
+			window.setScene(scene);
+
+			window.getIcons().add(new Image(Util.getResourceAsURI("images/aplus.png").toString() ));
+			window.setTitle("eQuiz-CLIENT");
+			window.setOnCloseRequest(event -> System.exit(0) );
+			window.show();
+		});        
+
 		txtIP.setText(Main.jsap.getResult().getString("host"));
 		txtPort.setText(Main.jsap.getResult().getInt("port")+"");
 		//txtID.setText("NBE"  +(new Random().nextInt(999-100+1)+100));
@@ -82,20 +64,23 @@ public class FxLoginController implements Initializable
 	public void btnJoin_click()
 	{
 
-		try{
+		try {
 			mySocket = new Socket(txtIP.getText(), Integer.parseInt(txtPort.getText()));
-			Channel srvrLinker = new Channel("myClient", mySocket);
-
-			FxExamSheet exam = new FxExamSheet();
-			exam.getMyController().setChannel(srvrLinker);
-			exam.getMyController().studentID = txtID.getText();
-			exam.getMyController().studentName =  txtName.getText();
+			ClientChannel srvrLinker = new ClientChannel("myClient", mySocket);
+	
+			FXMLLoader exam = new FXMLLoader(Util.getResourceAsURL("fx-exam-sheet.fxml"));
+			exam.load();
+			srvrLinker.studentID =  txtID.getText() ;
+			srvrLinker.studentName = txtName.getText() ;
+			
+			((FxExamSheetController)exam.getController()).setChannel(srvrLinker);
+	
 			srvrLinker.start();
-			pnlRoot.getScene().getWindow().hide();
-
-		}
-		catch (NumberFormatException | IOException e){
+			PanRoot.getScene().getWindow().hide();
+			
+		} catch (NumberFormatException | IOException e) {
 			Util.showError(e, e.getMessage());
 		}
+
 	}
 }

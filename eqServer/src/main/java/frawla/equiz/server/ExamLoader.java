@@ -1,98 +1,71 @@
 package frawla.equiz.server;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.odftoolkit.simple.SpreadsheetDocument;
-
 import com.rits.cloning.Cloner;
 
+import frawla.equiz.util.Log;
 import frawla.equiz.util.exam.BlankField;
 import frawla.equiz.util.exam.ExamConfig;
 import frawla.equiz.util.exam.MultipleChoice;
 import frawla.equiz.util.exam.Question;
 import frawla.equiz.util.exam.Student;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class ExamLoader
+public abstract class ExamLoader
 {
-
 	private static ExamLoader instance;
-	//private File sourceFile;
 
-	private List<Question> questionList = new ArrayList<>();
-	private List<String> BWList = new ArrayList<>();
-	private List<String> ErrReport = new ArrayList<>();
-	private ExamConfig examConfig = new ExamConfig();
-	private List<File> imageList = new ArrayList<>();
-	//private Workbook wrkBook;
-	private ObservableList<Student> students;
+	private static List<Question> questionList = new ArrayList<>();
+	private static List<String> BWList = new ArrayList<>();
+	private static ExamConfig examConfig = new ExamConfig();
+	private static ObservableList<Student> students;
 
-	private ExamLoader(){ }
+	protected ExamLoader(){ }
 
-	public static ExamLoader getInstance()
+	public static ExamLoader getInstance(){return instance;}
+	public static ExamLoader getInstance(File srcFile)
 	{
-		if (instance == null)
-			instance = new ExamLoader();
-
+		if(instance == null)
+			create(srcFile);
+		else if( instance.getExamConfig().SourceFile != srcFile )
+			create(srcFile);
+		
 		return instance;
 	}
 
-
-	public void load(File srcFile) throws Exception 
+	public static void create(File srcFile) 
 	{
-		String ext = FilenameUtils.getExtension(srcFile.getAbsolutePath()); 
+		String ext = FilenameUtils.getExtension(srcFile.getAbsolutePath());
+		//TODO: guessing mime types
+		//String t = getMimeType(srcFile);
 		if( ext.trim().toLowerCase().equals("xlsx") )
 		{
-			FileInputStream fin = new FileInputStream(srcFile);
-			Workbook wrkBook = WorkbookFactory.create( fin );
-			students = FXCollections.observableArrayList();
-	
-			//sourceFile = srcFile;
-			 
-			ExamLoaderXLSX examLoader = new ExamLoaderXLSX(wrkBook, srcFile);
-			
-			examConfig = examLoader.getExamConfig();
-			questionList = examLoader.getQustionList();
-			imageList = examLoader.getImageList();
-			BWList = examLoader.getBWList();
-			students = examLoader.getStudentList();
-			ErrReport = examLoader.getErrReport();
-			
-			examConfig.SourceFile =srcFile;
-			wrkBook.close();
-			fin.close();
-		}else if( ext.trim().toLowerCase().equals("ods") ){
-			
-			SpreadsheetDocument wrkBook = SpreadsheetDocument.loadDocument(srcFile);
-			ExamLoaderODS examLoader = new ExamLoaderODS(wrkBook, srcFile);
-			examConfig = examLoader.getExamConfig();
-			questionList = examLoader.getQustionList();
-			imageList = examLoader.getImageList();
-			BWList = examLoader.getBWList();
-			students = examLoader.getStudentList();
-			ErrReport = examLoader.getErrReport();
-			
-			examConfig.SourceFile =srcFile;
-			wrkBook.close();
-			
+			instance = new ExamLoaderXLSX(srcFile);
 		}
-
+		else if( ext.trim().toLowerCase().equals("ods") )
+		{
+			instance = new ExamLoaderODS(srcFile);
+		}
+		students     = instance.getStudentList();
+		examConfig   = instance.getExamConfig();
+		BWList       = instance.getBWList();
+		questionList = instance.getQustionList();
+		
+		students.forEach(st -> st.setStatus(Student.GRADED) );
+		
 	}
 
-
-
-	public List<File> getImageFiles() 
-	{
-		return imageList;
-	}
+	//TODO: later
+//	private static String getMimeType(File srcFile) throws IOException {
+//		//File file = new File(srcFile);
+//		InputStream is = new BufferedInputStream(new FileInputStream(srcFile));
+//		String mimeType = URLConnection.guessContentTypeFromStream(is);		
+//		return mimeType;
+//	}
 
 	public  boolean isValidStudent(String id)
 	{
@@ -100,30 +73,22 @@ public class ExamLoader
 		switch(examConfig.studentListType){
 			case ALL_STUDENTS:
 				allow = true;
-				break;
+			break;
 			case WHITE_LIST:
 				allow = BWList.stream()
 				.filter(s -> s.equals(id))
 				.findFirst()
 				.isPresent();
-				break;
+			break;
 			case BLACK_LIST:
 				allow = ! BWList.stream()
 				.filter(s -> s.equals(id))
 				.findFirst()
 				.isPresent();
-				break;
+			break;
 		}
 		return allow;
 	}
-
-
-	public ExamConfig getExamConfig(){
-		return examConfig;
-	}
-
-	public List<Question> getQustionList(){return questionList;}
-	public void setQustionList(List<Question> lst){this.questionList = lst;}
 
 	public List<Question> getCloneOfQustionList(){
 		return new Cloner().deepClone(questionList);
@@ -131,46 +96,34 @@ public class ExamLoader
 
 	public String getQuestionStatistics()
 	{
-		String[] l = {"No. of Questions", "", "", "No. of Images", "No. of Recorded Sheets"};
-
-		String[] d = {
-				questionList.size()+"", 
-				questionList.stream().filter(q-> q instanceof MultipleChoice).count()+" "+ Question.MULTIPLE_CHOICE,
-				questionList.stream().filter(q-> q instanceof BlankField).count() +" " + Question.BLANK_FIELD,
-				questionList.stream().filter(q-> !q.getImgFileName().equals("") ).count() +"" ,
-				students.size() + ""
-		};
-
-		List<String> labels = Arrays.asList(l);
-		List<String> data = Arrays.asList(d);
+		String Questions = questionList.size()+"";
+		String MC = questionList.stream().filter(q-> q instanceof MultipleChoice).count() + "";
+		String BF = questionList.stream().filter(q-> q instanceof BlankField).count() +"";
+		String Images = questionList.stream().filter(q-> !q.getImgFileName().equals("") ).count() +"";
+		String RecordedSheets = students.size() + "";
 
 		String s = "";
-		int max = labels
-				.stream()
-				.mapToInt( String::length )
-				.max()
-				.getAsInt();
-
-		for (int i=0; i<d.length; i++)
-		{
-			s += String.format("%-"+max+"s | %s\n", labels.get(i), data.get(i));			
-		}
+		s += String.format("%2s %s\n", Questions, "Questions" );
+		s += String.format("%2s %2s %s\n", " ", MC, Question.MULTIPLE_CHOICE );
+		s += String.format("%2s %2s %s\n", " ", BF, Question.BLANK_FIELD );
+		s += String.format("%2s %s\n", Images, "Images" );
+		s += String.format("%2s %s\n", RecordedSheets, "Recorded Sheets" );
+		
 		return s;
 
 	}
 
-	public int getQuestionCount()
-	{
-		return questionList.size();
+	public int getQuestionCount() {
+		return instance.getQustionList().size();
 	}
-
-	public ObservableList<Student> getStudentList() {
-		return students;
-	}
-
-	public List<String> getErrReport()
-	{
-		return ErrReport;
-	}
+	
+	public abstract List<Question> getQustionList();
+	public abstract ExamConfig getExamConfig();
+	public abstract List<String> getBWList();
+    public abstract List<File> getImageFiles();
+	public abstract List<String> getErrReport();
+	
+	public abstract ObservableList<Student> getStudentList();
+	public abstract List<Log> getLog();
 
 }//ExamLoader

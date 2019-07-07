@@ -2,14 +2,28 @@
 	apply plugin: 'java'
 	apply plugin: 'eclipse'
 	
+
+	dependencies
+	{
+		//mokito
+		testCompile "org.mockito:mockito-core:2.28.+"
+	}
+	
 	eclipse {
 		classpath {	
+			jdt {
+				//if you want to alter the java versions 
+				//(by default they are configured with gradle java plugin settings):
+				sourceCompatibility = 1.8
+				targetCompatibility = 1.8
+			}		     
+		
 		    //customizing the classes output directory:
-		    defaultOutputDir = file('build-eclipse')
+		    defaultOutputDir = file('build')
 		
 		    //default settings for downloading sources and Javadoc:
 		    downloadSources = false
-		    downloadJavadoc = true
+		    downloadJavadoc = false
 		}
 	}
 

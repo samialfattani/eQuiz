@@ -1,4 +1,4 @@
-package General;
+package general;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -165,7 +165,7 @@ public class QuestionTest
 
 		//------- NEW PATTERN ------
 		
-		qbf = new BlankField("Q5`1.5`");
+		qbf = new BlankField("Q5`2`");
 		assertEquals("-", qbf.getStudentAnswer());
 		
 		qbf = new BlankField("Q5`1.5``");

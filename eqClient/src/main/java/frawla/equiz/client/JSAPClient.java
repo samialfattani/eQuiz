@@ -18,7 +18,11 @@ public class JSAPClient extends SimpleJSAP
 
 	private JSAPResult result;
 
- 
+	/**
+	 * -h 10.4.10.100 -p 10000 -i SAM000 -u "Sami Alfattani"
+	 * -h 192.168.200.1 -p 10000 -i SAM000 -u "Sami Alfattani"
+	 * -h localhost -p 10000 -i SAM000 -u "Sami Alfattani"
+	 * */
 	public JSAPClient(String[] args) throws JSAPException
 	{
 		super("kkkkkk");

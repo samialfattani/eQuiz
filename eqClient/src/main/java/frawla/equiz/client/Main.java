@@ -1,11 +1,16 @@
 	
 package frawla.equiz.client;
 
+import java.io.IOException;
+
 import com.martiansoftware.jsap.JSAPException;
+
+import frawla.equiz.util.Util;
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 
-
+ 
 public class Main extends Application
 {
 	public static JSAPClient jsap;
@@ -18,7 +23,15 @@ public class Main extends Application
 	@Override
 	public void start(Stage window) 
 	{
-		new FxLogin();
+		try 
+		{
+			new FXMLLoader(Util.getResourceAsURL("fx-login.fxml")).load();
+		}
+		catch (IOException e) 
+		{ 
+			Util.showError(e, e.getMessage());
+		}
+		
 	}
 
 }

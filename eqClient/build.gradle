@@ -21,12 +21,19 @@
 	
 	eclipse {
 		classpath {	
+			jdt {
+				//if you want to alter the java versions 
+				//(by default they are configured with gradle java plugin settings):
+				sourceCompatibility = 1.8
+				targetCompatibility = 1.8
+			}		     
+
 		    //customizing the classes output directory:
-		    defaultOutputDir = file('build-eclipse')
+		    defaultOutputDir = file('build')
 		
 		    //default settings for downloading sources and Javadoc:
 		    downloadSources = false
-		    downloadJavadoc = true
+		    downloadJavadoc = false
 		}
 	}
 
@@ -56,9 +63,11 @@
 	    // = new File('../A') project(':eqClient')
 	    def projPath = projectDir.absolutePath;
 	    icon = new File(projPath + '/src/main/resources/images/exam.ico').absolutePath
+	    
+	    //headerType = "console" //no splash with console
 	    headerType = "gui" //no splash with console
-		
 		splashFileName = new File(projPath + '/src/main/resources/images/splash-client.bmp').absolutePath
+		
 		version = gitVersion() 
 		//project.name
 		outfile = 'eQuiz-client-' + version +'.exe'

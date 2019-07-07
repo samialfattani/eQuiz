@@ -1,4 +1,4 @@
-package General;
+package general;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -35,8 +35,9 @@ public class ExamLoaderXLSXTest
 	public static void before() throws Exception
 	{
 		new JFXPanel();
+		//       new File("./data/IT100-2.xlsx")
 		File f = new File( Util.getResourceAsURI("IT100-2.xlsx"));
-		ExamLoader.getInstance().load( f ); //new File("./data/IT100-2.xlsx")
+		ExamLoader.getInstance(f); 
 		exConfig = ExamLoader.getInstance().getExamConfig();
 	}
 
@@ -58,7 +59,11 @@ public class ExamLoaderXLSXTest
 	@Test
 	public void LoadTest() throws EncryptedDocumentException, InvalidFormatException, IOException
 	{
-		assertEquals(6, ExamLoader.getInstance().getQustionList().size());
+		assertEquals(5, ExamLoader.getInstance().getQustionList().size());
+		assertEquals(2, ExamLoader.getInstance().getImageFiles().size());
+		assertEquals(5, ExamLoader.getInstance().getStudentList().size());
+		assertEquals(3, ExamLoader.getInstance().getBWList().size());
+		assertEquals(0, ExamLoader.getInstance().getLog().size());
 	}
 
 	@Test

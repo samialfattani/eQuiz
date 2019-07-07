@@ -1,6 +1,7 @@
 package frawla.equiz.server;
 
 import java.io.File;
+import java.text.ParseException;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +16,8 @@ import org.odftoolkit.simple.table.Table;
 
 import com.rits.cloning.Cloner;
 
+import frawla.equiz.util.EQDate;
+import frawla.equiz.util.Log;
 import frawla.equiz.util.Util;
 import frawla.equiz.util.exam.BlankField;
 import frawla.equiz.util.exam.ExamConfig;
@@ -35,7 +38,7 @@ import javafx.util.Duration;
  * @author samipc
  *
  */
-public class ExamLoaderODS
+public class ExamLoaderODS extends ExamLoader
 {
 
 	private File sourceFile;
@@ -46,24 +49,36 @@ public class ExamLoaderODS
 	private ExamConfig examConfig = new ExamConfig();
 	private List<File> imageList = new ArrayList<>();
 	private SpreadsheetDocument wrkBook;
+
+	private List<Log> logList;
 	private static ObservableList<Student> students;
 
-	public ExamLoaderODS(SpreadsheetDocument wrkBook, File f)
+	public ExamLoaderODS(File srcFile)
 	{
-		students = FXCollections.observableArrayList();
+		try {
+			wrkBook = SpreadsheetDocument.loadDocument(srcFile);
 		
-		this.wrkBook =wrkBook;
-		sourceFile = f;
-		
-		LoadFileConfig();
-		loadQuestionList();
-		loadImages();
-		loadStdBWlist();
-		loadStudentList();
+			examConfig.SourceFile =srcFile;
+			
+			students = FXCollections.observableArrayList();
+			
+			sourceFile = srcFile;
+			
+			loadFileConfig();
+			loadQuestionList();
+			loadImages();
+			loadStdBWlist();
+			loadStudentList();
+			loadLog();
+			wrkBook.close();
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 
-	private void LoadFileConfig() 
+	private void loadFileConfig() 
 	{
 		Table mySheet = wrkBook.getTableByName("Config" );
 
@@ -136,7 +151,7 @@ public class ExamLoaderODS
 				c = shtQuestions.getRowByIndex( i ).getCellByIndex( j+3 );
 				if(!isBlankCell(c)) 
 				{
-					data = shtQuestions.getRowByIndex( i ).getCellByIndex( j+3 ).toString();
+					data = shtQuestions.getRowByIndex( i ).getCellByIndex( j+3 ).getDisplayText();
 					addChoice(q, data, j);					
 				}
 			}
@@ -146,7 +161,7 @@ public class ExamLoaderODS
 
 			c = shtQuestions.getRowByIndex( i ).getCellByIndex( 9 );
 			if(!isBlankCell(c)){
-				File f = new File(c.toString());
+				File f = new File(c.getStringValue());
 				q.setImgFileName(f.getName());
 			}
 
@@ -162,14 +177,16 @@ public class ExamLoaderODS
 		//getQustionList().forEach( qu -> System.out.println(qu) );
 	}
 
-
 	private void loadStdBWlist()
 	{
 		BWList.clear();
-		Table BWSheet = wrkBook.getTableByName("BlackWhite List");
+		Table BWSheet = wrkBook.getTableByName("BlackWhite_List");
+		if( BWSheet == null)
+			ErrReport.add("Sheet of 'BlckWhite_List' is not found");
+			
 		for (int i=1; i < BWSheet.getRowCount(); i++)
 		{
-			String s = BWSheet.getRowByIndex(i).getCellByIndex(0).toString();
+			String s = BWSheet.getRowByIndex(i).getCellByIndex(0).getStringValue();
 			BWList.add(s);
 		}
 	}
@@ -182,17 +199,16 @@ public class ExamLoaderODS
 		{			
 			Cell c = shtQuestions.getRowByIndex( i ).getCellByIndex( 9 );
 			if(!isBlankCell(c)){
-				File f = new File(c.toString());
+				File f = new File(c.getStringValue());
 
 				if(!f.exists())
-					f = new File(sourceFile.getParent(), c.toString());
+					f = new File(sourceFile.getParent(), c.getStringValue());
 
 				imageList.add( f );
 			}
 		}
 
 	}
-
 
 	private void loadStudentList() 
 	{
@@ -201,12 +217,11 @@ public class ExamLoaderODS
 		if(shtAnswer ==null)
 			return ;
 
-		for (int i=1; i < shtAnswer.getColumnCount(); i++)
+		for (int i=1; i < shtAnswer.getRowCount(); i++)
 		{
-			String sid = shtAnswer.getRowByIndex(i).getCellByIndex(0).toString();
+			String sid = shtAnswer.getRowByIndex(i).getCellByIndex(0).getStringValue();
 			Student std = new Student(sid);			
-			std.setName(shtAnswer.getRowByIndex(i).getCellByIndex(1).toString());
-			std.setStatus(Student.FINISHED);
+			std.setName(shtAnswer.getRowByIndex(i).getCellByIndex(1).getStringValue());
 
 			ExamSheet examSheet = new ExamSheet();
 			examSheet.setExamConfig( getExamConfig() );
@@ -223,7 +238,8 @@ public class ExamLoaderODS
 
 	private List<Question> extractQuestionList(Row stRow, Row timerRow) throws InputMismatchException
 	{
-		int[] QIDs = Arrays.asList(stRow.getCellByIndex(2).toString().split(","))
+		
+		int[] QIDs = Arrays.asList(stRow.getCellByIndex(2).getStringValue().split(","))
 				.stream()
 				.map(String::trim)
 				.mapToInt(Integer::parseInt)
@@ -239,15 +255,15 @@ public class ExamLoaderODS
 							 .findFirst()
 							 .get();
 
-			String timeCellContent = timerRow.getCellByIndex( 2 + (qid-1) ).toString();
-			String cellContent = stRow.getCellByIndex(base + (qid-1)*2).toString() ;
+			String timeCellContent = timerRow.getCellByIndex( 2 + (qid-1) ).getStringValue();
+			String cellContent = stRow.getCellByIndex(base + (qid-1)*2).getStringValue() ;
 
 			if( qj instanceof MultipleChoice )
 			{
 				MultipleChoice mcCopy = new MultipleChoice(cellContent);
 				mcCopy.setText(qj.getText());
 				mcCopy.copyChoices(qj);
-				mcCopy.setStudentMark(  Double.parseDouble(stRow.getCellByIndex(base + (qid-1)*2+1).toString() )  );
+				mcCopy.setStudentMark(  stRow.getCellByIndex(base + (qid-1)*2+1).getDoubleValue()   );
 				mcCopy.setConsumedTime( toDuration(timeCellContent)  );
 				Qlst.add( mcCopy );
 			}
@@ -256,7 +272,7 @@ public class ExamLoaderODS
 				BlankField qbCopy = new BlankField(cellContent);
 				qbCopy.setText(qj.getText());
 				qbCopy.copyOptions(qj);
-				qbCopy.setStudentMark(  Double.parseDouble(stRow.getCellByIndex(base + (qid-1)*2+1).toString() )  );
+				qbCopy.setStudentMark(  stRow.getCellByIndex(base + (qid-1)*2+1).getDoubleValue() );
 				qbCopy.setConsumedTime( toDuration(timeCellContent)  );
 				Qlst.add( qbCopy );
 			}
@@ -274,9 +290,27 @@ public class ExamLoaderODS
 		return d;
 	}
 
-	public List<File> getImageList(){
-		return imageList;
+	private List<Log> loadLog() throws ParseException
+	{
+		logList = new ArrayList<>();
+		
+		Table shtLog = wrkBook.getTableByName("Log");
+		if(shtLog == null)
+			return null;
+
+		for (int i=1; i < shtLog.getRowCount(); i++)
+		{
+			String time = shtLog.getRowByIndex(i).getCellByIndex(0).getStringValue();
+			String text = shtLog.getRowByIndex(i).getCellByIndex(1).getStringValue();
+			
+			Log log = new Log( new EQDate(Util.MY_DATE_FORMAT, time) , text);
+			logList.add( log );
+		}
+		return logList;
 	}
+
+	//--------------------------------------------------
+	public List<File> getImageList(){return imageList;}
 
 	private boolean isValidQuestionSheet(Table shtQuestions)
 	{
@@ -404,7 +438,7 @@ public class ExamLoaderODS
 		if(c.getValueType() == null)
 			return true;
 		
-		if(c.toString().trim().replaceAll("\\s+", "").equals(""))
+		if(c.getStringValue().trim().replaceAll("\\s+", "").equals(""))
 			return true;
 
 		return false;
@@ -434,8 +468,6 @@ public class ExamLoaderODS
 		}
 
 	}
-
-
 
 	public ExamConfig getExamConfig(){
 		return examConfig;
@@ -478,23 +510,15 @@ public class ExamLoaderODS
 
 	}
 
-	public int getQuestionCount(){
-		return questionList.size();
-	}
 
-	public ObservableList<Student> getStudentList() {
-		return students;
-	}
+	@Override public ObservableList<Student> getStudentList() {return students;}
+	@Override public List<String> getBWList(){return BWList;}
+	@Override public List<String> getErrReport(){return ErrReport;}
+	@Override public List<Log> getLog(){return logList;}
 
 
-	public List<String> getBWList(){
-		return BWList;
-	}
+	@Override public List<File> getImageFiles() {return imageList;}
 
 
-	public List<String> getErrReport()
-	{
-		return ErrReport;
-	}
 
 }//ExamLoader

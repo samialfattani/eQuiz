@@ -5,6 +5,7 @@ import java.io.File;
 
 import frawla.equiz.util.Util;
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 
 public class Main extends Application
@@ -18,10 +19,15 @@ public class Main extends Application
 	public void start(Stage window) throws Exception
 	{
 		try{
-			FxExamConfig examConfig = new FxExamConfig();
-			File f = new File("data/IT100-2.xlsx");
-			if(f.exists())
-				examConfig.getMyController().setExamFile(f);
+			
+			FXMLLoader loader = new FXMLLoader( Util.getResourceAsURL("fx-exam-config.fxml") );
+			loader.load();
+			File f = new File("../data/MidTerm-1/MidTerm-2019.xlsx");		
+			if(f.exists()) {
+				//System.out.println( new File(".").getAbsolutePath() );
+				FxExamConfigController cntrl = (FxExamConfigController) loader.getController();
+				cntrl.setExamFile(f);
+			}
 		}catch(Exception ex){
 			Util.showError(ex, ex.getMessage());
 		}

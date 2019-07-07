@@ -21,8 +21,8 @@ public class MultipleChoice extends Question implements Serializable, Randomizab
 
 	private String correctAnswer;
 	
-	//This input should be on the follwing format 'Q2/1/CBEAD/E/teacher notes'
-	public MultipleChoice(String c) throws InputMismatchException
+	//This input should be on the follwing format 'Q2`1`CBEAD`E`teacher notes'
+	public MultipleChoice(String c) throws InputMismatchException 
 	{
 		String Qptrn = "(?s)Q(\\d+)`(\\+?[0-9]*\\.?[0-9]*)`([A-Fa-f]{1,6})`([A-Fa-f\\-]?)(`(.*))?";
 		Pattern pattern = Pattern.compile(Qptrn);
@@ -38,19 +38,19 @@ public class MultipleChoice extends Question implements Serializable, Randomizab
 			setCorrectAnswer("A");
 
 			//CBEAD to list of letters
-			String ol = matcher.group(3);
+			String ol = matcher.group(3); 
 			for (int k = 0; k < ol.length(); k++){
 				String letter = ol.substring(k,k+1);
 				 getOrderList().add( letter);
 			}
 			String ans = Optional.ofNullable(matcher.group(4)).orElse("");
 			ans = (ans.equals(""))? "-" : ans;
-			setStudentAnswer( ans );
+			setStudentAnswer( ans ); 
 
 			String teacherNot = Optional.ofNullable(matcher.group(6)).orElse("");		
 			setTeacherNote( teacherNot );
 		}else
-			throw new InputMismatchException("'" + c + "' is in wrong format.This input should be on the follwing format 'Q2/1/CBEAD/E' or 'Q2/1/CBEAD/E/teacher note'");
+			throw new InputMismatchException("'" + c + "' is in wrong format.This input should be on the follwing format 'Q2`1`CBEAD`E' or 'Q2`1`CBEAD`E`teacher note'");
 		
 		
 	}

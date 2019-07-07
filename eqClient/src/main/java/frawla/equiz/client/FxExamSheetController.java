@@ -10,27 +10,28 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
 import frawla.equiz.util.Channel;
+import frawla.equiz.util.EQuizException;
 import frawla.equiz.util.Message;
 import frawla.equiz.util.Util;
 import frawla.equiz.util.exam.BlankField;
 import frawla.equiz.util.exam.ExamSheet;
 import frawla.equiz.util.exam.MultipleChoice;
 import frawla.equiz.util.exam.Question;
-import frawla.equiz.util.exam.RegisterInfo;
 import frawla.equiz.util.exam.TimingType;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
@@ -48,7 +49,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
@@ -56,48 +57,9 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-class FxExamSheet
-{
-	private FXMLLoader fxmlLoader;
-	private FxExamSheetController myController;
-
-	public FxExamSheet()
-	{
-		try
-		{
-			fxmlLoader = new FXMLLoader(Util.getResourceAsURI("fx-exam-sheet.fxml").toURL());			
-			
-			AnchorPane root = (AnchorPane) fxmlLoader.load();
-			myController = (FxExamSheetController) fxmlLoader.getController();
-
-			Scene scene = new Scene(root, 1000, 700);
-			scene.getStylesheets().add(Util.getResourceAsURI("mystyle.css").toURL().toExternalForm());
-			 
-			
-			Stage window = new Stage( );
-			window.setScene(scene);
-			window.getIcons().add(new Image(Util.getResourceAsURI("images/exam.png").toString() ));
-			window.setTitle("Exam Sheet");
-			window.setOnCloseRequest(event -> myController.disconnect());
-			window.setMinWidth(1050);
-			window.setMinHeight(770);
-			window.show();
-		}
-		catch (IOException e){
-			Util.showError(e, e.getMessage());
-		}            
-		
-	}
-	
-	public FxExamSheetController getMyController(){
-		return myController;
-	}
-
-}
-
 public class FxExamSheetController implements Initializable
 {
-	@FXML private AnchorPane pnlRoot ;
+	@FXML private Pane PanRoot;
 	@FXML private RadioButton ch1;
 	@FXML private RadioButton ch2;
 	@FXML private RadioButton ch3;
@@ -120,20 +82,16 @@ public class FxExamSheetController implements Initializable
 	@FXML private Button btnFinish;
 	@FXML private Label lblMark;
 	@FXML private WebView webCompletion;
-	
 
-	private ExamSheet mySheet;
-	public String studentID = ""; 
-	public String studentName = "";
 	
 	private List<RadioButton> Radios ;
-	private Channel myChannel;
+	private ClientChannel myChannel;
 	private Duration timeLeft;
 	private Timeline myTimer;
 	private ToggleGroup radioGroup;
 	private Question currentQues;
-	private Map<String, byte[]> myImageList;
-	private boolean ExamFinished = false;
+	
+	private BooleanProperty  examIsFinished = new SimpleBooleanProperty(false);
 	private long startCountingTime = 0;
 	private long endCountingTime = 0;
 	
@@ -146,6 +104,22 @@ public class FxExamSheetController implements Initializable
 	@Override
 	public void initialize(URL location, ResourceBundle resources)
 	{
+		//to be executed after initialize()
+		Platform.runLater(() -> {
+			Stage window = new Stage( );
+			Scene scene = new Scene(PanRoot, PanRoot.getPrefWidth(), PanRoot.getPrefHeight());
+			scene.getStylesheets().add(Util.getResourceAsURL("mystyle.css").toExternalForm());
+
+			window.setScene(scene);
+
+			window.getIcons().add(new Image(Util.getResourceAsURI("images/exam.png").toString() ));
+			window.setTitle("Exam Sheet");
+			window.setOnCloseRequest(event -> disconnect());
+			window.show();
+		});        
+		
+		btnFinish.disableProperty().bind(examIsFinished);
+
 		lblNext.setGraphic(new ImageView( new Image(  Util.getResourceAsStream( "images/next.png" ) )));
 		lblPrev.setGraphic(new ImageView( new Image(  Util.getResourceAsStream( "images/previous.png" ) )));
 		
@@ -174,7 +148,7 @@ public class FxExamSheetController implements Initializable
 		    @Override
 		    public void handle(ActionEvent event) 
 		    {
-				String str = (mySheet.getExamConfig().timingType == TimingType.EXAM_LEVEL)? "Exam Time: " :"Question Time: ";
+				String str = (myChannel.mySheet.getExamConfig().timingType == TimingType.EXAM_LEVEL)? "Exam Time: " :"Question Time: ";
 				str += Util.formatTime(timeLeft); 
 				timeLeft = timeLeft.subtract(Duration.seconds(1) );
 				lblTime.setText(str);
@@ -184,8 +158,8 @@ public class FxExamSheetController implements Initializable
 			private void setPrgTime()
 			{
 				double ratio; 
-				if(mySheet.getExamConfig().timingType == TimingType.EXAM_LEVEL)
-					ratio = timeLeft.toSeconds() / mySheet.getExamConfig().examTime.toSeconds();
+				if(myChannel.mySheet.getExamConfig().timingType == TimingType.EXAM_LEVEL)
+					ratio = timeLeft.toSeconds() /myChannel.mySheet.getExamConfig().examTime.toSeconds();
 				else
 					ratio = timeLeft.toSeconds() / currentQues.getTime().toSeconds();
 				
@@ -213,22 +187,24 @@ public class FxExamSheetController implements Initializable
 			}
 		});
 		
-	}//--------------- inilizse
+	}//--------------- inilizse -------
 
-	public void setChannel(Channel srvrLinker){
+	public void setChannel(ClientChannel srvrLinker){
 		myChannel = srvrLinker;
-		myChannel.setOnNewMessage((msg, ch) -> {			
+		
+		myChannel.setOnNewMessage((msg, ch) -> 
+		{
 			//any change of GUI MUST be in Application Thread
-			Platform.runLater(  ()-> newMessageHasBeenReleased(msg, ch) );			
+			Platform.runLater(  ()-> newMessageHasDelivered(msg, ch) );			
 		});				
 	}
 	
 	private void runExam(Duration tLeft) throws IOException
 	{
-		currentQues = mySheet.getCurrentQuestion();		
+		currentQues =myChannel.mySheet.getCurrentQuestion();		
 		btnFinish.setDisable(false);
 
-		if(mySheet.getExamConfig().timingType == TimingType.EXAM_LEVEL)
+		if(myChannel.mySheet.getExamConfig().timingType == TimingType.EXAM_LEVEL)
 			timeLeft = tLeft;
 		else
 			timeLeft = currentQues.getTime().subtract(currentQues.getConsumedTime()) ;
@@ -242,15 +218,15 @@ public class FxExamSheetController implements Initializable
 	
 	public void lblNext_MouseClicked() throws IOException{
 		setAnswer();
-		//int currIndex = mySheet.getQuestionList().indexOf(currentQues);		
-		currentQues = mySheet.getNextQuestion(); //mySheet.getQuestionList().get(currIndex+1);
+		//int currIndex =myChannel.mySheet.getQuestionList().indexOf(currentQues);		
+		currentQues =myChannel.mySheet.getNextQuestion(); //mySheet.getQuestionList().get(currIndex+1);
 		loadQuestion( currentQues );
 	}
 	
 	public void lblPrev_MouseClicked() throws IOException{
 		setAnswer();
-		//int i = mySheet.getQuestionList().indexOf(currentQues);
-		currentQues = mySheet.getPreviousQuestion(); //mySheet.getQuestionList().get(i-1);		
+		//int i =myChannel.mySheet.getQuestionList().indexOf(currentQues);
+		currentQues = myChannel.mySheet.getPreviousQuestion(); //mySheet.getQuestionList().get(i-1);		
 		loadQuestion( currentQues );
 	}
 
@@ -273,7 +249,7 @@ public class FxExamSheetController implements Initializable
 		currentQues.AppendConsumedTime( Duration.millis(endCountingTime - startCountingTime)  );
 		startCountingTime = System.currentTimeMillis();
 		
-		//mySheet.currentQuesIdx = mySheet.getCurrentQuestion(); //mySheet.getQuestionList().indexOf(currentQues);
+		//mySheet.currentQuesIdx =myChannel.mySheet.getCurrentQuestion(); //mySheet.getQuestionList().indexOf(currentQues);
 	}
 	
 	public void btnFinish_click() throws IOException
@@ -286,27 +262,25 @@ public class FxExamSheetController implements Initializable
 		if( res.isPresent() && res.get() == ButtonType.CANCEL) 
 			    return;
 		
-    	Message<ExamSheet> msg = new Message<>(
-    			Message.FINAL_COPY_OF_EXAM_WITH_ANSWERS, mySheet);
-    	myChannel.sendMessage(msg);
-		
-    	ExamFinished  = true;
+    	examIsFinished.set(true);
     	myTimer.stop();
     	setDisableAll(true);
+    	
+    	myChannel.sendFinalCopy();
 	}
 	
 	
 	
 	private void loadQuestion(Question q) 
 	{
-		int idx = mySheet.getQuestionList().indexOf(q) +1;
+		int idx =myChannel.mySheet.getQuestionList().indexOf(q) +1;
 		txtQuestion.setText(q.getText());
-		lblQuesCounter.setText( idx + "/" + mySheet.getQuestionList().size() );
+		lblQuesCounter.setText( idx + "/" + myChannel.mySheet.getQuestionList().size() );
 		imgFigure.setImage(  getImage(q.getImgFileName()) );
 		txtQuestion.requestFocus();
 		
 		
-		if(mySheet.getExamConfig().timingType == TimingType.QUESTION_LEVEL)
+		if(myChannel.mySheet.getExamConfig().timingType == TimingType.QUESTION_LEVEL)
 			timeLeft = q.getTime().subtract(q.getConsumedTime()).add(Duration.seconds(2));
 
 		lblMark.setText( String.format("Marks: %.2f", q.getMark()) );
@@ -339,15 +313,15 @@ public class FxExamSheetController implements Initializable
 		}
 		
 		//enable/disable buttons
-		i = mySheet.getQuestionList().indexOf(q);
-		lblNext.setDisable(i == mySheet.getQuestionList().size()-1);
+		i =myChannel.mySheet.getQuestionList().indexOf(q);
+		lblNext.setDisable(i == myChannel.mySheet.getQuestionList().size()-1);
 		lblPrev.setDisable(i == 0);
 		loadAnswer();
 		
-		if(ExamFinished)
+		if(examIsFinished.get())
 			setDisableAll(true);
 		
-		else if(timeLeft.lessThan(Duration.ZERO) && mySheet.getExamConfig().timingType == TimingType.QUESTION_LEVEL)
+		else if(timeLeft.lessThan(Duration.ZERO) && myChannel.mySheet.getExamConfig().timingType == TimingType.QUESTION_LEVEL)
 			// if the question time is up.
 			setDisableAll(true);
 		else if(timeLeft.lessThan(Duration.ZERO) && !q.getStudentAnswer().equals(""))
@@ -363,14 +337,14 @@ public class FxExamSheetController implements Initializable
 	private void updateCompletionText(Question q)
 	{
 	
-		int idx = mySheet.getQuestionList().indexOf(q);
+		int idx =myChannel.mySheet.getQuestionList().indexOf(q);
 		WebEngine webEngine = webCompletion.getEngine();
 		
 		
 		ArrayList<Text> chunks = new ArrayList<>();
 		StringBuilder content = new StringBuilder();
 		
-		for (int i = 0; i < mySheet.getQuestionList().size(); i++)
+		for (int i = 0; i < myChannel.mySheet.getQuestionList().size(); i++)
 		{
 			//TextBuilder.create().text(word).fill(Paint.valueOf(color)).build();
 			Text t1 = new Text();
@@ -378,7 +352,7 @@ public class FxExamSheetController implements Initializable
 			t1.setUnderline(false);
 			style += "font-size: 16; font-weight: bold; font-family: Consolas; "; // 
 			
-			Question qq =mySheet.getQuestionList().get(i); 
+			Question qq = myChannel.mySheet.getQuestionList().get(i); 
 			if( qq.getStudentAnswer() == null || !qq.getStudentAnswer().equals(""))				
 				style += "text-decoration: line-through; ";
 				//t1.setUnderline(true);
@@ -449,92 +423,67 @@ public class FxExamSheetController implements Initializable
 		}
 	}
 	
-	public void imgFigure_mouseEntered(){
-		Image image = new Image( Util.getResourceAsURI("images/zoom.png").toString() );  //pass in the image path
-		pnlRoot.getScene().setCursor(new ImageCursor(image));
-	}
-	public void imgFigure_mouseExited(){
-		pnlRoot.getScene().setCursor(Cursor.DEFAULT);
-	}
 	
-	@SuppressWarnings("unchecked")
-	private void newMessageHasBeenReleased(final Message<?> msg, final Channel ch)
+	//@SuppressWarnings("unchecked")
+	private void newMessageHasDelivered(final Message<?> msg, final Channel ch)
 	{
 		
 		String code = msg.getCode();
 		try{
+		myChannel.handleTheMsg(msg, ch);		
 		switch(code)
 		{
 			case Message.WELCOME_FROM_SERVER:	
 				imgConnection.setImage( Util.getConnectedImage() );
-				lblID.setText(studentID);
-				lblName.setText(studentName);
-				RegisterInfo r = new RegisterInfo(studentID, studentName);
-				myChannel.sendMessage(new Message<RegisterInfo>(Message.REGESTER_INFO , r));
-			break;
-			case Message.YOU_ARE_ALREADY_CONNECTED: 
-				Util.showError("You Are Aready Connected\nYou can't connect twice at the same time.");
-				btnFinish.setDisable(true);
-				
-			break;
-			case Message.YOU_ARE_REJECTED:
-				Util.showError("You Are Rejected\nYou don't have right to enter this exam. Please inform your exam Administrator.");
-				btnFinish.setDisable(true);
-			break;
-			case Message.STUDENT_CUTOFF:
-				imgConnection.setImage( Util.getDisconnectedImage() );
-			break;
-			case Message.YOU_HAVE_ALREADY_FINISHED: 
-				Util.showError("You have Finished the exam, you can't connect again");
-				btnFinish.setDisable(true);
-			break;
-			case Message.EXAM_OBJECT: 
-				mySheet = (ExamSheet) msg.getData();
-				myChannel.sendMessage(new Message<String>(Message.EXAM_OBJECT_RECIVED_SUCCESSFYLLY));								
-			break;
-			case Message.IMAGES_LIST: 
-				myImageList = (Map<String, byte[]>) msg.getData();
-				myChannel.sendMessage(new Message<String>(Message.IMAGE_LIST_RECIVED_SUCCESSFYLLY));								
+				lblID.setText(myChannel.studentID);
+				lblName.setText(myChannel.studentName);
 			break;
 			case Message.TIME_LEFT:
 				runExam( (Duration) msg.getData() );
 			break;
-			case Message.GIVE_ME_A_BACKUP_NOW:
-				setAnswer();
-		    	myChannel.sendMessage(
-		    			new Message<>(Message.BACKUP_COPY_OF_EXAM_WITH_ANSWERS, mySheet));	
-			break;				
 			case Message.KHALAS_TIMES_UP:				
 				new Alert(AlertType.INFORMATION, "TIME'S UP	").showAndWait();
-				btnFinish_click();
+				examIsFinished.set(true);
 			break;
 			case Message.FINAL_COPY_IS_RECIEVED:
-				if(ExamFinished){
-					Alert alert = new Alert(AlertType.INFORMATION);
-					ImageView iv = new ImageView ( Util.getResourceAsURI("images/ok.png").toString());
-					iv.setFitWidth(64); iv.setFitHeight(64);
-					alert.setGraphic( iv );
-					alert.setTitle("Exam Sheet is Submitted");
-					alert.setHeaderText(null);
-					alert.setContentText("Your Answer is being recieved Successfully!\nThe link to Server will be Disconnected");
-					Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-					stage.getIcons().add(new Image(Util.getResourceAsURI("images/ok.png").toString() ));					
-					alert.showAndWait();
+				Alert alert = new Alert(AlertType.INFORMATION);
+				ImageView iv = new ImageView ( Util.getResourceAsURI("images/ok.png").toString());
+				iv.setFitWidth(64); iv.setFitHeight(64);
+				alert.setGraphic( iv );
+				alert.setTitle("Exam Sheet is Submitted");
+				alert.setHeaderText(null);
+				alert.setContentText("Your Answer is being recieved Successfully!\nThe link to Server will be Disconnected");
+				Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+				stage.getIcons().add(new Image(Util.getResourceAsURI("images/ok.png").toString() ));					
+				alert.showAndWait();
 
-					//TODO: remove this
-					//myChannel.sendMessage( 
-			    	//		new Message<String>(Message.I_HAVE_FINISHED, ""));
-					myChannel.getSocket().close();
-					System.exit(0);
-				}
+				System.exit(0);
 			break;
-
 		}
 		
+		}catch(EQuizException e)
+		{
+			String err = e.getMessage();
+			switch (err) {
+			case Message.YOU_ARE_ALREADY_CONNECTED: 
+			case Message.YOU_ARE_REJECTED:
+			case Message.YOU_HAVE_ALREADY_FINISHED:
+				btnFinish.setDisable(true);
+				Util.showError(e.getMessage());
+			break;
+			case Message.STUDENT_CUTOFF:
+				imgConnection.setImage( Util.getDisconnectedImage() );
+				if( !examIsFinished.get() )
+					Util.showError(e.getMessage());
+			break;
+			default:
+				Util.showError(e.getMessage());
+			}
+				
 		}catch(Exception e){
 			Util.showError(e , e.getMessage());
 		}
-	}
+	}//newMessageHasBeenReleased
 
 	private Image getImage(String fileName) 
 	{
@@ -563,7 +512,7 @@ public class FxExamSheetController implements Initializable
 		String fs = File.separator;
 		
 		
-		if(myImageList.get(fileName) == null) //no image in the list			
+		if(myChannel.myImageList.get(fileName) == null) //no image in the list			
 			return Util.getResourceAsURI("images/imagebox.png");
 		
 		File myDir = new File(Util.getTempDir() + fs +  "equiz");
@@ -575,7 +524,7 @@ public class FxExamSheetController implements Initializable
 		{
 			//write image into file for first time
 	        FileOutputStream fos = new FileOutputStream(imgFile);
-	        byte[] imgData = myImageList.get(fileName);
+	        byte[] imgData = myChannel.myImageList.get(fileName);
 	        fos.write(imgData, 0, imgData.length);
 	        fos.flush();
 	        fos.close();						
@@ -589,8 +538,17 @@ public class FxExamSheetController implements Initializable
 	{
 		setAnswer();
     	Message<ExamSheet> msg = new Message<>(
-    			Message.BACKUP_COPY_OF_EXAM_WITH_ANSWERS, mySheet);
+    			Message.BACKUP_COPY_OF_EXAM_WITH_ANSWERS, myChannel.mySheet);
     	myChannel.sendMessage(msg);		
+	}
+
+	// --------- Zoom -------------
+	public void imgFigure_mouseEntered(){
+		Image image = new Image( Util.getResourceAsURI("images/zoom.png").toString() );  //pass in the image path
+		PanRoot.getScene().setCursor(new ImageCursor(image));
+	}
+	public void imgFigure_mouseExited(){
+		PanRoot.getScene().setCursor(Cursor.DEFAULT);
 	}
 
 }//end class

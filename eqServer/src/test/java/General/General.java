@@ -1,4 +1,4 @@
-package General;
+package general;
 
 
 
@@ -7,6 +7,8 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,6 +19,8 @@ import frawla.equiz.util.Util;
 import frawla.equiz.util.exam.ExamConfig;
 import frawla.equiz.util.exam.QuesinoOrderType;
 import frawla.equiz.util.exam.TimingType;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
 import javafx.util.Duration;
 
@@ -36,7 +40,7 @@ public class General
 
 		Message<ExamConfig> m2 = new Message<>(Message.EXAM_OBJECT);
 		File f = new File (Util.getResourceAsURI("example.xlsx"));
-		ExamLoader.getInstance().load(f); //new File("example.xlsx")
+		ExamLoader.getInstance(f); //new File("example.xlsx")
 		ExamConfig e = ExamLoader.getInstance().getExamConfig();
 		e.questionOrderType = QuesinoOrderType.RANDOM;
 		e.timingType = TimingType.EXAM_LEVEL;		
@@ -56,11 +60,11 @@ public class General
 		assertEquals(m2Str, m2.toString() );
 		
 		String Stat = 
-				"No. of Questions       | 7" + "\n" +
-				"                       | 5 Multiple Choice" + "\n" +
-				"                       | 2 Blank Field" + "\n" +
-				"No. of Images          | 2" + "\n" +
-				"No. of Recorded Sheets | 0" + "\n";
+				" 7 Questions" + "\n" +
+				"    5 Multiple Choice"  + "\n" +
+				"    2 Blank Field"  + "\n" +
+				" 2 Images"  + "\n" +
+				" 0 Recorded Sheets\n" ;
 
 		assertEquals(Stat, ExamLoader.getInstance().getQuestionStatistics());
 	}
@@ -82,6 +86,25 @@ public class General
 		
 		assertEquals(d.toSeconds(), 3600+30*60 , 0.0);
 		
+	}
+	
+	
+	@Test
+	public void ObservableListTest() 
+	{
+		ObservableList<StringBuilder> lst1 = FXCollections.observableArrayList();
+		lst1.add( new StringBuilder("ahmed") );
+		lst1.add( new StringBuilder("ali") );
+		lst1.add( new StringBuilder("sami"));
+		
+		ObservableList<StringBuilder> lst2 = lst1.stream()
+										 .filter(s -> s.toString().startsWith("a"))
+										 .collect(Collectors.toCollection(FXCollections::observableArrayList));
+		
+		lst2.forEach(s -> s.append("2"));
+		
+		assertEquals("[ahmed2, ali2]", lst2.toString());
+		assertEquals("[ahmed2, ali2, sami]", lst1.toString());
 	}
 	
 	

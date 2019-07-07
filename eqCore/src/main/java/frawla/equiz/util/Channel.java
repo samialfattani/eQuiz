@@ -53,12 +53,12 @@ public class Channel  extends Thread
 				messageReceiver.MessageReleased(msg, this);
 			}
 			
-		}catch(SocketException | EOFException e){			
+		}catch(SocketException | EOFException e){
 			messageReceiver.MessageReleased(new Message<String>(Message.STUDENT_CUTOFF), this);
 		}catch(ClassNotFoundException | IOException e ){
 			Util.showError(e, e.toString());
 		}	
-	}
+	} 
 
 	@Override
 	public void interrupt() 
@@ -66,12 +66,12 @@ public class Channel  extends Thread
 		try 
 		{
 			running = false;
-			if(messageReceiver != null)
-				messageReceiver.MessageReleased(new Message<String>(Message.STUDENT_CUTOFF), this);
+//			if(messageReceiver != null)
+//				messageReceiver.MessageReleased(new Message<String>(Message.STUDENT_CUTOFF), this);
 			
 			mySocket.close();
 			
-		}catch (IOException e){ Util.showError(e, e.toString());}
+		}catch (IOException e){ e.printStackTrace();}
 		finally{
 			super.interrupt();
 		}
@@ -115,7 +115,7 @@ public class Channel  extends Thread
 	}
 	
 	public boolean isConnected(){
-		return (mySocket != null && mySocket.isBound());
+		return (mySocket != null && mySocket.isBound() && isAlive() );
 	}
 
 }
