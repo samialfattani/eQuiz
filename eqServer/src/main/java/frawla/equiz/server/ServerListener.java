@@ -1,19 +1,25 @@
-package frawla.equiz.util;
+package frawla.equiz.server;
 
 //network
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+
+import frawla.equiz.util.Channel;
+import frawla.equiz.util.Message;
+import frawla.equiz.util.Receivable;
+import frawla.equiz.util.Util;
 
 public class ServerListener  extends Thread
 {
 
 	private Socket mySocket;
 	private ServerSocket myServerSocket ;
-	private Receivable serverMsgListener;
+	private Receivable MsgRoutine;
 	private int socketID = 1;
 	private boolean running = true;
 	
@@ -41,28 +47,25 @@ public class ServerListener  extends Thread
 	{
 		try
 		{	    	
-			serverMsgListener.MessageReleased(new Message<String>(Message.SERVER_LOG ,  "Server is Initialized, " + InetAddress.getLocalHost().getHostAddress() + ":" + myServerSocket.getLocalPort() ), null);
-			serverMsgListener.MessageReleased(new Message<String>(Message.SERVER_IP , InetAddress.getLocalHost().getHostAddress()), null);
-			serverMsgListener.MessageReleased(new Message<String>(Message.SERVER_HOST_NAME , InetAddress.getLocalHost().getHostName()), null);
+			MsgRoutine.MessageReleased(new Message<String>(Message.SERVER_IS_INITIALIZED ,  InetAddress.getLocalHost().getHostAddress() + ":" + myServerSocket.getLocalPort() ), null);
+			MsgRoutine.MessageReleased(new Message<String>(Message.SERVER_HOST_NAME , InetAddress.getLocalHost().getHostName()), null);
 
 			while(running)
 			{
-				serverMsgListener.MessageReleased(new Message<String>(Message.SERVER_LOG , "Server Waiting..."), null);
 				mySocket = myServerSocket.accept();
-
 
 				/*for each client, a new Channel object will be created and to be run
 				 * in a seperate thread. then the object will be included in the Student.
 				 */				
 				Channel clientLinker = new Channel("svrPlug-" + socketID, mySocket);
 				clientLinker.setOnNewMessage( (msg, ch) -> 
-								serverMsgListener.MessageReleased(msg, ch) );
+								MsgRoutine.MessageReleased(msg, ch) );
 				clientLinker.setSocketID(socketID);
-				//clientLinker.start();
 
+				//start run() in a new thread
 				pool.execute(clientLinker);
 				clientLinker.sendMessage(new Message<String>(Message.WELCOME_FROM_SERVER , "Hello"));
-				serverMsgListener.MessageReleased(new Message<String>(Message.NEW_CLIENT_HAS_BEEN_CONNECTED), clientLinker);				
+				MsgRoutine.MessageReleased(new Message<String>(Message.NEW_CLIENT_HAS_BEEN_CONNECTED), clientLinker);				
 				socketID++;
 				
 			}//end while
@@ -86,7 +89,7 @@ public class ServerListener  extends Thread
 				if(!mySocket.isClosed())
 					mySocket.close();
 			
-			serverMsgListener.MessageReleased(new Message<String>(Message.SERVER_CLOSED , "Server is Closed by inturrupt"), null);
+			MsgRoutine.MessageReleased(new Message<String>(Message.SERVER_CLOSED , "Server is Closed by inturrupt"), null);
 		}catch (IOException e){ }
 		finally{
 			super.interrupt();
@@ -94,17 +97,27 @@ public class ServerListener  extends Thread
 	}	
 
 	public void setOnNewMessage(Receivable nml){
-		serverMsgListener = nml;
+		MsgRoutine = nml;
 	}
 
-	public String getLocalPort()
+	public int getLocalPort()
 	{		
-		return myServerSocket.getLocalPort() + "";
+		return myServerSocket.getLocalPort();
 	}
 
+	public String getIP()  
+	{
+		try {
+			return InetAddress.getLocalHost().getHostAddress();
+		} catch (UnknownHostException e) {
+			return "Unknown Host";
+		}
+	}
+
+	//CREATE server with available port.
 	private ServerSocket CreateServer(int port) 
 	{
-		 ServerSocket s= null;
+		ServerSocket s= null;
 		for (int p=port; p< port+100; p++) 
 	    {
 	        try{

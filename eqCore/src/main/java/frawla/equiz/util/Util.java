@@ -221,13 +221,13 @@ public class Util
 		int seconds = (int) Math.floor(d.toSeconds());
 		int h = seconds / 3600;
 		int m = (seconds - h * 3600) / 60;
-		//int s = seconds - h * 3600 - m * 60;
+		int s = seconds - h * 3600 - m * 60;
 		//int mi = ((int)(d.toMillis()) - seconds*1000)/100;
 
 		if (h <= 0)
-			return String.format("00:%02d", m);
+			return String.format("%02d:%02d", m, s);
 		else
-			return String.format("%d:%02d", h, m);
+			return String.format("%d:%02d:%02d", h, m, s);
 	}
 
 	public static void copyFile(File source, File dest) 

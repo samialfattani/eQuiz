@@ -31,24 +31,28 @@ public class ClientChannel extends Channel {
 				this.sendMessage(new Message<RegisterInfo>(Message.REGESTER_INFO , r));
 			break;
 			case Message.YOU_ARE_ALREADY_CONNECTED:
+				ch.sendMessage( new Message<>(Message.STOP_RECIEVING_MESSAGES) );
 				throw new EQuizException(
 						"You Are Aready Connected\\nYou can't connect twice at the same time.", 
 						Message.YOU_ARE_ALREADY_CONNECTED );
 				
+				
 			case Message.YOU_ARE_REJECTED:
+				ch.sendMessage( new Message<>(Message.STOP_RECIEVING_MESSAGES) );
 				throw new EQuizException(
 						"You Are Rejected\\nYou don't have right to enter this exam. Please inform your exam Administrator.", 
 						Message.YOU_ARE_REJECTED );
 				
-			case Message.STUDENT_CUTOFF:
-				throw new EQuizException(
-						"You just have diconnected!", Message.STUDENT_CUTOFF ); 
-				
 			case Message.YOU_HAVE_ALREADY_FINISHED:
+				ch.sendMessage( new Message<>(Message.STOP_RECIEVING_MESSAGES) );
 				throw new EQuizException(
 						"You have Finished the exam, you can't connect again", 
 						Message.YOU_HAVE_ALREADY_FINISHED );
 				 
+			case Message.STUDENT_CUTOFF:
+				throw new EQuizException(
+						"You just have diconnected!", Message.STUDENT_CUTOFF ); 
+
 			case Message.EXAM_OBJECT: 
 				mySheet = (ExamSheet) msg.getData();
 				this.sendMessage(new Message<String>(Message.EXAM_OBJECT_RECIVED_SUCCESSFYLLY));								
@@ -68,7 +72,9 @@ public class ClientChannel extends Channel {
 				this.sendFinalCopy();
 			break;				
 			case Message.FINAL_COPY_IS_RECIEVED:
-				this.getSocket().close();
+		    	this.sendMessage( 
+		    			new Message<>( Message.STOP_RECIEVING_MESSAGES ));
+				//this.getSocket().close();
 			break;
 		}	 
 	}//handleTheMsg

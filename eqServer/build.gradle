@@ -1,12 +1,18 @@
+/*----------------
+--     SERVER   --
+------------------*/
+
 	/*only buildscript {} and other plugins {} blocks are allowed before plugins {} blocks, 
 	  no other statements are allowed
 	//this is for making exe file only*/	
 	plugins {
 		id 'edu.sc.seis.launch4j' version '2.3.0'
+		id 'java'
+		id 'eclipse'
 	}
 	
-	apply plugin: 'java'
-	apply plugin: 'eclipse'
+	//apply plugin: 'java'
+	//apply plugin: 'eclipse'
 	//project.targetCompatibility = 1.5
 	
 	configurations.all {
@@ -15,10 +21,22 @@
 	    }
 	}
 
+	test {
+		useJUnitPlatform()
+		testLogging { events "passed", "skipped", "failed" }
+	}	
+
 	dependencies
 	{
 		compile project (":eqCore")
 
+		testCompile 'junit:junit:4.+'
+		//testImplementation('org.junit.jupiter:junit-jupiter:5.5.0')
+		//testCompile 'junit:junit:5.+'
+		//testImplementation('org.junit.jupiter:junit-jupiter:5.5.0')
+		//testCompile 'org.junit.jupiter:junit-jupiter:5.5.0'
+	
+	
 		//Excel (.xlsx)
 		compile 'org.apache.poi:poi:4.1.0'
 		compile 'org.apache.poi:poi-ooxml:4.1.0'
@@ -55,6 +73,7 @@
 		
 	}
 	
+	
 	eclipse {
 		classpath {
 		    //customizing the classes output directory:
@@ -69,17 +88,10 @@
 	apply plugin: 'application' //adds 'run' task	
 	mainClassName = 'frawla.equiz.server.Main'
 
-/*
-	jar {
-    	manifest {
-    	 attributes(
-			'Class-Path': ".",
-    	 	'Implementation-Title': "Gradle",
-            'Implementation-Version': version,
-            'Main-Class': mainClassName)
-    	}
+	//this is to run with JVM option to run the java agent
+	run {
+	     jvmArgs '-javaagent:../ObjectSize/build/libs/ObjectSizeFetcherAgent.jar'
 	}
-*/
 
 	// launch4j: put all configuration of launch4j here 
 	createExe {
@@ -115,4 +127,15 @@
 		//see more: https://github.com/TheBoegl/gradle-launch4j
 	}
 
+/*
+	jar {
+    	manifest {
+    	 attributes(
+			'Class-Path': ".",
+    	 	'Implementation-Title': "Gradle",
+            'Implementation-Version': version,
+            'Main-Class': mainClassName)
+    	}
+	}
+*/
 	

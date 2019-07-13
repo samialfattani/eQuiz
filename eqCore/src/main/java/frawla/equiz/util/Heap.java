@@ -3,28 +3,37 @@ package frawla.equiz.util;
 public class Heap
 {
 
-	public static long getUsedSize()
+	public static long getAvailableSize()
 	{
 		// Get current size of heap in bytes
 		long heapSize = Runtime.getRuntime().totalMemory();
 		return heapSize;
+		
 	}
 	
-	public static long getFreeSize()
-	{
-		 // Get amount of free memory within the heap in bytes. This size will increase
-		 // after garbage collection and decrease as new objects are created.
-		long heapFreeSize = Runtime.getRuntime().freeMemory();
-		return heapFreeSize;
-	}
-	
-	public static long getTotalSize()
+	public static long getMaxMemory()
 	{
 		// Get maximum size of heap in bytes. The heap cannot grow beyond this size.
 		// Any attempt will result in an OutOfMemoryException.
 		long heapMaxSize = Runtime.getRuntime().maxMemory();
 		return heapMaxSize;
 	}
+
+	public static long getFreeSize()
+	{
+		 // Get amount of free memory within the heap in bytes. This size will increase
+		 // after garbage collection and decrease as new objects are created.
+		long heapFreeSize = Runtime.getRuntime().freeMemory();
+		
+		return heapFreeSize;
+	}
+
+	public static long getUsedSize()
+	{
+		long heapUsed = getAvailableSize() - getFreeSize();
+		return heapUsed;
+	}
+	
 	
 	public static String ReadableByte(long bytes ) 
 	{

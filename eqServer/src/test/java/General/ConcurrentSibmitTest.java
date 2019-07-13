@@ -15,9 +15,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
+import frawla.equiz.server.ServerListener;
 import frawla.equiz.util.Channel;
 import frawla.equiz.util.Message;
-import frawla.equiz.util.ServerListener;
 
 public class ConcurrentSibmitTest
 {
@@ -27,7 +27,6 @@ public class ConcurrentSibmitTest
 	@Test
 	public void Sibmi120MessagesConcurrentlyTest() throws IOException, InterruptedException
 	{
-        
 		ServerListener serverListener = new ServerListener("serverTest", 9999);
 		
         serverListener.setOnNewMessage((msg, myChannel) ->
@@ -46,12 +45,12 @@ public class ConcurrentSibmitTest
 				count++;
 				myChannel.sendMessage(new Message<String>(Message.TIME_LEFT, ""));
 				
+				
 				if(count.compareTo(THREAD_COUNT) >= 0)
 					serverListener.interrupt();
 				
 			}
 		});
-        
         
         //Listener.start();
 

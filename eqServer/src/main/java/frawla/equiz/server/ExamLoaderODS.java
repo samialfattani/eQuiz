@@ -14,8 +14,6 @@ import org.odftoolkit.simple.table.Cell;
 import org.odftoolkit.simple.table.Row;
 import org.odftoolkit.simple.table.Table;
 
-import com.rits.cloning.Cloner;
-
 import frawla.equiz.util.EQDate;
 import frawla.equiz.util.Log;
 import frawla.equiz.util.Util;
@@ -476,9 +474,9 @@ public class ExamLoaderODS extends ExamLoader
 	public List<Question> getQustionList(){return questionList;}
 	public void setQustionList(List<Question> lst){this.questionList = lst;}
 
-	public List<Question> getCloneOfQustionList(){
-		return new Cloner().deepClone(questionList);
-	}
+//	public List<Question> getCloneOfQustionList(){
+//		return new Cloner().deepClone(questionList);
+//	}
 
 	public String getQuestionStatistics()
 	{

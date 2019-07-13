@@ -104,6 +104,7 @@ public class ExcelRecorder
 						.findFirst()
 						.get();
 				row.createCell(Base + (2*j+0)).setCellValue( q.toString() );
+				row.getCell(2*j+0).getCellStyle().setWrapText(true);
 				
 				row.createCell(Base + (2*j+1)).setCellValue( q.getStudentMark());
 			}//end for

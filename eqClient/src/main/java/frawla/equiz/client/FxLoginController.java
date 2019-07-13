@@ -66,16 +66,16 @@ public class FxLoginController implements Initializable
 
 		try {
 			mySocket = new Socket(txtIP.getText(), Integer.parseInt(txtPort.getText()));
-			ClientChannel srvrLinker = new ClientChannel("myClient", mySocket);
+			ClientChannel myChannel = new ClientChannel("myClient", mySocket);
 	
 			FXMLLoader exam = new FXMLLoader(Util.getResourceAsURL("fx-exam-sheet.fxml"));
 			exam.load();
-			srvrLinker.studentID =  txtID.getText() ;
-			srvrLinker.studentName = txtName.getText() ;
+			myChannel.studentID =  txtID.getText() ;
+			myChannel.studentName = txtName.getText() ;
 			
-			((FxExamSheetController)exam.getController()).setChannel(srvrLinker);
+			((FxExamSheetController)exam.getController()).setChannel(myChannel);
 	
-			srvrLinker.start();
+			myChannel.start();
 			PanRoot.getScene().getWindow().hide();
 			
 		} catch (NumberFormatException | IOException e) {

@@ -32,7 +32,7 @@ public class BlankField extends Question implements Serializable
 			setMark(Double.parseDouble(  matcher.group(2)  ));
 
 			String ans = Optional.ofNullable( matcher.group(3) ).orElse("");
-			ans = (ans.equals(""))? "-" : ans;
+			//ans = (ans.equals(""))? "-" : ans;
 			setStudentAnswer(ans);
 
 			String tchrNote = Optional.ofNullable( matcher.group(5) ).orElse("");

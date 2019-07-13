@@ -10,8 +10,11 @@ import com.rits.cloning.Cloner;
 import frawla.equiz.util.Log;
 import frawla.equiz.util.exam.BlankField;
 import frawla.equiz.util.exam.ExamConfig;
+import frawla.equiz.util.exam.ExamSheet;
 import frawla.equiz.util.exam.MultipleChoice;
+import frawla.equiz.util.exam.QuesinoOrderType;
 import frawla.equiz.util.exam.Question;
+import frawla.equiz.util.exam.Randomizable;
 import frawla.equiz.util.exam.Student;
 import javafx.collections.ObservableList;
 
@@ -90,10 +93,6 @@ public abstract class ExamLoader
 		return allow;
 	}
 
-	public List<Question> getCloneOfQustionList(){
-		return new Cloner().deepClone(questionList);
-	}
-
 	public String getQuestionStatistics()
 	{
 		String Questions = questionList.size()+"";
@@ -125,5 +124,23 @@ public abstract class ExamLoader
 	
 	public abstract ObservableList<Student> getStudentList();
 	public abstract List<Log> getLog();
+
+	public ExamSheet generateNewSheet() 
+	{
+		ExamSheet newSheet = new ExamSheet();
+		newSheet.setExamConfig( new Cloner().deepClone(examConfig) );
+		newSheet.setQustionList( new Cloner().deepClone(questionList) );
+
+		if(examConfig.questionOrderType == QuesinoOrderType.RANDOM)
+			newSheet.shuffle();
+
+		//shuffle Options in each Question
+		newSheet.getQuestionList()
+			.stream()
+			.filter(qu -> qu instanceof Randomizable)
+			.forEach( q ->  ((Randomizable)q).shuffle() );
+		
+		return newSheet;
+	}
 
 }//ExamLoader

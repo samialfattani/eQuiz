@@ -62,7 +62,7 @@ public class ExamLoaderXLSX extends ExamLoader
 			questionList = loadQuestionList( wrkBook);
 			imageList    = loadImages( wrkBook);
 			BWList       = loadStdBWlist( wrkBook);
-			students     = loadStudentList( wrkBook);
+			students     = loadStudentList( wrkBook); //load answers and times
 			logList      = loadLog( wrkBook);
 			
 		} catch (IOException | EncryptedDocumentException |  ParseException e) {
@@ -175,7 +175,7 @@ public class ExamLoaderXLSX extends ExamLoader
 			c = row.getCell( j+3 );
 			if(!isBlankCell(c)) {
 				String[] key = {"A", "B", "C", "D", "E","F","G","H","I"};
-				q.getChoices().put( key[j] , c.getStringCellValue() );				
+				q.getChoices().put( key[j] , c.toString() );				
 			}
 		}
 
@@ -241,48 +241,34 @@ public class ExamLoaderXLSX extends ExamLoader
 		ObservableList<Student> students = FXCollections.observableArrayList();
 		Sheet shtAnswer = wrkBook.getSheet("Answers");
 		Sheet shtTimer = wrkBook.getSheet("Timer");
+		Row row;
 		if(shtAnswer ==null)
 			return students;
 
 		for (int i=1; i < shtAnswer.getPhysicalNumberOfRows(); i++)
 		{
-			String sid = shtAnswer.getRow(i).getCell(0).toString();
-			Student std = new Student(sid);			
-			std.setName(shtAnswer.getRow(i).getCell(1).toString());
+			row = shtAnswer.getRow(i);
+			String sid = row.getCell(0).getStringCellValue();
+			Student st = new Student(sid);			
+			st.setName(row.getCell(1).getStringCellValue());
 
 			ExamSheet examSheet = new ExamSheet();
-			examSheet.setExamConfig( getExamConfig() );
+			examSheet.setExamConfig( new Cloner().deepClone( examConfig )  );
 
 			//read all answers and timers
 			List<Question> Qlst = extractQuestionList( shtAnswer.getRow(i), shtTimer.getRow(i) );
 			examSheet.setQustionList(  Qlst );
+			st.setExamSheet(examSheet);
 			
-			std.setExamSheet(examSheet);
-			students.add(std);
+			//reset Start, Resume, Finish Points
+			st.reset( getExamConfig().examTime );
+			
+			students.add(st);
 		}
+		
 		return students;
 	}
 
-	private List<Log> loadLog(Workbook wrkBook) throws ParseException
-	{
-		logList = new ArrayList<>();
-		
-		Sheet shtLog = wrkBook.getSheet("Log");
-		if(shtLog == null)
-			return logList;
-
-		for (int i=1; i < shtLog.getPhysicalNumberOfRows(); i++)
-		{
-			String time = shtLog.getRow(i).getCell(0).toString();
-			String text = shtLog.getRow(i).getCell(1).toString();
-			
-			Log log = new Log( new EQDate(Util.MY_DATE_FORMAT, time) , text);
-			logList.add( log );
-		}
-		return logList;
-	}
-
-	//TODO: read times not implemented yet.
 	private List<Question> extractQuestionList(Row stRow, Row timerRow) 
 	{
 		List<Question> Qlst = new ArrayList<>();
@@ -290,8 +276,8 @@ public class ExamLoaderXLSX extends ExamLoader
 		if( stRow.getCell(2).toString().isEmpty() )
 			return Qlst;
 		
-		//5,4,2,1,3
-		int[] QIDs = Arrays.asList(stRow.getCell(2).toString().split(","))
+		//{5,4,2,1,3}		
+		int[] QIDs = Arrays.asList(stRow.getCell(2).getStringCellValue().split(","))
 				.stream()
 				.map(String::trim)
 				.mapToInt(Integer::parseInt)
@@ -306,27 +292,27 @@ public class ExamLoaderXLSX extends ExamLoader
 							 .findFirst()
 							 .get();
 
-			String timeCellContent = timerRow.getCell( 2 + (qid-1) ).toString();
-			String cellContent = stRow.getCell(base + (qid-1)*2).toString() ;
+			String timeCellContent = timerRow.getCell( 2 + (qid-1) ).getStringCellValue();
+			String cellContent = stRow.getCell(base + (qid-1)*2).getStringCellValue() ;
 
-			if( qj instanceof MultipleChoice )
+			if( qj instanceof MultipleChoice) 
 			{
 				
 				MultipleChoice mcCopy = new MultipleChoice(cellContent);
-				mcCopy.setText(qj.getText());
+				mcCopy.setText(qj.getText()+"");
 				mcCopy.copyChoices(qj);
-				mcCopy.setStudentMark(  Double.parseDouble(stRow.getCell(base + (qid-1)*2+1).toString() )  );
+				mcCopy.setStudentMark(  stRow.getCell(base + (qid-1)*2+1).getNumericCellValue() );
 				mcCopy.setConsumedTime( toDuration(timeCellContent)  );
-				Qlst.add( mcCopy );
+				Qlst.add( new Cloner().deepClone(mcCopy)  );
 			}
 			else if(qj instanceof BlankField)
 			{
 				BlankField qbCopy = new BlankField(cellContent);
-				qbCopy.setText(qj.getText());
+				qbCopy.setText(qj.getText()+"");
 				qbCopy.copyOptions(qj);
-				qbCopy.setStudentMark(  Double.parseDouble(stRow.getCell(base + (qid-1)*2+1).toString() )  );
+				qbCopy.setStudentMark(  stRow.getCell(base + (qid-1)*2+1).getNumericCellValue() );
 				qbCopy.setConsumedTime( toDuration(timeCellContent)  );
-				Qlst.add( qbCopy );
+				Qlst.add( new Cloner().deepClone(qbCopy) );
 			}
 
 		}
@@ -358,7 +344,7 @@ public class ExamLoaderXLSX extends ExamLoader
 		}
 
 		if( cells.stream().anyMatch( c -> isBlankCell(c) )){
-			ErrReport.add("Some required cells found blank. Question No., Text, Type, and Option(A) can never be blank.");
+			ErrReport.add("Some required cells found blank. Text, Type, and Option(A) can never be blank.");
 			validSheet = false;
 		}
 
@@ -457,6 +443,27 @@ public class ExamLoaderXLSX extends ExamLoader
 
 	}// end sheet Validation
 
+	private List<Log> loadLog(Workbook wrkBook) throws ParseException
+	{
+		logList = new ArrayList<>();
+		
+		Sheet shtLog = wrkBook.getSheet("Log");
+		if(shtLog == null)
+			return logList;
+
+		for (int i=1; i < shtLog.getPhysicalNumberOfRows(); i++)
+		{
+			String time = shtLog.getRow(i).getCell(0).toString();
+			String text = shtLog.getRow(i).getCell(1).toString();
+			
+			Log log = new Log( new EQDate(Util.MY_DATE_FORMAT, time) , text);
+			logList.add( log );
+		}
+		return logList;
+	}
+	
+	//---------------------------------------------
+
 	private static String cellToLower(Cell c){
 		return c.toString().toLowerCase();
 
@@ -473,8 +480,6 @@ public class ExamLoaderXLSX extends ExamLoader
 		return c.getCellType( ) == CellType.BLANK ;
 	}
 
-	
-	//---------------------------------------------
 	public static boolean isThereAnyDuplicate(List<Cell> cells)
 	{
 		boolean isUnique; 
@@ -487,9 +492,9 @@ public class ExamLoaderXLSX extends ExamLoader
 	}
 
 
-	public List<Question> getCloneOfQustionList(){
-		return new Cloner().deepClone(questionList);
-	}
+//	public List<Question> getCloneOfQustionList(){
+//		return new Cloner().deepClone(questionList);
+//	}
 
 	public List<File> getImageList(){return imageList;}
 	@Override public List<String> getBWList(){return BWList;}

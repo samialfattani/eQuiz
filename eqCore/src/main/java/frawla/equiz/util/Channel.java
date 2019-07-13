@@ -13,7 +13,7 @@ public class Channel  extends Thread
 {
 	
 	private Socket mySocket;
-	private Receivable messageReceiver;
+	private Receivable myRoutine;
 	private ObjectOutputStream  myWriter; 
 	private int socketID = 0;
 	private boolean running = true;
@@ -35,26 +35,31 @@ public class Channel  extends Thread
 	public void run() 
 	{
 		try(ObjectInputStream objInptStrm = new ObjectInputStream(mySocket.getInputStream());){
-			Message<?>  msg = new Message<>("");
+			
 
 			while(running)
 			{
+				Message<?>  msg; // = new Message<>("");
 				//readUnshared(): to read the last updated object
 				//msg = (Message<?>) objInptStrm.readUnshared();
+				//mySocket.getInputStream().reset();
 				msg = (Message<?>) objInptStrm.readObject();
 
 				if(msg == null)
 					break;
 				
-				if(msg.getCode().equals(Message.STOP_RECIEVING_MESSAGES))
-					break;
+//				if(msg.getCode().equals(Message.STOP_RECIEVING_MESSAGES))
+//					int
+//					break;
 				
 				//System.out.println(msg);
-				messageReceiver.MessageReleased(msg, this);
+				myRoutine.MessageReleased(msg, this);
 			}
 			
-		}catch(SocketException | EOFException e){
-			messageReceiver.MessageReleased(new Message<String>(Message.STUDENT_CUTOFF), this);
+		}catch(SocketException | EOFException  e){
+			//if the socket is suddenly closed. it will send to both Server and Client 
+			if(myRoutine != null)
+				myRoutine.MessageReleased(new Message<String>(Message.STUDENT_CUTOFF), this);
 		}catch(ClassNotFoundException | IOException e ){
 			Util.showError(e, e.toString());
 		}	
@@ -66,9 +71,6 @@ public class Channel  extends Thread
 		try 
 		{
 			running = false;
-//			if(messageReceiver != null)
-//				messageReceiver.MessageReleased(new Message<String>(Message.STUDENT_CUTOFF), this);
-			
 			mySocket.close();
 			
 		}catch (IOException e){ e.printStackTrace();}
@@ -82,23 +84,23 @@ public class Channel  extends Thread
 		if (mySocket.isClosed())
 			return;
 		
-		try{	
-			/**
-			 * reset(): to garentee that last updated object to be sent. Otherwise, 
-			 * the Outputstream will send the (previously written object)!.
-			 * 
-			 * writeUnshared() and readUnshared() also can be used to solve problem, but they
-			 * will send the last updated base-object. i.e if the object contains another sub-objects,
-			 * then they will not get updated.
-			 */
+//	      synchronized(myWriter)
+//	        {
+//	        }		
+		/**
+		 * reset(): to garentee that last updated object to be sent. Otherwise, 
+		 * the Outputstream will send the (previously written object)!.
+		 * 
+		 * writeUnshared() and readUnshared() also can be used to solve problem, but they
+		 * will send the last updated base-object. i.e if the object contains another sub-objects,
+		 * then they will not get updated.
+		 */
+		try {
 			myWriter.reset();
 			myWriter.writeObject((Object) msg);
-			//myWriter.writeUnshared((Object) msg);
 			myWriter.flush();
-		}
-		catch (IOException e){
-			Util.showError(e, e.toString());		
-		}
+		}catch (IOException e) 
+		{ e.printStackTrace(); }
 		
 	}
 
@@ -111,7 +113,7 @@ public class Channel  extends Thread
 
 	
 	public void setOnNewMessage(Receivable rc){
-		messageReceiver = rc;
+		myRoutine = rc;
 	}
 	
 	public boolean isConnected(){

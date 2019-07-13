@@ -2,6 +2,7 @@ package general;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +23,7 @@ import frawla.equiz.server.ExamLoaderXLSX;
 import frawla.equiz.util.Util;
 import frawla.equiz.util.exam.ExamConfig;
 import frawla.equiz.util.exam.QuesinoOrderType;
+import frawla.equiz.util.exam.Student;
 import frawla.equiz.util.exam.StudentListType;
 import frawla.equiz.util.exam.TimingType;
 import javafx.embed.swing.JFXPanel;
@@ -36,7 +38,9 @@ public class ExamLoaderXLSXTest
 	{
 		new JFXPanel();
 		//       new File("./data/IT100-2.xlsx")
+		//File f = new File( "D:\\Dropbox\\Sami-Programming\\JAVA\\eQuiz\\data\\MidTerm-1\\SE260-MidTerm-1.xlsx");
 		File f = new File( Util.getResourceAsURI("IT100-2.xlsx"));
+		
 		ExamLoader.getInstance(f); 
 		exConfig = ExamLoader.getInstance().getExamConfig();
 	}
@@ -110,4 +114,55 @@ public class ExamLoaderXLSXTest
         wrkBook.close();
 	}
 	
+
+	@Test
+	public void LoadTimeTest() 
+	{
+		//make sure that all student answers don't have null
+		ExamLoader.getInstance()
+		  .getStudentList()
+		  .stream()
+		  .forEach( st -> {
+
+			  st.getOptionalExamSheet()
+			  	.ifPresent( sht -> {
+			  		
+			  		sht.getQuestionList()
+			  		   .stream()
+			  		   .forEach( q -> {
+			  			   assertTrue(
+			  					 q.getConsumedTime().greaterThanOrEqualTo( Duration.ZERO ) 
+			  					   );
+			  		   });
+			  	});
+		  });
+		
+	}//LoadTimeTest
+
+
+	@Test
+	public void LoadTimeCalculationTest() 
+	{
+		ExamLoader.getInstance()
+		  .getStudentList()
+		  .forEach(s -> s.toString());
+
+		//make sure that all student answers don't have null
+		Student st = ExamLoader.getInstance()
+		  .getStudentList()
+		  .stream()
+		  .filter(s -> s.getId().equals("XXX111"))
+		  .findFirst()
+		  .get();
+		
+		assertEquals(
+				5 * 60 + 30, 
+				st.getSpendTime().toSeconds(), 1 ); 
+
+		assertEquals(
+				5 * 60 + 30, 
+				st.getSpendTime().toSeconds(), 1 ); 
+
+	}//LoadTimeTest
+
 }//end class

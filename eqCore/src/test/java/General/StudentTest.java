@@ -2,30 +2,77 @@ package general;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
+
+import org.junit.Before;
 import org.junit.Test;
 
+import frawla.equiz.util.EQDate;
 import frawla.equiz.util.EQuizException;
+import frawla.equiz.util.Util;
+import frawla.equiz.util.exam.ExamConfig;
+import frawla.equiz.util.exam.ExamSheet;
 import frawla.equiz.util.exam.Student;
 import javafx.util.Duration;
 
 public class StudentTest
 {
+	ExamSheet examSheetMocked;	
+	ExamSheet emptyExamSheet;
+	ExamConfig examConfigMocked;
+	
+	@Before
+	public void readObjectFromFileAsMock() throws InterruptedException, EQuizException
+	{
+		File mockFile;
+		mockFile = Util.getResourceAsFile("ExamSheet-sami.mock");
+		examSheetMocked = (ExamSheet) Util.readFileAsObject( mockFile  );
+		
+		mockFile = Util.getResourceAsFile("ExamSheet-empty.mock");
+		emptyExamSheet = (ExamSheet) Util.readFileAsObject( mockFile  );
+
+		mockFile = Util.getResourceAsFile("ExamConfig.mock");
+		examConfigMocked = (ExamConfig) Util.readFileAsObject( mockFile  );
+		
+	}
+
+	
 	@Test
 	public void rejectedTest() throws InterruptedException, EQuizException
 	{
 		//TODO: we need to move the validation method to be inside Student class		
 	}
 
+	
+	@Test
+	public void StartAndFinishTest() throws InterruptedException, EQuizException
+	{
+		Student st = new Student("NBE222");
+		st.setExamSheet(examSheetMocked);
+		
+		st.setStatus(Student.READY);//mocking
+		
+		Duration examTime = new Duration( 2 * 60 * 1000); //2 min.
+		st.runExam(examTime);
+		assertEquals(Student.STARTED, st.getStatus());
+
+		Thread.sleep(2000);
+		st.finishNow();
+		assertEquals(Student.FINISHED, st.getStatus());
+	}
+
 	@Test
 	public void cutOffOnReadyTest() throws InterruptedException, EQuizException
 	{
 		Student st = new Student("NBE222");
+		st.setExamSheet(examSheetMocked);
+		
 		st.setStatus(Student.READY);//mocking
 		
 		st.cutOffNow();
 		assertEquals(Student.DISCONNECTED, st.getStatus());
 		
-		Duration examTime = new Duration(120000); //2 min.
+		Duration examTime = new Duration( 2 * 60 * 1000); //2 min.
 		st.runExam(examTime);
 		
 		assertEquals(Student.STARTED, st.getStatus());
@@ -35,6 +82,8 @@ public class StudentTest
 	public void cutOffAndResumeTest() throws InterruptedException, EQuizException
 	{
 		Student st = new Student("NBE222");
+		st.setExamSheet(emptyExamSheet);
+		
 		st.setStatus(Student.READY); //mocking
 		
 		Duration examTime = new Duration(120000);
@@ -79,27 +128,80 @@ public class StudentTest
 	}//end Test
 
 	@Test
-	public void cutOffAfterFinishTest() throws InterruptedException, EQuizException
+	public void  cutOffAfterFinishTest() throws InterruptedException, EQuizException
 	{
 		Student st = new Student("NBE222");
+		st.setExamSheet(emptyExamSheet);
+		Duration examTime = new Duration(10 * 60 * 1000); //10 min.
+		emptyExamSheet.getExamConfig().examTime = examTime;
+		
+		
 		st.setStatus(Student.READY);//mocking
+		st.runExam(examTime); 
 		
-		Duration examTime = new Duration(120000);
-		st.runExam(examTime); //2min.
-		
-		assertEquals(st.getLeftTime().toSeconds(), 120, 0.1);
+		assertEquals(10, st.getLeftTime().toMinutes(), 0.01);
+		assertEquals(10, st.getLeftTime().toMinutes(), 0.01);
 		
 		assertEquals(Student.STARTED, st.getStatus());
-		assertEquals(0, st.getSpendTime().toSeconds(), 0.1);
+		assertEquals(0, st.getSpendTime().toSeconds(), 1);
 		Thread.sleep(1000);
 		st.finishNow();
 		
 		assertEquals(Student.FINISHED, st.getStatus());
+		
 		assertEquals(1, st.getSpendTime().toSeconds(), 0.1);
 		
 		st.cutOffNow();
 		assertEquals(Student.FINISHED, st.getStatus());
 		
 	}
+	
+	@Test
+	public void resumeAfterFinishTest() throws InterruptedException, EQuizException
+	{
+		Student st = new Student();
+		//spy is better than mock
+		//st = spy(Student.class);
+		//doReturn( new Duration( 100 * 1000 ) ).when(st).calculateSpendTime();
+		
+		st.setId("NBE222");
+		st.setExamSheet(examSheetMocked);
+		Duration examTime = new Duration( 10 * 60 * 1000 );
+		examSheetMocked.getExamConfig().examTime = examTime;
+		
+		st.setStatus(Student.GRADED);//mocking
+		st.setStatus( Student.CUTOFF ); //mocking
+		
+		//here is to estimate starting time.
+		Duration FullAnsweringTime = st.getSpendTime();
+		assertEquals(330 , FullAnsweringTime.toSeconds() , 1); //5:30 min
+		
+		EQDate now = new EQDate();
+		st.setStartPoint(  now.minus( FullAnsweringTime )  );
+		st.setResumePoint( now.minus( FullAnsweringTime )  );
+		st.setFinishPoint( st.getStartPoint().plus( examTime ) );
+		
+		//now he is running
+		st.setStatus(Student.STARTED);
+		assertEquals(5.5 , st.getSpendTime().toMinutes() , 0.01); //5:30 min
+		
+		st.cutOffNow();
+
+		st.runExam(examTime);
+		assertEquals(4.5, st.getLeftTime().toMinutes(), 0.01);
+		assertEquals(Student.RESUMED, st.getStatus());
+	
+	}
+	
 
 }//end class
+
+
+
+
+//doCallRealMethod().when(st).setStartPoint( any(EQDate.class) );
+//doCallRealMethod().when(st).getStartPoint(  );
+//doCallRealMethod().when(st).setCuttoffPoint( any(EQDate.class) );
+//doCallRealMethod().when(st).setFinishPoint( any(EQDate.class) );
+//doCallRealMethod().when(st).getLeftTime(  );
+

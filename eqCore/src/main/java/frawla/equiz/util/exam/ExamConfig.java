@@ -53,5 +53,9 @@ public class ExamConfig implements Serializable
 		return s;
 	}
 
+	public Duration getExamTime() {
+		return examTime;
+	}
+
 
 }

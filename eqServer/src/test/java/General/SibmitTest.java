@@ -13,9 +13,9 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+import frawla.equiz.server.ServerListener;
 import frawla.equiz.util.Channel;
 import frawla.equiz.util.Message;
-import frawla.equiz.util.ServerListener;
 import frawla.equiz.util.Util;
 import frawla.equiz.util.exam.RegisterInfo;
 

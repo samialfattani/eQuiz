@@ -112,7 +112,15 @@ public class QuestionTest
 		assertEquals("-",qmc.getStudentAnswer());
 		assertEquals("teacher notes\r\n rgrg\n5165165", qmc.getTeacherNote());
 
+		qmc = new MultipleChoice("Q1`1`DBACE`A");
+		assertTrue(qmc.isCorrectAnswer());		
+		assertEquals("A",qmc.getStudentAnswer());
+		assertEquals("", qmc.getTeacherNote());
 
+		qmc = new MultipleChoice("Q1`1`DBACE`");
+		assertFalse(qmc.isCorrectAnswer());		
+		assertEquals("-",qmc.getStudentAnswer());
+		assertEquals("", qmc.getTeacherNote());
 	}// end MultipleChoiceSpecialConstructorTest
 
 	@Test

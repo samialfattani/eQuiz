@@ -82,4 +82,9 @@ public abstract class Question implements Serializable
 			return getStudentAnswer();
 	}
 
+	public boolean isAnswered() 
+	{		
+		return getStudentAnswer() == null || !getStudentAnswer().equals("");
+	}
+
 }

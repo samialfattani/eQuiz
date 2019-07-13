@@ -44,7 +44,7 @@ public class MultipleChoice extends Question implements Serializable, Randomizab
 				 getOrderList().add( letter);
 			}
 			String ans = Optional.ofNullable(matcher.group(4)).orElse("");
-			ans = (ans.equals(""))? "-" : ans;
+			//ans = (ans.equals(""))? "-" : ans;
 			setStudentAnswer( ans ); 
 
 			String teacherNot = Optional.ofNullable(matcher.group(6)).orElse("");		
@@ -128,7 +128,6 @@ public class MultipleChoice extends Question implements Serializable, Randomizab
 	}
 	public void copyChoices(Question q)
 	{
-		
 		((MultipleChoice)q).getChoices()
 		  .forEach( (k,v) -> {
 			  	getChoices().put(k, v);
@@ -156,7 +155,7 @@ public class MultipleChoice extends Question implements Serializable, Randomizab
 			 getOrderList().add( letter);
 		}
 		String ans = Optional.ofNullable( Answer[3] ).orElse("");
-		ans = (ans.equals(""))? "-" : ans;
+		//ans = (ans.equals(""))? "-" : ans;
 		setStudentAnswer( ans );
 
 		//String teacherNot = Optional.ofNullable( Answer[4] ).orElse("");		

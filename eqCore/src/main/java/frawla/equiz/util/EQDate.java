@@ -4,6 +4,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javafx.util.Duration;
+
 public class EQDate extends Date 
 {
 	private static final long serialVersionUID = 1L;
@@ -25,6 +27,17 @@ public class EQDate extends Date
 	public String format(String pattern) {
 		SimpleDateFormat f = new SimpleDateFormat(pattern);		
 		return f.format(this);
+	}
+	public EQDate minus(Duration dur) 
+	{
+		long durMillis = new Double( dur.toMillis() ).longValue();
+		EQDate res = new EQDate (this.getTime() - durMillis);
+		return res;
+	}
+	public EQDate plus(Duration dur) {
+		long durMillis = new Double( dur.toMillis() ).longValue();
+		EQDate res = new EQDate (this.getTime() + durMillis);
+		return res;
 	}
 	
 

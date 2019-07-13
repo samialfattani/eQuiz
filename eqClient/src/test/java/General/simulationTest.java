@@ -7,23 +7,26 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import org.junit.Test;
-
 import frawla.equiz.client.ClientChannel;
 import frawla.equiz.util.Message;
 import frawla.equiz.util.Util;
 
-public class simulationTest {
+public class simulationTest 
+{
+	public static void main(String[] args) throws UnknownHostException, IOException, InterruptedException 
+	{
+		new simulationTest().test();
+	}
 
-	@Test 
-	public void test() throws UnknownHostException, IOException, InterruptedException {
-			
+	public void test() throws UnknownHostException, IOException, InterruptedException 
+	{
 			String[][] csvFile = LosdSCVFile(); 
 			ArrayList<ClientChannel> examiners = new ArrayList<ClientChannel>();
 			int stCount = csvFile.length ;
 			for (int i=0; i < stCount; i++) 
 //			for (int i=0; i < 1; i++)
 			{
+				
 				Socket mySocket = new Socket("localhost", 10000);
 		    	final ClientChannel c = new ClientChannel("myClient"+csvFile[i][0], mySocket);
 		    	c.studentID = csvFile[i][0];
@@ -45,6 +48,7 @@ public class simulationTest {
 			
 			//wait 5 min
 			String lastlog = "";
+			//loop as long as any is still connected.
 			while( examiners.stream().anyMatch(c -> c.isConnected() && c.isAlive()) ) {
 				long cc = examiners.stream().filter(c -> c.isConnected()).count();
 				String newlog = cc + " is connected, waiting for 5 sec...";

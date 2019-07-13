@@ -34,9 +34,9 @@ public class Message<E> implements Serializable
 
 
 	//server messages
-	public static final String SERVER_LOG = "50";
+	public static final String SERVER_IS_INITIALIZED = "50";
 	public static final String WELCOME_FROM_SERVER = "51";
-	public static final String SERVER_IP = "52";
+	//public static final String SERVER_IP = "52";
 	public static final String SERVER_HOST_NAME = "53";
 	public static final String NEW_CLIENT_HAS_BEEN_CONNECTED = "54";
 	public static final String EXAM_OBJECT = "55";
@@ -63,6 +63,4 @@ public class Message<E> implements Serializable
 	public static final String FINAL_COPY_OF_EXAM_WITH_ANSWERS = "31";
 	public static final String I_HAVE_FINISHED = "48";
 	public static final String PLAIN_TEXT_FROM_CLIENT = "49";
-
-
 }

@@ -22,7 +22,9 @@ public class Main extends Application
 			
 			FXMLLoader loader = new FXMLLoader( Util.getResourceAsURL("fx-exam-config.fxml") );
 			loader.load();
-			File f = new File("../data/MidTerm-1/MidTerm-2019.xlsx");		
+			//File f = new File("../data/MidTerm-1/MidTerm-2019.xlsx");
+			File f = new File("../data/MidTerm-1/SE260-MidTerm-1.xlsx");
+			
 			if(f.exists()) {
 				//System.out.println( new File(".").getAbsolutePath() );
 				FxExamConfigController cntrl = (FxExamConfigController) loader.getController();

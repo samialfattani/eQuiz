@@ -9,15 +9,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFFormulaEvaluator;
@@ -32,13 +27,8 @@ import frawla.equiz.util.EQuizException;
 import frawla.equiz.util.Heap;
 import frawla.equiz.util.Log;
 import frawla.equiz.util.Message;
-import frawla.equiz.util.ServerListener;
 import frawla.equiz.util.Util;
 import frawla.equiz.util.exam.ExamConfig;
-import frawla.equiz.util.exam.ExamSheet;
-import frawla.equiz.util.exam.QuesinoOrderType;
-import frawla.equiz.util.exam.Randomizable;
-import frawla.equiz.util.exam.RegisterInfo;
 import frawla.equiz.util.exam.Student;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -78,17 +68,16 @@ public class FxMonitorController implements Initializable
 
 	@FXML private Pane PanRoot ;
 	@FXML private BorderPane pnlTable;
-	@FXML private Label lblIP;
 	@FXML private Label lblHost;
-	@FXML private Label lblPort;
 	@FXML private Label lblStatus;
 	@FXML private TextArea txtLog;
 	@FXML private Button btnChangePort;
 	@FXML private Label lblTotalHeap;
 	@FXML private Label lblTotalStudents;
+	@FXML private Label lblVersion;
+	
 	@FXML private ProgressBar prgHeap;
 	@FXML private ToggleButton btnAutoBackup;
-	@FXML private Button btnRecordOnExcel;
 	@FXML private Button btnFinish;
 	@FXML private ContextMenu mnuStudents;
 	@FXML private MenuItem mntmRecordOnExcel;
@@ -98,22 +87,20 @@ public class FxMonitorController implements Initializable
 	@FXML private MenuItem mntmExportAllToPDF;
 	@FXML private MenuItem mntmUngradeHim;
 	@FXML private MenuItem mntmFinishHim;
-	@FXML private MenuItem mnitmSetToCutoff;
+	@FXML private MenuItem mnitmUnfinishHim;
 
 
 	private ExamTableView examTable;
-	private ServerListener listenter;
+	//private ServerListener listenter;
 
-	public ObservableList<Student> Students; //= FXCollections.observableArrayList();
-	public List<Channel> Connections = new ArrayList<>();
 	private BooleanProperty  examIsRunning = new SimpleBooleanProperty(false);
 	private Workbook wrkBook;
-	private ExamConfig examConfig;
-	private Map<String, byte[]> imageList = new HashMap<>();
 	private Timeline backupTimer;
-	private Object backupLock = new Object();
-	private List<Log> logList = new ArrayList<>();
-	private List<Log> Logs;
+
+	private ServerEngine serverEngine;
+	private ObservableList<Student> Students; //= FXCollections.observableArrayList();
+	private ExamConfig examConfig;
+	private List<Log> Logs = new ArrayList<>();
 
 
 	@Override
@@ -130,20 +117,23 @@ public class FxMonitorController implements Initializable
 			window.setTitle("Exam Monitor");
 			window.setOnCloseRequest(event -> System.exit(0) );
 			window.show();
+			window.focusedProperty().addListener((ov, o1, o2) ->{
+				mntmRefresh_click();
+			});
+			
+			lblVersion.setVisible(false);
 
 			//--------------------------------
-			startLisening();
+			startLisening(10000);
 			//--------------------------------
-		
+			mntmRefresh_click();
 		});        
 
 		//------ INITIALIZATION -----------A
-		lblPort.setText("10000");
 		examTable = new ExamTableView();
 		pnlTable.setCenter(examTable);
 		
 		btnChangePort.disableProperty().bind( examIsRunning );
-		btnRecordOnExcel.disableProperty().bind( examIsRunning );
 		mntmRecordOnExcel.disableProperty().bind( examIsRunning );
 		mntmRecordOnExcelWithoutAutoCorrect.disableProperty().bind( examIsRunning );
 		
@@ -152,14 +142,16 @@ public class FxMonitorController implements Initializable
 		mntmBackup.disableProperty().bind( examIsRunning.not() );
 		mntmExportAllToPDF.setDisable(false); //bind after loading students
 		
-		
-
 		examTable.setContextMenu(mnuStudents);
-		examTable.setStudentList(Students);
 		examTable.setDisable(false);
+		
+		
 		examTable.setOnMouseClicked( e -> {
 			examTable.requestFocus();
-			handleMouseClicked(e);
+			Platform.runLater( () ->{
+				handleMouseClicked(e);
+			});
+			
 		});
 
 
@@ -180,58 +172,45 @@ public class FxMonitorController implements Initializable
 			backupTimer.stop();
 	}
 
-	public void startLisening() 
+	public void startLisening(int port) 
 	{
 		try {
-			listenter = new ServerListener("listenter", Integer.parseInt(lblPort.getText()));
-		
-			lblPort.setText(listenter.getLocalPort());
-			listenter.setOnNewMessage( (msg, ch) -> 
+			serverEngine = new ServerEngine("listenter", port);
+
+			serverEngine.setOnNewMessage( (msg, ch) -> 
 			{
 				newMessageHasBeenReleased(msg, ch);
 			});
-			listenter.start();
-			lblStatus.setText("listening...\n");		
+		
+			serverEngine.setOnAllBackupsAreRecieved( ()->
+			{
+				log("Done Backup");
+				//System.err.println(ObjectSizeFetcher.getObjectSize(  new Date() ));
+				//System.err.println(ObjectSizeFetcher.getObjectSize(  Students ));
+			});
+			serverEngine.start();
+
+			serverEngine.setExamData();
+			Students = serverEngine.Students;
+			examConfig = serverEngine.examConfig;
+			Logs = serverEngine.Logs;
+			examTable.setStudentList(Students);
 		} 
 		catch (NumberFormatException | IOException e) 
 		{Util.showError(e, e.getMessage());}
 	}
 
 
-	public void btnRunExam_click()
+	public void btnDistributeSheet_click()
 	{
 		log("Sending...");
-		Students
-			.parallelStream()
-			.filter(st -> st.isConnected())
-			.filter(st -> st.isREADY() || st.isRESUMED() )
-			.forEach(st -> { 
-				sendExam(st );
-			});
+		serverEngine.sendExamToAll();
 
 		backupTimer.play();
 		btnAutoBackup.setSelected(true);
 
 		log("Exam Sheets are sent to 'Ready' and 'Resume' Students");
 		examIsRunning.set(true);
-	}
-
-	public void btnFinish_click() 
-	{
-		log("Finishing...");
-		backupTimer.stop();
-
-		Students
-		.stream()
-		.filter( st -> st.isSTARTED() || st.isRESUMED())
-		.forEach(st ->{
-			st.getServerLinker()
-			.sendMessage( new Message<>(Message.KHALAS_TIMES_UP) );
-		});
-
-		examIsRunning.set(false);
-		log("All Students are alerted to Finish now!");
-		mntmRefresh_click();
 	}
 
 	public void btnRecordOnExcel_click(){
@@ -245,7 +224,7 @@ public class FxMonitorController implements Initializable
 	private void recordOnExcel(boolean withAutoCorrect){
 		try {
 			if( Students.stream()
-					.allMatch( s -> !s.isREADY() && !s.isRESUMED() )
+					.allMatch( s -> not(s.isREADY() || s.isRESUMED()) )
 					)
 			{
 				RecordOnExcel(withAutoCorrect);
@@ -276,7 +255,7 @@ public class FxMonitorController implements Initializable
 		
 		ExcelRecorder.RecordAnswers(wrkBook, Students, quesCount);
 		ExcelRecorder.RecordTimer(wrkBook, Students, quesCount);
-		ExcelRecorder.RecordLogs(wrkBook, logList);
+		ExcelRecorder.RecordLogs(wrkBook, Logs);
 		HSSFFormulaEvaluator.evaluateAllFormulaCells(wrkBook);
 
 		updateAndSaveExcelFileAndLogFile();
@@ -299,33 +278,14 @@ public class FxMonitorController implements Initializable
 
 	public void disconnectServer() 
 	{
-		listenter.interrupt();
+		serverEngine.interrupt();
 	}
 
 	
 	protected void StartTakingBackupForAll() throws ExecutionException 
 	{
 		log("Start Taking Backup for All Students...");
-
-		Runnable task = () -> 
-		{
-			synchronized(backupLock)
-			{
-				for(Student st: Students)
-				{
-					if(st.isSTARTED() || st.isRESUMED()){
-						Message<ExamConfig> msg = new Message<>(Message.GIVE_ME_A_BACKUP_NOW);
-						st.getServerLinker().sendMessage(msg);
-						
-						try{ backupLock.wait(3000); } catch(InterruptedException e){ Util.showError(e, e.getMessage()); }
-					}
-				}
-				log("Done Backup");
-			}//synchronized
-		};
-
-		ExecutorService  exec = Executors.newSingleThreadExecutor();
-		exec.execute(task);
+		serverEngine.backupAll();
 	}
 	
 	private void newMessageHasBeenReleased(final Message<?> msg, final Channel chnl)
@@ -345,181 +305,72 @@ public class FxMonitorController implements Initializable
 
 		String code = msg.getCode();
 		String stringData;
-		ExamSheet examData = null;
 
 		switch(code)		
 		{
-			case Message.SERVER_LOG:
+			case Message.SERVER_IS_INITIALIZED:
 				stringData = (String) msg.getData();
-				log(stringData);
+				lblStatus.setText("Listening to " + stringData);
+				log("Server is Initialized, " + stringData);
 				break;
 			case Message.SERVER_CLOSED:
 				stringData = (String) msg.getData();
 				lblStatus.setText("Closed");
 				log(stringData);
 				break;
-
-			case Message.SERVER_IP:
-				stringData = (String) msg.getData();
-				lblIP.setText(stringData);
-				break;
 			case Message.SERVER_HOST_NAME:
 				stringData = (String) msg.getData();
 				lblHost.setText(stringData);
 				break;
 			case Message.NEW_CLIENT_HAS_BEEN_CONNECTED:
-				Connections.add( chnl );
 				log("New Client has been joined, socketID = " + chnl.getSocketID());
 				break;
 			case Message.REGESTER_INFO:
-
-				RegisterInfo r = (RegisterInfo)msg.getData();
-
-				//before you try to link with exsisted Student
-				Student st = findStudentOrAddNewOne(r.ID);
-
-				//student is already added before.
-				if(st.isConnected()){
-					chnl.sendMessage( 
-							new Message<>(Message.YOU_ARE_ALREADY_CONNECTED) );
-					Connections.remove(chnl);			
-					break;
-				}
-
-				st.setServerLinker(chnl);
-				st.setId( r.ID );
-				st.setName( r.Name );
-
-				if(!isValidStudent(st)){
-					st.setStatus(Student.REJECTED);
-					st.getServerLinker().sendMessage(
-							new Message<>(Message.YOU_ARE_REJECTED));
-					break;
-				}
-
-				if (st.isFINISHED() || st.isGRADED() ){
-					st.getServerLinker().sendMessage( 
-							new Message<>(Message.YOU_HAVE_ALREADY_FINISHED) );
-					break;
-				}
-
-				//student is valid, connected, and not finished
-				if(examIsRunning.get()){
-					sendExam(st); //resume or late
-				}else{
-					//new or reconnect before starting exam.
-					st.setStatus(Student.READY);  
-				}
-
-
 				break;			
 			case Message.STUDENT_CUTOFF:
-				student = findStudent(chnl);
-				if(student == null)
-					break;
-				if( student.isRunningHisExam() ) {
-					student.cutOffNow();
-					log("CuttOff happend with "+ student.getName() );
-				}
+				student = serverEngine.findStudent(chnl);
+				if(student.isCUTOFF())
+					log(student.getName() + " is Cut-Off his exam"  );
 				break;			
 			case  Message.PLAIN_TEXT_FROM_CLIENT:
 				stringData = (String) msg.getData();
-				student = findStudent(chnl);
+				student = serverEngine.findStudent(chnl);
 				log(  student.getName() + ": " + stringData );
 				break;
-			case  Message.EXAM_OBJECT_RECIVED_SUCCESSFYLLY:
-				chnl.sendMessage(new Message<Map<String, byte[]>>(Message.IMAGES_LIST, imageList ));
-				break;
+			case Message.EXAM_OBJECT_RECIVED_SUCCESSFYLLY:
 			case Message.IMAGE_LIST_RECIVED_SUCCESSFYLLY:
-				student = findStudent(chnl);
-				student.runExam(examConfig.examTime);
-				Message<Duration> m = new Message<>(Message.TIME_LEFT, student.getLeftTime() );
-				chnl.sendMessage(m);
 				break;
 			case Message.BACKUP_COPY_OF_EXAM_WITH_ANSWERS:
-				synchronized(backupLock)
-				{
-					examData = (ExamSheet) msg.getData(  );
-					student = findStudent(chnl);        
-					student.setExamSheet(examData);     
-					student.setLastUpdate(new Date());  
-					log("copy-" + student.getId());     
-					backupLock.notify();                
-				}
+				student = serverEngine.findStudent(chnl);
+				log(student.getId() + " sent a Copy");
 				break;
 			case  Message.FINAL_COPY_OF_EXAM_WITH_ANSWERS:
-				examData = (ExamSheet) msg.getData();
-				student = findStudent(chnl);
-				student.setExamSheet(examData);
-				log("Final Copy has been taken from "+ student.getName() );
-				chnl.sendMessage(new Message<>(Message.FINAL_COPY_IS_RECIEVED));
-
-				student = findStudent(chnl);
-				student.finishNow();
-				log("Finished -> " + student.getName() );
+				student = serverEngine.findStudent(chnl);
+				log( student.getName() + " -> sent his Final-Copy and Finished");
+				break;				
+			case Message.STOP_RECIEVING_MESSAGES:
 				break;
 
 				//*************************
 			default:
-				log( "##" + msg + "##");
+				log( "Known msg: ##" + msg.getCode() + "##");
 				break;
 		}
-		examTable.refresh();
+		mntmRefresh_click();
+		
 	}
 
 	private void log(String str)
 	{
-		Log log = new Log(new EQDate(), str);
-		logList.add( log );
-		txtLog.appendText(  log + "\n" );	
+		//must be runLater cause it may called from non-FX-thread
+		Platform.runLater(( )->{
+			Log log = new Log(new EQDate(), str);
+			Logs.add( log );
+			txtLog.appendText(  log + "\n" );	
+		});
 	}
 
-	private void sendExam(Student student)
-	{
 
-		ExamSheet newSheet = new ExamSheet(); 
-		newSheet.setExamConfig(examConfig);
-		newSheet.setQustionList( ExamLoader.getInstance().getCloneOfQustionList() ); 
-
-		if(examConfig.questionOrderType == QuesinoOrderType.RANDOM)
-			newSheet.shuffle();
-
-		//shuffle Options in each Question
-		newSheet.getQuestionList()
-		.stream()
-		.filter(qu -> qu instanceof Randomizable)
-		.forEach( q ->  ((Randomizable)q).shuffle() );
-
-		ExamSheet sheet = student.getOptionalExamSheet().orElse(newSheet);
-		Message<ExamSheet> m = new Message<ExamSheet>(Message.EXAM_OBJECT, sheet );
-		student.getServerLinker().sendMessage( m );
-	}
-
-	private boolean isValidStudent(Student st)
-	{
-		return ExamLoader.getInstance().isValidStudent(st.getId());
-	}
-
-	private Student findStudentOrAddNewOne(final String id)
-	{
-		return
-			Students.stream()
-			.filter( st -> st.getId().equals(id))
-			.findFirst()
-			.orElseGet( () -> {
-				Student s = new Student(id);
-				Students.add(s);
-				return s;
-			});
-	}
-
-	private Student findStudent(final Channel ch)
-	{
-		return Students.stream()
-				.filter(st -> (st.getServerLinker() == ch) )
-				.findFirst()
-				.get();
-	}
 
 	public void mntmRemoveRejected_click(){
 		Students.stream()
@@ -527,23 +378,12 @@ public class FxMonitorController implements Initializable
 		.forEach(st -> {
 			st.getServerLinker().interrupt();
 			Students.remove(st);
-			Connections.remove(st.getServerLinker());
+			//Connections.remove(st.getServerLinker());
 		});
 		mntmRefresh_click();
 	}
 
 
-	public void setExamData(ExamConfig exConf, Map<String,byte[]> imgLst, ObservableList<Student> stdlst, List<Log> logs) 
-	{
-		examConfig = exConf;
-		imageList = imgLst;
-		Students = stdlst;
-		examTable.setStudentList(Students);
-		Logs = logs;
-		for(Log l: Logs)
-			txtLog.appendText( l.toString() +"\n");
-		
-	}
 	
 	public void btnChangePort_click()
 	{
@@ -561,21 +401,20 @@ public class FxMonitorController implements Initializable
 		userInput.ifPresent(port -> 
 		{
 			try{
-				if(listenter.isAlive()) {
-					listenter.interrupt();
+				if(serverEngine.isAlive()) {
+					serverEngine.interrupt();
 					log("Server has been intuerrupted");
 				}
 
-				lblPort.setText(port);
-				startLisening();
+				startLisening( Integer.parseInt(port)  );
 			}
 			catch (Exception e){ }//keep it empty
 		});
 
 	}
 
-	public void mntmRunExam_click(){
-		btnRunExam_click();
+	public void mntmDistributeSheet_click(){
+		btnDistributeSheet_click();
 	}
 	
 	public void mntmBackup_click()
@@ -587,8 +426,17 @@ public class FxMonitorController implements Initializable
 		{ Util.showError(e, e.getMessage()); }
 		mntmRefresh_click();
 	}
-	public void mntmFinish_click(){
-		btnFinish_click();
+
+	public void mntmFinish_click()
+	{
+		log("Finishing...");
+		backupTimer.stop();
+
+		serverEngine.finishAllStudents();
+
+		examIsRunning.set(false);
+		log("All Students are alerted to Finish now!");
+		mntmRefresh_click();
 	}
 
 	public void mntmRecordOnExcel_click(){
@@ -609,7 +457,7 @@ public class FxMonitorController implements Initializable
         				st.getStatusProperty().isNotEqualTo(Student.RESUMED)
         			));
 
-		mnitmSetToCutoff.disableProperty()
+		mnitmUnfinishHim.disableProperty()
 	        .bind( 
 	            st.getStatusProperty().isNotEqualTo( Student.FINISHED ) 
 	         );
@@ -624,14 +472,30 @@ public class FxMonitorController implements Initializable
 			.sendMessage( new Message<>(Message.KHALAS_TIMES_UP) );
 
 	}
-	public void mnitmSetToCutoff_click() {
+	public void mnitmUnfinishHim_click() {
 		int i = examTable.getSelectionModel().getSelectedIndex();
-		Students.get(i).setStatus(Student.CUTOFF);
+		Student st = Students.get(i);
+		st.UnFinishNow();
 		mntmRefresh_click();
 	}
 	public void mntmUngradeHim_click() {
 		int i = examTable.getSelectionModel().getSelectedIndex();
-		Students.get(i).setStatus(Student.FINISHED);
+		Student st = Students.get(i);
+		st.UnGradeNow();
+		mntmRefresh_click();
+	}
+	public void mnitmUnfinishAll_click() {
+		Students
+			.stream()
+			.filter(st -> st.isFINISHED() )
+			.forEach(st -> st.UnFinishNow());
+		mntmRefresh_click();
+	}
+	public void mntmUngradeAll_click() {
+		Students
+			.stream()
+			.filter(st -> st.isGRADED() )
+			.forEach(st -> st.UnGradeNow() );
 		mntmRefresh_click();
 	}
 	
@@ -689,12 +553,16 @@ public class FxMonitorController implements Initializable
 	}
 
 
-	public void mntmRefresh_click(){
+	public void mntmRefresh_click()
+	{
 		refreshHeap();
 		refreshStudentStatistics();
 		examTable.refresh();
-		if(listenter.isAlive())
-			lblStatus.setText( String.format("Listening to {0}...", listenter.getLocalPort() ) );
+		
+		lblStatus.setText("" + serverEngine.getIP() + ":" +  serverEngine.getLocalPort( ) + "");
+		
+		if(serverEngine.isAlive())
+			lblStatus.setText( String.format("Listening to %S", serverEngine.getLocalPort() ) );
 		else
 			lblStatus.setText("Closed");
 	}
@@ -738,16 +606,19 @@ public class FxMonitorController implements Initializable
 	}
 	public void btnGC_click(){
 		System.gc();
+		mntmRefresh_click();
 	}
 
 	private void refreshHeap()
 	{
-		lblTotalHeap.setText(  String.format("%s / %s", 
+		lblTotalHeap.setText(  String.format("%s / %s, %s", 
 				Heap.ReadableByte( Heap.getUsedSize())  ,
-				Heap.ReadableByte( Heap.getTotalSize()) ));
+				Heap.ReadableByte( Heap.getAvailableSize() ), 
+				Heap.ReadableByte( Heap.getMaxMemory() )
+				));
 
-		double prog = 	Double.parseDouble(Heap.getUsedSize()+"") / 
-				Double.parseDouble(Heap.getTotalSize()+""); 
+		double prog = 	Double.parseDouble(Heap.getUsedSize() + "") / 
+				Double.parseDouble(Heap.getAvailableSize() + ""); 
 		prgHeap.setProgress( prog );
 
 	}
@@ -756,4 +627,9 @@ public class FxMonitorController implements Initializable
 		//TODO: just for test anything
 	}
 	
+	private boolean not(boolean b) {
+		return !b;
+	}
+
+
 }//end MonitorController

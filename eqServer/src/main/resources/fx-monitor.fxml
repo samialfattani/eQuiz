@@ -24,42 +24,31 @@
    <center>
       <AnchorPane prefHeight="413.0" prefWidth="756.0" BorderPane.alignment="CENTER">
          <children>
-            <Label fx:id="lblHost" layoutX="60.0" layoutY="47.0" prefHeight="22.0" prefWidth="160.0" style="-fx-background-color: lightyellow; -fx-border-color: red;" text="Host" AnchorPane.topAnchor="47.0">
-               <font>
-                  <Font name="Consolas Bold" size="18.0" />
-               </font>
-            </Label>
-            <Label fx:id="lblIP" layoutX="60.0" layoutY="19.0" prefHeight="22.0" prefWidth="160.0" style="-fx-background-color: lightyellow; -fx-border-color: red;" text="000.000.000.000" AnchorPane.topAnchor="14.0">
-               <font>
-                  <Font name="Consolas Bold" size="18.0" />
-               </font>
-            </Label>
-            <Label fx:id="lblPort" layoutX="229.0" layoutY="14.0" prefHeight="24.0" prefWidth="63.0" style="-fx-background-color: lightyellow; -fx-border-color: red;" text="0000" textAlignment="CENTER" AnchorPane.topAnchor="14.0">
-               <font>
-                  <Font name="Consolas Bold" size="18.0" />
-               </font>
-            </Label>
-            <Label fx:id="lblIP11" layoutX="14.0" layoutY="14.0" prefHeight="24.0" prefWidth="33.0" text="IP" textAlignment="CENTER" AnchorPane.topAnchor="14.0">
-               <font>
-                  <Font name="Consolas Bold" size="18.0" />
-               </font>
-            </Label>
-            <Label fx:id="lblIP111" layoutX="14.0" layoutY="47.0" prefHeight="24.0" prefWidth="46.0" text="Host" textAlignment="CENTER" AnchorPane.topAnchor="47.0">
-               <font>
-                  <Font name="Consolas Bold" size="18.0" />
-               </font>
-            </Label>
-            <Button fx:id="btnChangePort" layoutX="298.0" layoutY="14.0" mnemonicParsing="false" onAction="#btnChangePort_click" prefHeight="25.0" prefWidth="63.0" text="Change">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font>
-            </Button>
-            <Label fx:id="lblStatus" layoutX="229.0" layoutY="47.0" prefHeight="22.0" prefWidth="160.0" style="-fx-background-color: lightyellow; -fx-border-color: red;" text="Status">
-               <font>
-                  <Font name="Consolas Bold" size="14.0" />
-               </font>
-            </Label>
-            <SplitPane dividerPositions="0.7" layoutX="17.0" layoutY="79.0" orientation="VERTICAL" prefHeight="389.0" prefWidth="692.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="79.0">
+            <HBox alignment="CENTER_LEFT" layoutX="14.0" layoutY="16.0" maxWidth="1.7976931348623157E308" prefWidth="468.0" spacing="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+               <children>
+                  <Label fx:id="lblStatus" prefHeight="22.0" prefWidth="271.0" style="-fx-background-color: lightyellow; -fx-border-color: red;" text="Lestening to 000.000.000.000:0000">
+                     <font>
+                        <Font name="Consolas Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="lblIP111" prefHeight="24.0" prefWidth="40.0" text="Host" textAlignment="CENTER">
+                     <font>
+                        <Font name="Consolas Bold" size="16.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="lblHost" prefHeight="22.0" prefWidth="160.0" style="-fx-background-color: lightyellow; -fx-border-color: red;" text="Host">
+                     <font>
+                        <Font name="Consolas Bold" size="16.0" />
+                     </font>
+                  </Label>
+                  <Button fx:id="btnChangePort" mnemonicParsing="false" onAction="#btnChangePort_click" prefHeight="25.0" prefWidth="63.0" text="Change">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Button>
+               </children>
+            </HBox>
+            <SplitPane dividerPositions="0.7" layoutX="17.0" layoutY="79.0" orientation="VERTICAL" prefHeight="389.0" prefWidth="692.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="35.0">
                <items>
                   <BorderPane fx:id="pnlTable" focusTraversable="true" prefHeight="42.0" prefWidth="729.0" style="-fx-background-color: pink;" />
                   <TextArea fx:id="txtLog" prefHeight="64.0" prefWidth="729.0" promptText="Logging Area...">
@@ -69,11 +58,6 @@
                   </TextArea>
                </items>
             </SplitPane>
-            <Button fx:id="btnRecordOnExcel" layoutX="618.0" layoutY="9.0" mnemonicParsing="false" onAction="#btnRecordOnExcel_click" prefHeight="61.0" prefWidth="127.0" text="Auto Correct &amp; Record" textAlignment="CENTER" wrapText="true" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="9.0">
-               <font>
-                  <Font name="System Bold" size="15.0" />
-               </font>
-            </Button>
          </children>
       </AnchorPane>
    </center>
@@ -84,14 +68,10 @@
               <menus>
                 <Menu mnemonicParsing="false" text="Action">
                   <items>
-                    <MenuItem fx:id="mntmRunExam" mnemonicParsing="false" onAction="#mntmRunExam_click" text="Run Exam" />
                         <MenuItem fx:id="mntmBackup" mnemonicParsing="false" onAction="#mntmBackup_click" text="Take Backup for All Active Students">
                            <accelerator>
                               <KeyCodeCombination alt="UP" code="B" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                            </accelerator></MenuItem>
-                        <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem fx:id="mntmRemoveRejected" mnemonicParsing="false" onAction="#mntmRemoveRejected_click" text="Remove Rejected" />
-                        <MenuItem fx:id="mntmFinish" mnemonicParsing="false" onAction="#mntmFinish_click" text="Finish Exam" />
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem fx:id="mntmRecordOnExcel" mnemonicParsing="false" onAction="#mntmRecordOnExcel_click" text="Record On Excel &amp; Auto Correct" />
                         <MenuItem fx:id="mntmRecordOnExcelWithoutAutoCorrect" mnemonicParsing="false" onAction="#mntmRecordOnExcelWithoutAutoCorrect_click" text="Record On Excel (without auto correct)" />
@@ -109,9 +89,20 @@
                         <MenuItem fx:id="mntmExit" mnemonicParsing="false" text="Exit" />
                   </items>
                 </Menu>
+                  <Menu mnemonicParsing="false" text="Students">
+                     <items>
+                    <MenuItem fx:id="mntmDistributeSheet" mnemonicParsing="false" onAction="#mntmDistributeSheet_click" text="Distribute Sheet" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem fx:id="mntmFinish" mnemonicParsing="false" onAction="#mntmFinish_click" text="Finish Exam" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem fx:id="mnitmUnfinishAll" mnemonicParsing="false" onAction="#mnitmUnfinishAll_click" text="Unfinish All" />
+                        <MenuItem fx:id="mntmUngradeAll" mnemonicParsing="false" onAction="#mntmUngradeAll_click" text="Ungrade All" />
+                        <MenuItem fx:id="mntmRemoveRejected" mnemonicParsing="false" onAction="#mntmRemoveRejected_click" text="Remove All Rejected" />
+                     </items>
+                  </Menu>
                 <Menu mnemonicParsing="false" text="Help">
                   <items>
-                    <MenuItem fx:id="mntmAbout" mnemonicParsing="false" text="About..." />
+                    <MenuItem fx:id="mntmAbout" mnemonicParsing="false" onAction="#mnutmAbout_click" text="About..." />
                   </items>
                 </Menu>
               </menus>
@@ -119,7 +110,7 @@
                   <ContextMenu fx:id="mnuStudents">
                     <items>
                         <MenuItem fx:id="mntmFinishHim" mnemonicParsing="false" onAction="#mntmFinishHim_click" text="Finish him" />
-                        <MenuItem fx:id="mnitmSetToCutoff" mnemonicParsing="false" onAction="#mnitmSetToCutoff_click" text="Set Him Unfinished" />
+                        <MenuItem fx:id="mnitmUnfinishHim" mnemonicParsing="false" onAction="#mnitmUnfinishHim_click" text="Set Him Unfinished" />
                         <MenuItem fx:id="mntmUngradeHim" mnemonicParsing="false" onAction="#mntmUngradeHim_click" text="Ungrade Him" />
                       <MenuItem fx:id="mntmDelete" mnemonicParsing="false" onAction="#mntmDelete_click" text="Delete" />
                         <MenuItem fx:id="mntmExportPDF" mnemonicParsing="false" onAction="#mntmExportPDF_click" text="Export to PDF" />
@@ -140,12 +131,12 @@
             </MenuBar>
             <ToolBar prefHeight="14.0" prefWidth="572.0">
               <items>
-                  <Button fx:id="btnRunExam" mnemonicParsing="false" onAction="#btnRunExam_click" prefHeight="30.0" prefWidth="91.0" text="Run Exam" textAlignment="CENTER" wrapText="true">
+                  <Button fx:id="btnRunExam" mnemonicParsing="false" onAction="#mntmDistributeSheet_click" prefHeight="31.0" prefWidth="144.0" text="Distribute Sheets" textAlignment="CENTER" wrapText="true">
                      <font>
                         <Font name="System Bold" size="15.0" />
                      </font>
                   </Button>
-                  <Button fx:id="btnFinish" mnemonicParsing="false" onAction="#btnFinish_click" prefHeight="30.0" prefWidth="104.0" text="Finish Exam" textAlignment="CENTER" wrapText="true">
+                  <Button fx:id="btnFinish" mnemonicParsing="false" onAction="#mntmFinish_click" prefHeight="31.0" prefWidth="88.0" text="Finish All" textAlignment="CENTER" wrapText="true">
                      <font>
                         <Font name="System Bold" size="15.0" />
                      </font>
@@ -155,7 +146,7 @@
                         <Font name="Consolas Bold" size="14.0" />
                      </font>
                   </ToggleButton>
-                  <Label fx:id="lblVersion" prefHeight="24.0" prefWidth="63.0" style="-fx-background-color: lightyellow; -fx-border-color: red;" text="v21" textAlignment="CENTER">
+                  <Label fx:id="lblVersion" prefHeight="24.0" prefWidth="63.0" style="-fx-background-color: lightyellow; -fx-border-color: red;" text="v24" textAlignment="CENTER">
                      <font>
                         <Font name="Consolas Bold" size="18.0" />
                      </font>
@@ -166,10 +157,10 @@
       </VBox>
    </top>
    <bottom>
-      <HBox prefWidth="759.0" spacing="5.0" BorderPane.alignment="CENTER">
+      <HBox maxWidth="1.7976931348623157E308" spacing="5.0" BorderPane.alignment="CENTER">
          <children>
-            <ProgressBar fx:id="prgHeap" prefWidth="200.0" progress="0.0" />
-            <Label fx:id="lblTotalHeap" graphicTextGap="5.0" prefHeight="19.0" prefWidth="175.0" style="-fx-background-color: lightyellow; -fx-border-color: red;" text="Heap">
+            <ProgressBar fx:id="prgHeap" maxWidth="1.7976931348623157E308" prefWidth="200.0" progress="0.0" HBox.hgrow="ALWAYS" />
+            <Label fx:id="lblTotalHeap" graphicTextGap="5.0" prefHeight="19.0" prefWidth="256.0" style="-fx-background-color: lightyellow; -fx-border-color: red;" text="Heap" HBox.hgrow="SOMETIMES">
                <font>
                   <Font name="Consolas Bold" size="14.0" />
                </font>
@@ -177,12 +168,12 @@
                   <Insets left="3.0" />
                </padding>
             </Label>
-            <Button fx:id="btnGC" mnemonicParsing="false" onAction="#btnGC_click" text="T">
+            <Button fx:id="btnGC" mnemonicParsing="false" onAction="#btnGC_click" text="T" HBox.hgrow="NEVER">
                <font>
                   <Font size="9.0" />
                </font>
             </Button>
-            <Label fx:id="lblTotalStudents" graphicTextGap="5.0" prefHeight="19.0" prefWidth="129.0" style="-fx-background-color: lightyellow; -fx-border-color: red;" text="# Students">
+            <Label fx:id="lblTotalStudents" graphicTextGap="5.0" prefHeight="19.0" prefWidth="91.0" style="-fx-background-color: lightyellow; -fx-border-color: red;" text="# Students" HBox.hgrow="NEVER">
                <font>
                   <Font name="Consolas Bold" size="14.0" />
                </font>

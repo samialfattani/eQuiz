@@ -1,0 +1,57 @@
+/*----------------
+--   Object Size   --
+------------------*/
+
+	//now to run the server with agenet use this
+	//java -javaagent:../ObjectSize/build/libs/ObjectSizeFetcherAgent.jar
+	
+	apply plugin: 'java'
+	apply plugin: 'eclipse'
+	
+	repositories{
+		mavenLocal()
+		mavenCentral()
+		jcenter()
+	}
+	
+	dependencies
+	{
+		//
+	}
+
+	eclipse {
+		classpath {
+		    //customizing the classes output directory:
+		    defaultOutputDir = file('build')
+		
+		    //default settings for downloading sources and Javadoc:
+		    downloadSources = false
+		    downloadJavadoc = false
+		}
+	}
+
+	apply plugin: 'application' //adds 'run' task
+	mainClassName = 'frawla.equiz.memory.Main'
+
+	run {
+	     jvmArgs '-javaagent:../ObjectSize/build/libs/ObjectSizeFetcherAgent.jar'
+	}
+
+	jar {
+		baseName = 'ObjectSizeFetcherAgent' //.jar name
+    	manifest {
+    	 attributes(
+			'Class-Path': ".",
+    	 	'Implementation-Title': 'Gradle',
+            'Implementation-Version': '1.0.0.1',
+            'Main-Class': mainClassName,
+            
+            //MOST IMPORTANT for this project
+            'Premain-Class': 'frawla.equiz.memory.ObjectSizeFetcher'
+            )
+    	}
+	}
+	
+		
+	
+
