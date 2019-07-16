@@ -9,8 +9,9 @@
 		id 'edu.sc.seis.launch4j' version '2.3.0'
 		id 'java'
 		id 'eclipse'
+		id 'groovy'
 	}
-	
+	//apply plugin: 'groovy'
 	//apply plugin: 'java'
 	//apply plugin: 'eclipse'
 	//project.targetCompatibility = 1.5
@@ -67,10 +68,12 @@
 		//mokito
 		testCompile "org.mockito:mockito-core:2.28.+"
 		
-		//javax for Send Emails
-		//compile 'javax:javaee-api:6.0'
-		//compile 'javax.javaee:javaee:6.0-alpha-1'
+		// https://mvnrepository.com/artifact/org.json/json
+		compile 'org.json:json:20180813'
 		
+		//to run Groovy code
+		compile localGroovy()
+		//compile 'org.codehaus.groovy:groovy-all:2.5.0'
 	}
 	
 	
@@ -126,6 +129,18 @@
 		messagesInstanceAlreadyExists "An application instance is already running.\n" + "������ ��� ���� �� ���� ��������"
 		//see more: https://github.com/TheBoegl/gradle-launch4j
 	}
+	
+	
+	
+	task about(dependsOn: classes, type: JavaExec) { doLast {
+		description 'Run Groovy script - to modify splash version'
+    	
+    	classpath = sourceSets.main.runtimeClasspath
+    	main = 'frawla.equiz.server.Main'
+    	println '---------------'
+    	
+    }}
+	
 
 /*
 	jar {

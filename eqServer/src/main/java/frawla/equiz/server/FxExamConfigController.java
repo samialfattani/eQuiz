@@ -32,7 +32,7 @@ public class FxExamConfigController implements Initializable
 	@FXML private TextArea txtInfo;
 	@FXML private Pane PanRoot;
 
-	private File lastDirectory = new File("");
+	private File lastDirectory = new File(".");
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) 
@@ -149,16 +149,17 @@ public class FxExamConfigController implements Initializable
 	public void mnutmAbout_click()
 	{
 		//TODO: complete this
-		Dialog<String> dialog = new Dialog<>();
-		Stage window = (Stage) dialog.getDialogPane().getScene().getWindow();
-		window.getIcons().add(new Image( Util.getResourceAsStream("images/servericon.png").toString() ));
-		window.setWidth(500);
-		ImageView iv = new ImageView ( Util.getResourceAsStream("images/server-splash.png").toString());
-		//iv.setFitWidth(70); iv.setFitHeight(70);
-		dialog.setGraphic( iv );
-		dialog.setTitle("About eQuiz-Server");
-		dialog.setHeaderText("");
-		dialog.show();
+//		Dialog<String> dialog = new Dialog<>();
+//		Stage window = (Stage) dialog.getDialogPane().getScene().getWindow();
+//		Image img = new Image( Util.getResourceAsStream("images/servericon.png"));
+//		window.getIcons().add(img);
+//		window.setWidth(500);
+//		ImageView iv = new ImageView ( img );
+//		//iv.setFitWidth(70); iv.setFitHeight(70);
+//		dialog.setGraphic( iv );
+//		dialog.setTitle("About eQuiz-Server");
+//		dialog.setHeaderText("");
+//		dialog.show();
 	}
 
 	public void mnutmExit_click()

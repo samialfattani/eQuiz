@@ -1,2 +1,7 @@
 include ':eqClient', ':eqServer', ':eqCore'
 
+/** reusing outputs of previous builds. 
+  stors (locally or remotely) build outputs and fetch them when inputs 
+  have not changed instead of regenerating them.
+  */
+//org.gradle.caching=true

@@ -209,7 +209,10 @@ public class ExcelRecorder
 		//autoSize all columns
 		for (int j=0; j < QuesCount+3 ; j++){
 			mySheet.autoSizeColumn(j);
+			int w = (mySheet.getColumnWidth(j) > 50)? 50 : mySheet.getColumnWidth(j); 
+			mySheet.setColumnWidth(j,  w);
 		}
+		
 
 	}//end RecordTimer
 

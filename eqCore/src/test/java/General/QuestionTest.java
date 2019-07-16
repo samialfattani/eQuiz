@@ -73,16 +73,16 @@ public class QuestionTest
 		
 		qmc = new MultipleChoice("Q2/1/CBEAD/");
 		assertFalse(qmc.isCorrectAnswer());
-		assertEquals("Q2`1`CBEAD`-", qmc.toString());
+		assertEquals("Q2`1`CBEAD`", qmc.toString());
 		assertEquals("{}",qmc.getChoices().toString());
 		
 		assertFalse(qmc.isCorrectAnswer());		
-		assertEquals("-",qmc.getStudentAnswer());
+		assertEquals("",qmc.getStudentAnswer());
 		assertEquals("", qmc.getTeacherNote());
 
-		qmc = new MultipleChoice("Q2/1/CBEAD/-");
+		qmc = new MultipleChoice("Q2/1/CBEAD/B/mynote");
 		assertFalse(qmc.isCorrectAnswer());		
-		assertEquals("-",qmc.getStudentAnswer());
+		assertEquals("B",qmc.getStudentAnswer());
 		assertEquals("", qmc.getTeacherNote());
 		
 		// ----- NEW PATTEREN
@@ -92,24 +92,24 @@ public class QuestionTest
 		assertEquals("E",qmc.getStudentAnswer());
 		assertEquals("teacher notes", qmc.getTeacherNote());
 		
-		qmc = new MultipleChoice("Q2`1`CBEAD`-`teacher notesefe efefef/ efefef/ef/efe");
+		qmc = new MultipleChoice("Q2`1`CBEAD``teacher notesefe efefef/ efefef/ef/efe");
 		assertFalse(qmc.isCorrectAnswer());
-		assertEquals("-",qmc.getStudentAnswer());
+		assertEquals("",qmc.getStudentAnswer());
 		assertEquals("teacher notesefe efefef/ efefef/ef/efe", qmc.getTeacherNote());
 
 		qmc = new MultipleChoice("Q2`1`CBEAD``teacher notes");
 		assertFalse(qmc.isCorrectAnswer());
-		assertEquals("-",qmc.getStudentAnswer());
+		assertEquals("",qmc.getStudentAnswer());
 		assertEquals("teacher notes", qmc.getTeacherNote());
 
 		qmc = new MultipleChoice("Q2`1`CBEAD``");
 		assertFalse(qmc.isCorrectAnswer());		
-		assertEquals("-",qmc.getStudentAnswer());
+		assertEquals("",qmc.getStudentAnswer());
 		assertEquals("", qmc.getTeacherNote());
 
-		qmc = new MultipleChoice("Q2`1`CBEAD`-`teacher notes\r\n rgrg\n5165165");
+		qmc = new MultipleChoice("Q2`1`CBEAD``teacher notes\r\n rgrg\n5165165");
 		assertFalse(qmc.isCorrectAnswer());		
-		assertEquals("-",qmc.getStudentAnswer());
+		assertEquals("",qmc.getStudentAnswer());
 		assertEquals("teacher notes\r\n rgrg\n5165165", qmc.getTeacherNote());
 
 		qmc = new MultipleChoice("Q1`1`DBACE`A");
@@ -119,7 +119,7 @@ public class QuestionTest
 
 		qmc = new MultipleChoice("Q1`1`DBACE`");
 		assertFalse(qmc.isCorrectAnswer());		
-		assertEquals("-",qmc.getStudentAnswer());
+		assertEquals("",qmc.getStudentAnswer());
 		assertEquals("", qmc.getTeacherNote());
 	}// end MultipleChoiceSpecialConstructorTest
 
@@ -174,10 +174,10 @@ public class QuestionTest
 		//------- NEW PATTERN ------
 		
 		qbf = new BlankField("Q5`2`");
-		assertEquals("-", qbf.getStudentAnswer());
+		assertEquals("", qbf.getStudentAnswer());
 		
 		qbf = new BlankField("Q5`1.5``");
-		assertEquals("-", qbf.getStudentAnswer());
+		assertEquals("", qbf.getStudentAnswer());
 		assertEquals("", qbf.getTeacherNote());
 		
 		qbf = new BlankField("Q5`1.5`Hi`jji");

@@ -120,10 +120,10 @@ public class FxExamSheetController implements Initializable
 			window.show();
 
 			KeyCombination kc;
-			kc = new KeyCodeCombination(KeyCode.PAGE_DOWN, KeyCombination.SHORTCUT_DOWN);
+			kc = new KeyCodeCombination(KeyCode.PAGE_DOWN, KeyCombination.CONTROL_DOWN);
 			PanRoot.getScene().getAccelerators().put(kc, () -> { lblNext_MouseClicked(); } );
-			kc = new KeyCodeCombination(KeyCode.PAGE_UP, KeyCombination.SHORTCUT_ANY);
-			PanRoot.getScene().getAccelerators().put(kc, () -> { lblNext_MouseClicked(); } );
+			kc = new KeyCodeCombination(KeyCode.PAGE_UP, KeyCombination.CONTROL_DOWN);
+			PanRoot.getScene().getAccelerators().put(kc, () -> { lblPrev_MouseClicked(); } );
 
 			lblIVersion.setVisible(false);
 
@@ -438,7 +438,7 @@ public class FxExamSheetController implements Initializable
 			if(getImageLocalFile(currentQues.getImgFileName()) == null)
 				return;
 			
-			if(me.getButton().equals(MouseButton.PRIMARY) && me.getClickCount() == 2)
+			if( isDoubleClick(me) )
 			{
 				Desktop dt = Desktop.getDesktop();
 				File f = new File(getImageLocalFile(currentQues.getImgFileName()));
@@ -448,6 +448,10 @@ public class FxExamSheetController implements Initializable
 		}catch(IOException | URISyntaxException e){
 			Util.showError(e , e.getMessage());
 		}
+	}
+
+	public boolean isDoubleClick(MouseEvent me) {
+		return me.getButton().equals(MouseButton.PRIMARY) && me.getClickCount() == 2;
 	}
 	
 	

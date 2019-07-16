@@ -224,9 +224,9 @@ public class FxMonitorController implements Initializable
 	private void recordOnExcel(boolean withAutoCorrect){
 		try {
 			if( Students.stream()
-					.allMatch( s -> not(s.isREADY() || s.isRESUMED()) )
-					)
+					.allMatch( s -> not(s.isREADY() || s.isRESUMED()) ) )
 			{
+				log("Start Recording...");
 				RecordOnExcel(withAutoCorrect);
 				log("Finished and Recorded !");
 			}else{
@@ -265,10 +265,6 @@ public class FxMonitorController implements Initializable
 	private void updateAndSaveExcelFileAndLogFile() throws IOException, FileNotFoundException 
 	{
 		FileOutputStream excelFOut = new FileOutputStream( examConfig.SourceFile );
-
-		String fname = FilenameUtils.removeExtension(examConfig.SourceFile.getAbsolutePath());
-		File logFile = new File(fname + ".log");
-		Util.Save(txtLog.getText(),  logFile, true);
 
 		wrkBook.write( excelFOut );
 		excelFOut.flush();
@@ -530,7 +526,7 @@ public class FxMonitorController implements Initializable
 	public void mntmExportAllToPDF_click() throws FileNotFoundException, DocumentException
 	{
 		//export only when all is graded.
-		if( Students.stream().allMatch(st -> st.isGRADED() )) {
+		if( Students.stream().anyMatch(st -> !st.isGRADED() )) {
 			Util.showError("Some students didn't graded yet!");
 			return;
 		}
@@ -629,6 +625,11 @@ public class FxMonitorController implements Initializable
 	
 	private boolean not(boolean b) {
 		return !b;
+	}
+
+	public void mnutmAbout_click()
+	{
+		//TODO: complete this also
 	}
 
 

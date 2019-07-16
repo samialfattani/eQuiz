@@ -258,8 +258,8 @@ public class Exporter
 		}else if (q.getStudentMark() == q.getMark()) {
 			
 			correctionMark  = '\u221A' + "    "  + mark  + "   " + q.getTeacherNote();
-			correctionMark  = '\uDDF8' + "    "  + mark + "   " + q.getTeacherNote() +
-			String.format("%c", '\uD83C') + '\uDDF7';
+//			correctionMark  = '\uDDF8' + "    "  + mark + "   " + q.getTeacherNote() +
+//			String.format("%c", '\uD83C') + '\uDDF7';
 		}else {
 			correctionMark = '\u221A' + "X   " + mark  + "   " + q.getTeacherNote();
 		}

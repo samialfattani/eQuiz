@@ -163,7 +163,7 @@ public class Util
 	}
 
 	public static Optional<File> getFileChooserForOpen(){
-		return getFileChooserForOpen(new File(""));
+		return getFileChooserForOpen(new File("."));
 	}
 	public static Optional<File> getFileChooserForOpen(File initialDir)
 	{
@@ -271,17 +271,13 @@ public class Util
 
 	public static String readFileAsString(final File f, final String LineSeperator)
 	{
+		
 		//final close all open objects
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(f)));)
 		{
 			//read the extraxcted file normally.
 			String line = null;
 			StringBuilder str = new StringBuilder();
-
-			if(!f.exists()){
-				JOptionPane.showMessageDialog(null, "Subtitle File is not found !!", "File Not Found", JOptionPane.ERROR_MESSAGE);
-				return "";
-			}
 
 			//first line only
 			if ((line = in.readLine()) != null)

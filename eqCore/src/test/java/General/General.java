@@ -43,6 +43,17 @@ public class General
 
 	
 	@Test
+	public void userHomePathTest() throws IOException 
+	{
+		File b; 
+		b = new File("" );
+		assertEquals(b.getAbsolutePath(), System.getProperty("user.dir") );
+		assertEquals("C:\\Users\\sami", System.getProperty("user.home") );
+	}
+	
+	
+
+	@Test
 	public void relativePathTest() throws IOException 
 	{
 		File b; 
@@ -280,10 +291,13 @@ public class General
         new JFXPanel(); // initializes JavaFX environment
         Duration d;
 		d = Duration.millis(3*1000);
-		assertEquals( "00:00", Util.formatTime(d) ); 
+		assertEquals( "00:03", Util.formatTime(d) ); 
 
 		d = Duration.millis( 3*60*1000 );
-		assertEquals( "00:03", Util.formatTime(d) ); 
+		assertEquals( "03:00", Util.formatTime(d) );
+		
+		d = Duration.hours(2).add( Duration.minutes(30) );
+		assertEquals( "2:30:00", Util.formatTime(d) );
 	}
 
 	@Test

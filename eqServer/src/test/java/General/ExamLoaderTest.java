@@ -31,18 +31,19 @@ public class ExamLoaderTest {
 					.findFirst().get()
 					.getOptionalExamSheet()
 					.get(), 
-				  new File("ExamSheet-sami.mock"));
+					Util.getResourceAsFile("ExamSheet-sami.mock")
+					);
 		
 		Util.Save(ExamLoader
 					.getInstance()
 					.getExamConfig(),
-			  new File("ExamConfig.mock"));
+					Util.getResourceAsFile("ExamConfig.mock"));
 		
 		
 		Util.Save(ExamLoader
 				.getInstance()
 				.generateNewSheet(),
-		  new File("ExamSheet-empty.mock"));
+				Util.getResourceAsFile("ExamSheet-empty.mock"));
 		
 		///----------------------------
 		f = new File( Util.getResourceAsURI("IT100-2-open-office.ods"));

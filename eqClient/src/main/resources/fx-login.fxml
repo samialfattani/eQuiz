@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="PanRoot" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="280.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frawla.equiz.client.FxLoginController">
+<AnchorPane fx:id="PanRoot" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="243.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frawla.equiz.client.FxLoginController">
    <children>
       <Label fx:id="lblTime" layoutX="14.0" layoutY="14.0" prefHeight="34.0" prefWidth="71.0" text="Host:" textAlignment="CENTER" AnchorPane.leftAnchor="14.0">
          <font>
@@ -38,7 +38,10 @@
             <Font name="Consolas Bold" size="18.0" />
          </font>
       </TextField>
-      <Button fx:id="btnJoin" defaultButton="true" layoutX="290.0" layoutY="161.0" mnemonicParsing="false" onAction="#btnJoin_click" prefHeight="60.0" prefWidth="93.0" text="Join" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="14.0" />
+      <Button fx:id="btnJoin" defaultButton="true" layoutX="293.0" layoutY="192.0" mnemonicParsing="false" onAction="#btnJoin_click" prefHeight="44.0" prefWidth="93.0" text="Join" AnchorPane.bottomAnchor="7.0" AnchorPane.rightAnchor="14.0">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font></Button>
       <TextField fx:id="txtPort" layoutX="81.0" layoutY="55.0" prefHeight="34.0" prefWidth="305.0" promptText="Port Number" AnchorPane.leftAnchor="81.0" AnchorPane.rightAnchor="14.0">
          <font>
             <Font name="Consolas Bold" size="18.0" />
