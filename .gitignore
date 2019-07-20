@@ -1,5 +1,6 @@
 .gradle
 .settings
+.vscode
 build
 build-eclipse
 bin
@@ -10,3 +11,7 @@ bin
 Thumb.mdb
 GIT modifications.txt
 ERRORS.txt
+/eqCore/nbproject/private/
+/eqClient/nbproject/private/
+/ObjectSize/nbproject/private/
+/eqServer/nbproject/private/

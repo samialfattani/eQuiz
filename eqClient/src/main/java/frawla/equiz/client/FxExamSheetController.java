@@ -127,7 +127,8 @@ public class FxExamSheetController implements Initializable
 
 			lblIVersion.setVisible(false);
 
-		});        
+		});
+		
 		ImageView img ;
 		int size = 26;
 		img = new ImageView( new Image(  Util.getResourceAsStream( "images/next.png" ) ));
@@ -192,10 +193,10 @@ public class FxExamSheetController implements Initializable
 					prgTime.getStyleClass().removeAll("red-bar");					
 				}
 				
-				if(timeLeft.lessThan(Duration.ZERO)){
-					setAnswer();
-					loadQuestion(currentQues);
-				}
+//				if(timeLeft.lessThan(Duration.ZERO)){
+//					setAnswer();
+//					loadQuestion(currentQues);
+//				}
 			}
 		}));
 		
@@ -233,7 +234,6 @@ public class FxExamSheetController implements Initializable
 		myTimer.play();
 		startCountingTime = System.currentTimeMillis();
 		loadQuestion( currentQues );
-
 	}
 	
 	public void lblNext_MouseClicked() {

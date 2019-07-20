@@ -41,12 +41,8 @@
 		//Excel (.xlsx)
 		compile 'org.apache.poi:poi:4.1.0'
 		compile 'org.apache.poi:poi-ooxml:4.1.0'
-		//compile 'org.apache.poi:poi-scratchpad:3.15'
-		//compile 'org.apache.poi:poi-ooxml-schemas:3.15'
-		//compile 'org.apache.poi:ooxml-schemas:1.3'
 		
 		//Open-Office Sheet files (.ods)
-		//compile 'org.apache.odftoolkit:odfdom-java:0.8.8-incubating'
 		compile 'org.apache.odftoolkit:simple-odf:0.7-incubating'
 		
 		//iText
@@ -84,7 +80,7 @@
 		
 		    //default settings for downloading sources and Javadoc:
 		    downloadSources = false
-		    downloadJavadoc = false
+		    downloadJavadoc = true
 		}
 	}
 
@@ -100,7 +96,7 @@
 	createExe {
 		outputDir = "../../exe/server"
 		fileDescription =	"Electronic Quizes - Server"
-		copyright = "All Copyright are recieved (c) 2016~2019, This is a program for EQuizes in order to make exams for students and mark registeration."
+		copyright = "Copyright © 2016~2019 by Eng. Sami Alfattani, All Rights recieved. This is a program for EQuizes in order to make exams for students and mark registeration."
 		companyName = "Sami"
 		 
 	    println mainClassName 
@@ -116,7 +112,7 @@
 		//splashFileName = new File('src/main/resources/images/splash-server.bmp').absolutePath
 		//project.name
 		version = gitVersion()
-		outfile	= 'eQuiz-server-' + version + '.exe'	
+		outfile	= 'eQuiz-server.exe'	
 		productName	= 'eQuiz-server-' + version
 		internalName = 'eQuiz-server-' + version
 
