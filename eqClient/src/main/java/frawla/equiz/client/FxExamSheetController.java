@@ -301,7 +301,7 @@ public class FxExamSheetController implements Initializable
 		if(myChannel.mySheet.getExamConfig().timingType == TimingType.QUESTION_LEVEL)
 			timeLeft = q.getTime().subtract(q.getConsumedTime()).add(Duration.seconds(2));
 
-		lblMark.setText( String.format("Marks: %.2f", q.getMark()) );
+		lblMark.setText( String.format("Marks: %s", Util.MARK_FORMATTER.format( q.getMark())  ) );
 		int i=0;		
 		if(q instanceof MultipleChoice)
 		{

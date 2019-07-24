@@ -5,7 +5,7 @@ import java.text.DecimalFormat;
 
 import javafx.util.Duration;
 
-public abstract class Question implements Serializable
+public abstract class Question implements Serializable, Cloneable
 {
 	private static final long serialVersionUID = 8649772481978311983L;
 	

@@ -30,12 +30,12 @@ public class EQDate extends Date
 	}
 	public EQDate minus(Duration dur) 
 	{
-		long durMillis = new Double( dur.toMillis() ).longValue();
+		long durMillis = Double.valueOf( dur.toMillis() ).longValue();
 		EQDate res = new EQDate (this.getTime() - durMillis);
 		return res;
 	}
 	public EQDate plus(Duration dur) {
-		long durMillis = new Double( dur.toMillis() ).longValue();
+		long durMillis = Double.valueOf( dur.toMillis() ).longValue();
 		EQDate res = new EQDate (this.getTime() + durMillis);
 		return res;
 	}

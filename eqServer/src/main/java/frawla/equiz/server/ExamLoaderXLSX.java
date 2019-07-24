@@ -1,7 +1,7 @@
 package frawla.equiz.server;
 
-import java.io.File;
 import java.io.FileInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.time.LocalTime;
@@ -17,8 +17,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-
-import com.rits.cloning.Cloner;
 
 import frawla.equiz.util.EQDate;
 import frawla.equiz.util.Log;
@@ -58,7 +56,7 @@ public class ExamLoaderXLSX extends ExamLoader
 			
 			sourceFile = srcFile;
 			
-			examConfig   = LoadFileConfig( wrkBook);
+			examConfig   = LoadExamConfig( wrkBook);
 			questionList = loadQuestionList( wrkBook);
 			imageList    = loadImages( wrkBook);
 			BWList       = loadStdBWlist( wrkBook);
@@ -71,7 +69,7 @@ public class ExamLoaderXLSX extends ExamLoader
 		
 	}
 
-	private ExamConfig LoadFileConfig(Workbook wrkBook) 
+	private ExamConfig LoadExamConfig(Workbook wrkBook) 
 	{
 		Sheet mySheet = wrkBook.getSheet( "Config" );
 		ExamConfig examConfig = new ExamConfig();
@@ -253,7 +251,8 @@ public class ExamLoaderXLSX extends ExamLoader
 			st.setName(row.getCell(1).getStringCellValue());
 
 			ExamSheet examSheet = new ExamSheet();
-			examSheet.setExamConfig( new Cloner().deepClone( examConfig )  );
+
+			examSheet.setExamConfig( examConfig );
 
 			//read all answers and timers
 			List<Question> Qlst = extractQuestionList( shtAnswer.getRow(i), shtTimer.getRow(i) );
@@ -303,7 +302,7 @@ public class ExamLoaderXLSX extends ExamLoader
 				mcCopy.copyChoices(qj);
 				mcCopy.setStudentMark(  stRow.getCell(base + (qid-1)*2+1).getNumericCellValue() );
 				mcCopy.setConsumedTime( toDuration(timeCellContent)  );
-				Qlst.add( new Cloner().deepClone(mcCopy)  );
+				Qlst.add( mcCopy );
 			}
 			else if(qj instanceof BlankField)
 			{
@@ -312,7 +311,7 @@ public class ExamLoaderXLSX extends ExamLoader
 				qbCopy.copyOptions(qj);
 				qbCopy.setStudentMark(  stRow.getCell(base + (qid-1)*2+1).getNumericCellValue() );
 				qbCopy.setConsumedTime( toDuration(timeCellContent)  );
-				Qlst.add( new Cloner().deepClone(qbCopy) );
+				Qlst.add( qbCopy );
 			}
 
 		}

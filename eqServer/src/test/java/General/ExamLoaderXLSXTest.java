@@ -1,8 +1,8 @@
 package general;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,8 +15,8 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import frawla.equiz.server.ExamLoader;
 import frawla.equiz.server.ExamLoaderXLSX;
@@ -33,7 +33,7 @@ public class ExamLoaderXLSXTest
 {
 	static ExamConfig exConfig;
 
-	@BeforeClass
+	@BeforeAll
 	public static void before() throws Exception
 	{
 		new JFXPanel();
@@ -68,6 +68,11 @@ public class ExamLoaderXLSXTest
 		assertEquals(5, ExamLoader.getInstance().getStudentList().size());
 		assertEquals(3, ExamLoader.getInstance().getBWList().size());
 		assertEquals(0, ExamLoader.getInstance().getLog().size());
+		
+		System.out.println(
+				ExamLoader.getInstance().getStudentList()
+				.get(0).getLeftTime()
+				);
 	}
 
 	@Test

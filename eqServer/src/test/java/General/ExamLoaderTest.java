@@ -1,16 +1,16 @@
 package general;
 
-import static org.junit.Assert.*;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import frawla.equiz.server.ExamLoader;
 import frawla.equiz.server.ExamLoaderODS;
 import frawla.equiz.server.ExamLoaderXLSX;
 import frawla.equiz.util.Util;
-import frawla.equiz.util.exam.Student;
 
 public class ExamLoaderTest {
 

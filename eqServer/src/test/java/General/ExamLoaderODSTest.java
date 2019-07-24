@@ -1,15 +1,16 @@
 package general;
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.table.Cell;
 import org.odftoolkit.simple.table.Table;
@@ -28,7 +29,7 @@ public class ExamLoaderODSTest
 {
 	static ExamConfig exConfig;
 
-	@BeforeClass
+	@BeforeAll
 	public static void before() throws Exception
 	{
 		new JFXPanel();

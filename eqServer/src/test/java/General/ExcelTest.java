@@ -1,6 +1,6 @@
 package general;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,9 +17,9 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import frawla.equiz.util.Util;
 
@@ -28,7 +28,7 @@ public class ExcelTest
 	private static File myFile = new File(Util.getResourceAsURI("IT100-2.xlsx")); //new File("data/test.xlsx");
 	private static Workbook wrkBook;
 	
-	@BeforeClass
+	@BeforeAll
 	public static void before() throws EncryptedDocumentException, InvalidFormatException, IOException
 	{
 		FileInputStream fin = new FileInputStream(myFile);
@@ -84,7 +84,7 @@ public class ExcelTest
 
 	}
 
-	@AfterClass
+	@AfterAll
 	public static void afterClass() throws IOException
 	{
 		FileOutputStream fout = new FileOutputStream( myFile ); 

@@ -1,5 +1,6 @@
 package frawla.equiz.util;
 
+
 public class Log {
 	/**
 	 * 

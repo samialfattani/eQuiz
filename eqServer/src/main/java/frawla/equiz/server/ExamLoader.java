@@ -5,14 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
-import com.rits.cloning.Cloner;
 
 import frawla.equiz.util.Log;
+import frawla.equiz.util.Util;
 import frawla.equiz.util.exam.BlankField;
 import frawla.equiz.util.exam.ExamConfig;
 import frawla.equiz.util.exam.ExamSheet;
 import frawla.equiz.util.exam.MultipleChoice;
-import frawla.equiz.util.exam.QuesinoOrderType;
 import frawla.equiz.util.exam.Question;
 import frawla.equiz.util.exam.Randomizable;
 import frawla.equiz.util.exam.Student;
@@ -26,6 +25,10 @@ public abstract class ExamLoader
 	private static List<String> BWList = new ArrayList<>();
 	private static ExamConfig examConfig = new ExamConfig();
 	private static ObservableList<Student> students;
+
+	private static File examConfigFile;
+
+	private static File questionListFile;
 
 	protected ExamLoader(){ }
 
@@ -54,9 +57,15 @@ public abstract class ExamLoader
 			instance = new ExamLoaderODS(srcFile);
 		}
 		students     = instance.getStudentList();
-		examConfig   = instance.getExamConfig();
 		BWList       = instance.getBWList();
+		examConfig   = instance.getExamConfig();
 		questionList = instance.getQustionList();
+		
+		examConfigFile = new File(Util.getEquizDir(), "examConfig.dat");
+		questionListFile = new File(Util.getEquizDir(), "questionList.dat");
+		
+		Util.Save(examConfig, examConfigFile);
+		Util.Save(questionList, questionListFile);
 		
 		students.forEach(st -> st.setStatus(Student.GRADED) );
 		
@@ -125,13 +134,15 @@ public abstract class ExamLoader
 	public abstract ObservableList<Student> getStudentList();
 	public abstract List<Log> getLog();
 
+	@SuppressWarnings("unchecked")
 	public ExamSheet generateNewSheet() 
 	{
 		ExamSheet newSheet = new ExamSheet();
-		newSheet.setExamConfig( new Cloner().deepClone(examConfig) );
-		newSheet.setQustionList( new Cloner().deepClone(questionList) );
+		
+		newSheet.setExamConfig( (ExamConfig) Util.readFileAsObject(examConfigFile) );
+		newSheet.setQustionList( (ArrayList<Question>) Util.readFileAsObject(questionListFile) );
 
-		if(examConfig.questionOrderType == QuesinoOrderType.RANDOM)
+		if(newSheet.getExamConfig().isRandomQuestions() )
 			newSheet.shuffle();
 
 		//shuffle Options in each Question

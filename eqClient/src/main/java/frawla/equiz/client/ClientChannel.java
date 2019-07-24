@@ -58,7 +58,7 @@ public class ClientChannel extends Channel {
 				this.sendMessage(new Message<String>(Message.EXAM_OBJECT_RECIVED_SUCCESSFYLLY));								
 			break;
 			case Message.IMAGES_LIST: 
-				myImageList = (Map<String, byte[]>) msg.getData();
+				myImageList = (Map<String , byte[]>) msg.getData();
 				this.sendMessage(new Message<String>(Message.IMAGE_LIST_RECIVED_SUCCESSFYLLY));								
 			break;
 			case Message.TIME_LEFT: 

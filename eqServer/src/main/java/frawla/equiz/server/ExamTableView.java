@@ -67,7 +67,7 @@ public class ExamTableView extends TableView<Student>
 		colName.setCellValueFactory(new PropertyValueFactory<>("name"));
 		colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
 		colStartPoint.setCellValueFactory(new PropertyValueFactory<>("startPoint"));
-		colTimeLeft.setCellValueFactory(new PropertyValueFactory<>("timeLeft"));
+		colTimeLeft.setCellValueFactory(new PropertyValueFactory<>("leftTime"));
 		colLastUpdate.setCellValueFactory(new PropertyValueFactory<>("lastUpdate"));
 		
 		//spectial values representation

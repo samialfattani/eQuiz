@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.URL;
+import java.util.Random;
 import java.util.ResourceBundle;
 
 import frawla.equiz.util.Util;
@@ -42,13 +43,14 @@ public class FxLoginController implements Initializable
 			window.setTitle("eQuiz-CLIENT");
 			window.setOnCloseRequest(event -> System.exit(0) );
 			window.show();
-		});        
+		});
 
 		txtIP.setText(Main.jsap.getResult().getString("host"));
-		txtPort.setText(Main.jsap.getResult().getInt("port")+"");
-		//txtID.setText("NBE"  +(new Random().nextInt(999-100+1)+100));
+		txtPort.setText(Main.jsap.getResult().getInt("port")+"");		
 		txtID.setText(Main.jsap.getResult().getString("id"));
 		txtName.setText(Main.jsap.getResult().getString("user"));
+		
+		txtID.setText("xxx" + "100"); //(new Random().nextInt(999-100+1)+100)
 
 
 		txtID.setTextFormatter( new TextFormatter<String>( change ->

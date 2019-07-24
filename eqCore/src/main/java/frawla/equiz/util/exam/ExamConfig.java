@@ -7,7 +7,7 @@ import java.util.List;
 
 import javafx.util.Duration;
 
-public class ExamConfig implements Serializable
+public class ExamConfig implements Serializable, Cloneable
 {
 
 	private static final long serialVersionUID = 1L;
@@ -57,5 +57,15 @@ public class ExamConfig implements Serializable
 		return examTime;
 	}
 
+	@Override
+	public ExamConfig clone() throws CloneNotSupportedException 
+	{
+		return (ExamConfig) super.clone();
+		
+	}
 
+	public boolean isRandomQuestions() 
+	{
+		return this.questionOrderType == QuesinoOrderType.RANDOM;
+	}
 }

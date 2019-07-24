@@ -6,150 +6,89 @@
 	  no other statements are allowed
 	//this is for making exe file only*/	
 	plugins {
-		id 'edu.sc.seis.launch4j' version '2.3.0'
+		id 'edu.sc.seis.launch4j' version '2.4.6' //https://github.com/TheBoegl/gradle-launch4j
 		id 'java'
 		id 'eclipse' // optional (to generate Eclipse project files)
 	}
-	//apply from: 'http://dl.bintray.com/content/shemnon/javafx-gradle/javafx.plugin'
 	
-//	apply plugin: 'java'
-//	apply plugin: 'eclipse'
-	
+	buildDir = 'D:/build/equiz-client'
+
 	dependencies
 	{
 		compile project (":eqCore")
-
-		testCompile 'junit:junit:4.+'
-		//testImplementation  'junit:junit:5.+'
-		//testCompile 'org.junit.jupiter:junit-jupiter:5.5.0'
+		
+		testImplementation 'org.junit.jupiter:junit-jupiter:5.5.0'
 		
 		//JSAP (Java Simple Arguments Parser)
 		compile 'com.martiansoftware:jsap:2.1'
 	}
 	
 	
-	eclipse {
+	eclipse 
+	{
 		classpath {	
-			jdt {
-				//if you want to alter the java versions 
-				//(by default they are configured with gradle java plugin settings):
-				//sourceCompatibility = 1.8
-				//targetCompatibility = 1.8
-			}		     
-
 		    //customizing the classes output directory:
-		    defaultOutputDir = file('build')
+		    defaultOutputDir = file('build') //must be inside project folder
 		
 		    //default settings for downloading sources and Javadoc:
 		    downloadSources = false
-		    downloadJavadoc = false
-		}
+		    downloadJavadoc = true
+        }
+		
 	}
 
 	apply plugin: 'application' //adds 'run' task	
-	mainClassName = 'frawla.equiz.client.Main'
+	mainClassName = 'frawla.equiz.client.Launcher'
 
 	jar {
+		version = '' //to avoid write it in Jar file name
     	manifest {
     	 attributes(
 			'Class-Path': ".",
     	 	'Implementation-Title': "Gradle",
-            'Implementation-Version': '12.3',
+            'Implementation-Version': gitVersion(), 
             'Main-Class': mainClassName)
     	}
 	}
-
+	
 	// launch4j: put all configuration of launch4j here 
 	createExe {
-		outputDir = "../../exe/client"
+		
+		//println(buildDir.absolutePath)
+		//outputDir = "../../exe/client"
+		//outputDir = ""
 		fileDescription	 = "Electronic Quizes - Client"
 		copyright = "All Copyright are recieved (c) 2016~2018, This is a program for e-quizes in order to make exams for students and mark registeration."
 		companyName = "Eng. Sami Alfattani"
 		 
-	    mainClassName = "frawla.equiz.client.Main"
-	    // = new File('../A') project(':eqClient')
-	    def projPath = projectDir.absolutePath;
-	    icon = new File(projPath + '/src/main/resources/images/exam.ico').absolutePath
+	    mainClassName = "frawla.equiz.client.Launcher"
 	    
-	    //headerType = "console" //no splash with console
-	    headerType = "gui" 
-		splashFileName = new File(projPath + '/src/main/resources/images/splash-client.bmp').absolutePath
+	    def projPath = projectDir.absolutePath;
+	    def imgDir = projPath + '/src/main/resources/images';
+	    
+	    icon = new File(imgDir + '/exam.ico').absolutePath
+	    
+	    headerType = "console" //no splash with console
+	    //headerType = "gui" 
+		//splashFileName = new File(imgDir + '/splash-client.bmp').absolutePath
 		
 		version = gitVersion() 
-		//project.name
 		outfile = 'eQuiz-client.exe'
 		productName	= 'eQuiz-client' 
 		internalName = 'eQuiz-client-' + version
+		
+		//jreMinVersion = '9.0'
+		jdkPreference = 'preferJre' //jreOnly|preferJre|preferJdk|jdkOnly
 
 		// initialHeapSize = 0 //Optional
 		// maxHeapSize = 4096
 		// maxHeapPercent = 50
 		errTitle = "Java is not Supported on this Computer"
-		downloadUrl = 'http://java.com/download'
-		messagesStartupError "An error occurred while starting the application.\n" + "��� ��� ����� ����� ��������" 
-		messagesBundledJreError "This application was configured to use a bundled Java Runtime Environment but the runtime is missing or corrupted.\n" + "��� �������� ���� ��� ���� ��� ���� ���� ��������ɡ ���� �� ������ ��� ������ �� �����"
-		messagesJreVersionError "This application requires a Java Runtime Environment\n" + "��� �� ����� ���� ������ � ���� �� ����� ������ ��������"
-		messagesLauncherError "The registry refers to a nonexistent Java Runtime Environment installation or the runtime is corrupted.\n" + "������ ��� ����� ���� ����"
-		messagesInstanceAlreadyExists "An application instance is already running.\n" + "������ ��� ���� �� ���� ��������"
+		downloadUrl = 'https://www.java.com/ES/download/'
+		messagesStartupError "An error occurred while starting the application.\n" + "حصلت مشكلة أثناء التشغيل" 
+		messagesBundledJreError "This application was configured to use a bundled Java Runtime Environment but the runtime is missing or corrupted.\n" + "ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½"
+		messagesJreVersionError "This application requires a Java Runtime Environment\n" + "ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
+		messagesLauncherError "The registry refers to a nonexistent Java Runtime Environment installation or the runtime is corrupted.\n" + "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½"
+		messagesInstanceAlreadyExists "An application instance is already running.\n" + "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
 		//see more: https://github.com/TheBoegl/gradle-launch4j
 	}
-
-	javafx {
-		appID 'frawla.equiz'
-		appName 'eQuiz-Client'
-		mainClass 'frawla.equiz.client.Main'
-	
-		//jvmArgs = ['-XX:+AggressiveOpts', '-XX:CompileThreshold=1']
-		systemProperties = [ 'prism.disableRegionCaching':'true' ]
-		arguments = ['-l', '--fast']
-	
-		embedLauncher = false
-	
-		// deploy/info attributes
-		category = 'Demos'
-		copyright = 'All Copyright are recieved (c) 2016~2018, This is a program for e-quizes in order to make exams for students and mark registeration.'
-		description = 'This is a project of Electronic Quizes.'
-		licenseType = ''
-		vendor = 'Eng. Sami Alfattani'
-		installSystemWide = true
-		menu = true
-		shortcut = true
-	
-		// app icons
-		icons {
-			shortcut = ['shortcut-16.png', 'shortcut-32.png', 
-						'shortcut-128.png', 'shortcut-256.png', 
-						'shortcut-16@2x.png', 'shortcut-32@2x.png', 
-						'shortcut-128@2x.png']
-			volume = 'javafx-icon.png'
-			setup = 'javafx-icon.png'
-		}
-	
-		releaseKey {
-			alias = 'production'
-			//keyPass = 'password' // provide via command line
-			keyStore = file('/Volumes/ProdThumbDrive/production.jks')
-			//storePass = 'password'  // provide via command line
-		}
-		signingMode 'release'
-	
-		width = 800
-		height = 600
-		embedJNLP = false
-		codebase = 'http://example.com/bogus/JNLP/Codebase'
-	
-		// arbitrary jnlp icons
-		icon {
-			href = 'src/main/resources/images/javafx-icon.png'
-			kind = 'splash'
-			width = 128
-			height = 128
-		}
-		icon {
-			href = 'shortcut-32@2x.png'
-			kind = 'selected'
-			width = 16
-			height = 16
-			scale = 1
-		}
-	}	

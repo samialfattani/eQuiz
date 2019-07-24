@@ -23,8 +23,6 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
-import javax.swing.JOptionPane;
-
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.control.Alert;
@@ -52,6 +50,7 @@ public class Util
 	static{
 		new JFXPanel();
 	}
+	
 	public Util()
 	{
 
@@ -430,37 +429,26 @@ public class Util
 	{  
 
 		return s.matches("[-+]?\\d*\\.?\\d+");  
+	}
+
+	public static File getEquizDir() 
+	{
+		File dir = new File ( System.getProperty("user.home")+"\\.equiz" );
+		if(!dir.exists())
+			dir.mkdir();
+		
+		return dir;
+	}
+	
+	public static File getInitFile() 
+	{
+		File dir = getEquizDir();
+		
+		File initFile = new File(dir + "\\init.json");
+		if(initFile.exists())
+			initFile.delete();
+		
+		copyFile(Util.getResourceAsFile("init.json"), initFile);
+		return initFile;
 	}  
-
-
-//	public static void jaxbStudentToXML(Student st, File f) {
-//
-//		try {
-//			JAXBContext context = JAXBContext.newInstance(Student.class);
-//			Marshaller m = context.createMarshaller();
-//			//for pretty-print XML in JAXB
-//			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-//
-//			// Write to System.out for debugging
-//			// m.marshal(emp, System.out);
-//
-//			// Write to File
-//			m.marshal(st, f);
-//		} catch (JAXBException e) {
-//			e.printStackTrace();
-//		}
-//	}
-//
-//	public static Student jaxbXMLToStudent(File f) {
-//		try {
-//			JAXBContext context = JAXBContext.newInstance(Student.class);
-//			Unmarshaller un = context.createUnmarshaller();
-//			Student st = (Student) un.unmarshal(f);
-//			return st;
-//		} catch (JAXBException e) {
-//			e.printStackTrace();
-//		}
-//		return null; 
-//	}
-
 }

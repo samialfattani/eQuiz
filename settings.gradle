@@ -1,3 +1,8 @@
+
+
+
+rootProject.name = 'eQuiz'
+
 include ':eqClient', ':eqServer', ':eqCore'
 
 /** reusing outputs of previous builds. 
@@ -5,3 +10,4 @@ include ':eqClient', ':eqServer', ':eqCore'
   have not changed instead of regenerating them.
   */
 //org.gradle.caching=true
+//org.gradle.java.home=/path_to_jdk_directory

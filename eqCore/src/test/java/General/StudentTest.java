@@ -1,11 +1,13 @@
 package general;
 
-import static org.junit.Assert.assertEquals;
+
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import frawla.equiz.util.EQDate;
 import frawla.equiz.util.EQuizException;
@@ -15,13 +17,14 @@ import frawla.equiz.util.exam.ExamSheet;
 import frawla.equiz.util.exam.Student;
 import javafx.util.Duration;
 
+
 public class StudentTest
 {
 	ExamSheet examSheetMocked;	
 	ExamSheet emptyExamSheet;
 	ExamConfig examConfigMocked;
 	
-	@Before
+	@BeforeAll
 	public void readObjectFromFileAsMock() throws InterruptedException, EQuizException
 	{
 		File mockFile;

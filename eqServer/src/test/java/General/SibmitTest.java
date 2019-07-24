@@ -1,6 +1,6 @@
 package general;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,8 +10,8 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import frawla.equiz.server.ServerListener;
 import frawla.equiz.util.Channel;
@@ -21,12 +21,12 @@ import frawla.equiz.util.exam.RegisterInfo;
 
 public class SibmitTest
 {
-	private Map<String, byte[]> images;
+	private static Map<String, byte[]> images;
 	private Map<String, byte[]> msgMap;
 	private Object lock = new Object();
 
-	@Before
-	public void before() throws FileNotFoundException, IOException{
+	@BeforeAll
+	public static void before() throws FileNotFoundException, IOException{
 		File imgFile ;
         byte[] imgData;
         images = new HashMap<>();
@@ -73,7 +73,7 @@ public class SibmitTest
 		client.interrupt();
 	}
 
-	private byte[] fileToByteArray(File file) throws FileNotFoundException, IOException
+	private static byte[] fileToByteArray(File file) throws FileNotFoundException, IOException
 	{
 		FileInputStream fin = new FileInputStream(file );
         

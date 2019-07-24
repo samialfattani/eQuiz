@@ -1,14 +1,14 @@
 package general;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import frawla.equiz.server.ExamLoader;
 import frawla.equiz.util.Message;
@@ -23,7 +23,8 @@ import javafx.util.Duration;
 
 public class General
 {
-	@Before public void before(){
+	@BeforeAll 
+	public static void before(){
 		new JFXPanel();
 	}
 

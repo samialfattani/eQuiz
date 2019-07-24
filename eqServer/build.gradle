@@ -10,34 +10,19 @@
 		id 'java'
 		id 'eclipse'
 		id 'groovy'
+		
+		id 'org.beryx.runtime' version '1.2.1'
 	}
-	//apply plugin: 'groovy'
-	//apply plugin: 'java'
-	//apply plugin: 'eclipse'
-	//project.targetCompatibility = 1.5
 	
-	configurations.all {
-	    resolutionStrategy {
-	        force 'xml-apis:xml-apis:1.0.b2'
-	    }
-	}
-
-	test {
-		useJUnitPlatform()
-		testLogging { events "passed", "skipped", "failed" }
-	}	
+	buildDir = 'D:/build/equiz-server'
 
 	dependencies
 	{
 		compile project (":eqCore")
-
-		testCompile 'junit:junit:4.+'
-		//testImplementation('org.junit.jupiter:junit-jupiter:5.5.0')
-		//testCompile 'junit:junit:5.+'
-		//testImplementation('org.junit.jupiter:junit-jupiter:5.5.0')
-		//testCompile 'org.junit.jupiter:junit-jupiter:5.5.0'
 	
-	
+		//Junit
+		testImplementation 'org.junit.jupiter:junit-jupiter:5.5.0'
+		
 		//Excel (.xlsx)
 		compile 'org.apache.poi:poi:4.1.0'
 		compile 'org.apache.poi:poi-ooxml:4.1.0'
@@ -51,15 +36,8 @@
 		//compile 'com.itextpdf:itext-xtra:5.5.10'
 		//compile 'com.itextpdf.tool:xmlworker:5.5.10'
 		
-		//Emoji :)
-		compile 'com.vdurmont:emoji-java:4.0.0'
-
-		//Cloning
-		compile 'uk.com.robust-it:cloning:1.9.2'
-
 		//FOP
 		compile 'commons-io:commons-io:2.5'
-		compile 'org.apache.xmlgraphics:fop:2.1'
 		
 		//mokito
 		testCompile "org.mockito:mockito-core:2.28.+"
@@ -74,9 +52,10 @@
 	
 	
 	eclipse {
+		
 		classpath {
 		    //customizing the classes output directory:
-		    defaultOutputDir = file('build')
+		    defaultOutputDir = file('build') //must be inside project folder
 		
 		    //default settings for downloading sources and Javadoc:
 		    downloadSources = false
@@ -85,11 +64,29 @@
 	}
 
 	apply plugin: 'application' //adds 'run' task	
-	mainClassName = 'frawla.equiz.server.Main'
+	mainClassName = 'frawla.equiz.server.Launcher'
 
 	//this is to run with JVM option to run the java agent
 	run {
 	     jvmArgs '-javaagent:../ObjectSize/build/libs/ObjectSizeFetcherAgent.jar'
+	}
+
+	runtime 
+	{
+	    //jlink options
+	    options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
+	}
+
+
+	jar {
+		version = '' //to avoid write it in Jar file name
+    	manifest {
+    	 attributes(
+			'Class-Path': ".",
+    	 	'Implementation-Title': "Gradle",
+            'Implementation-Version': gitVersion(),
+            'Main-Class': mainClassName)
+    	}
 	}
 
 	// launch4j: put all configuration of launch4j here 
@@ -117,7 +114,7 @@
 		internalName = 'eQuiz-server-' + version
 
 		errTitle = "Java is not Supported on this Computer"
-		downloadUrl = 'http://java.com/download'
+		downloadUrl = 'https://www.java.com/ES/download/'
 		messagesStartupError "An error occurred while starting the application.\n" + "ÍÕáÊ ãÔßáÉ ÃËäÇÁ ÊÔÛíá ÇáÈÑäÇãÌ" 
 		messagesBundledJreError "This application was configured to use a bundled Java Runtime Environment but the runtime is missing or corrupted.\n" + "åÐÇ ÇáÈÑäÇãÌ íÊØáÈ æÌæÏ ÇáÌÇÝÇ¡ æáßä íÈÏæ Ãä ÇáÌÇÝÇ ÛíÑ ãæÌæÏÉ Çæ ÊÍÊÇÌ Åáì ÇÚÇÏÉ ÊÍãíá"
 		messagesJreVersionError "This application requires a Java Runtime Environment\n" + "ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
@@ -128,25 +125,15 @@
 	
 	
 	
-	task about(dependsOn: classes, type: JavaExec) { doLast {
+	task about(dependsOn: classes, type: JavaExec) { doLast 
+	{
 		description 'Run Groovy script - to modify splash version'
     	
     	classpath = sourceSets.main.runtimeClasspath
-    	main = 'frawla.equiz.server.Main'
+    	main = 'frawla.equiz.server.Main'	
     	println '---------------'
     	
     }}
 	
 
-/*
-	jar {
-    	manifest {
-    	 attributes(
-			'Class-Path': ".",
-    	 	'Implementation-Title': "Gradle",
-            'Implementation-Version': version,
-            'Main-Class': mainClassName)
-    	}
-	}
-*/
 	

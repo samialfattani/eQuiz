@@ -14,17 +14,11 @@ import frawla.equiz.util.Util;
 class JSONTest {
 
 	@Test
-	void test() throws IOException 
+	void test() throws IOException
 	{
-		File dir = new File ( System.clearProperty("user.home")+"\\.equiz" );
-		if(!dir.exists())
-			dir.mkdir();
 		
-		File initFile = new File(dir + "\\init.json");
-		if(initFile.exists())
-			initFile.delete();
-		
-		Util.copyFile(Util.getResourceAsFile("init.json"), initFile);
+		File initFile = Util.getInitFile();
+		File dir = initFile.getParentFile();
 		
 		String json = Util.readFileAsString(initFile);
         JSONObject obj = new JSONObject(json);

@@ -114,13 +114,15 @@ public class Student implements Serializable
 	 */
 	public Duration getLeftTime()
 	{
-		if (isRunningHisExam()){
-			
+		if (isRunningHisExam())
+		{
 			Duration examTime = new Duration (finishPoint.getTime() - startPoint.getTime());
 			leftTime = examTime.subtract( getSpendTime() );
+			
 			return leftTime;
 		}
-		return null;
+		
+		return Duration.ZERO;
 	}
 
 	/**

@@ -18,15 +18,25 @@ public class JSAPClient extends SimpleJSAP
 
 	private JSAPResult result;
 
+	public JSAPClient(String resourceName) throws IOException, JSAPException{
+		super(resourceName);
+		System.out.println(resourceName);
+		System.exit(0);
+	}
+
 	/**
-	 * -h 10.4.10.100 -p 10000 -i SAM000 -u "Sami Alfattani"
+	 * --help :default argument
+	 * -?     :default argument
+	 * -h 10.4.10.100 -p 10000 -i SAM000 -u "Sami Alfattani" -v
 	 * -h 192.168.200.1 -p 10000 -i SAM000 -u "Sami Alfattani"
-	 * -h localhost -p 10000 -i SAM000 -u "Sami Alfattani"
+	 * --host localhost --user-name "Sami Alfattani"
 	 * */
 	public JSAPClient(String[] args) throws JSAPException
 	{
-		super("kkkkkk");
+		super("eQuiz-Client");
+		
 		try{
+			
 			// create a flagged option we'll access using the id "host".
 			// it's going to be an integer, with a default value of 'localhost'.
 			// its short flag is "h", so a command line containing "-h 10.4.10.191 "
@@ -55,7 +65,6 @@ public class JSAPClient extends SimpleJSAP
 			opt3.setHelp("Name of the Student who participated this exam.");
 			registerParameter(opt3);
 
-			
 			FlaggedOption opt4 = new FlaggedOption("id")
 					.setStringParser( new StringParser()
 					{
@@ -76,10 +85,11 @@ public class JSAPClient extends SimpleJSAP
 					.setLongFlag("verbose");
 			sw1.setHelp("put this flag if you want to check the assigned parameters.");
 			registerParameter(sw1);
-
+			
 			//--- finish -----
 			result = parse(args);
-			showVerbose();
+			
+			showVerboseIfRequested();
 			if ( messagePrinted() ) 
 				System.exit( 1 );
 		}
@@ -87,9 +97,9 @@ public class JSAPClient extends SimpleJSAP
 
 	}//end constructor
 
-	private void showVerbose()
+	private void showVerboseIfRequested()
 	{
-		if( result.getBoolean("verbose")){
+		if( isVerboseRequested() ){
 			System.out.println("host: " + result.getString("host"));
 			System.out.println("port: " + result.getInt("port"));			
 			System.out.println("user id: " + result.getString("id"));
@@ -98,8 +108,15 @@ public class JSAPClient extends SimpleJSAP
 			
 	}
 
-	public JSAPClient(String resourceName) throws IOException, JSAPException{
-		super(resourceName);
+	public boolean isVerboseRequested()
+	{
+		return result.getBoolean("verbose");
+	}
+
+
+	public boolean isHelpRequested()
+	{
+		return result.getBoolean("help");
 	}
 
 	public JSAPResult getResult()

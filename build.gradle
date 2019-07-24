@@ -24,19 +24,20 @@
 	subprojects
 	{
 		dependencies
-		{
-			//apply plugin: 'java'
-		}
+		{}
 	}
 	
 	task getjava{
-		println System.getProperty('java.home')
+		//println System.getProperty('java.home')
 	}
 	
 	task simo { doLast {
 		
-		def details = versionDetails()
+		println "------ JAVA_HOME -----"
+		println System.getProperty('java.home')
+		println ""
 		println "------ This is GIT Version Information -----"
+		def details = versionDetails()
 		println "Version = " + gitVersion()
 		println "lastTag = $details.lastTag"
 		println "commitDistance = $details.commitDistance"

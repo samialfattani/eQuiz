@@ -60,8 +60,6 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-
-
 public class FxMonitorController implements Initializable
 {
 

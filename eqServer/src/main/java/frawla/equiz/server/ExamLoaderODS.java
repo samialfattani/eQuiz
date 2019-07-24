@@ -1,7 +1,7 @@
 package frawla.equiz.server;
 
-import java.io.File;
 import java.text.ParseException;
+import java.io.File;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
