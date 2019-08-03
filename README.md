@@ -1,7 +1,7 @@
-# eQuiz
+# **eQuiz**
 This is a a desktop application of electronic quizzes. Instructor can enter his/her questions in Excel sheet. It is a client server application. Once the server is started it will listen to some port(by default 10000) and clients connects to it.
 
-# Usage
+## Usage
 you can just clone and start contribute
 ```bash
 $ git clone

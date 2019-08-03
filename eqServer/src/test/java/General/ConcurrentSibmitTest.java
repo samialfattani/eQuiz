@@ -24,6 +24,7 @@ public class ConcurrentSibmitTest
 	private List<byte[]> lst = new ArrayList<>();
 	private volatile Integer count =0;
 	private final int THREAD_COUNT = 5;
+	
 	@Test
 	public void Sibmi120MessagesConcurrentlyTest() throws IOException, InterruptedException
 	{
@@ -73,7 +74,6 @@ public class ConcurrentSibmitTest
         	T[i] = new Thread (() -> {
             	Message<byte[]> msg = new Message<>(Message.EXAM_OBJECT , lst.get(fi) );
             	clients[fi].sendMessage(msg);
-            	//clients[fi].interrupt();
         	});
 		}
         

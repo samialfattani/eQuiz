@@ -25,6 +25,7 @@ public class ExamTableView extends TableView<Student>
 	private TableColumn<Student, Boolean> colConnected= new TableColumn<>("C");
 	private TableColumn<Student, Duration> colTimeLeft = new TableColumn<>("Time Left");
 	private TableColumn<Student, Date> colLastUpdate = new TableColumn<>("Last Backup");
+	private TableColumn<Student, Double> colMarks = new TableColumn<>("Marks");
 
 	private StyleChangingRowFactory<Student> rowFactory;
 	//private ObservableList<Student> Students = FXCollections.observableArrayList();
@@ -46,13 +47,14 @@ public class ExamTableView extends TableView<Student>
 		setFocusTraversable(false);
 		setTableMenuButtonVisible(true);
 
-		colConnected.setPrefWidth(40);		colConnected.setMinWidth(USE_PREF_SIZE);
+		colConnected.setPrefWidth(40);	colConnected.setMinWidth(USE_PREF_SIZE);
 		colId.setPrefWidth(75); 		colId.setMinWidth(USE_PREF_SIZE);		
 		colName.setPrefWidth(150);		colName.setMinWidth(USE_PREF_SIZE);
-		colStatus.setPrefWidth(70);	colStatus.setMinWidth(USE_PREF_SIZE);
-		colStartPoint.setPrefWidth(100);		colStartPoint.setMinWidth(USE_PREF_SIZE);		
+		colStatus.setPrefWidth(70);			colStatus.setMinWidth(USE_PREF_SIZE);
+		colStartPoint.setPrefWidth(100);	colStartPoint.setMinWidth(USE_PREF_SIZE);		
 		colTimeLeft.setPrefWidth(100);		colTimeLeft.setMinWidth(USE_PREF_SIZE);
-		colLastUpdate.setPrefWidth(100);		colLastUpdate.setMinWidth(USE_PREF_SIZE);
+		colLastUpdate.setPrefWidth(100);	colLastUpdate.setMinWidth(USE_PREF_SIZE);
+		colMarks.setPrefWidth(75);	colMarks.setMinWidth(USE_PREF_SIZE);
 		
 		colConnected.setSortable(false);
 		colId.setSortable(true);		
@@ -61,6 +63,7 @@ public class ExamTableView extends TableView<Student>
 		colStartPoint.setSortable(true);
 		colTimeLeft.setSortable(true);
 		colLastUpdate.setSortable(true);
+		colMarks.setSortable(true);
 
 		colConnected.setCellValueFactory(new PropertyValueFactory<>("connected"));
 		colId.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -69,6 +72,7 @@ public class ExamTableView extends TableView<Student>
 		colStartPoint.setCellValueFactory(new PropertyValueFactory<>("startPoint"));
 		colTimeLeft.setCellValueFactory(new PropertyValueFactory<>("leftTime"));
 		colLastUpdate.setCellValueFactory(new PropertyValueFactory<>("lastUpdate"));
+		colMarks.setCellValueFactory(new PropertyValueFactory<>("totalMarks"));
 		
 		//spectial values representation
 		colConnected.setCellFactory( new IsConnectedCellFactory());
@@ -76,14 +80,13 @@ public class ExamTableView extends TableView<Student>
 		colTimeLeft.setCellFactory(new DurationCellFactory());
 		colLastUpdate.setCellFactory(new DateCellFactory());
 
-		getColumns().addAll(colConnected, colId, colName, colStatus, colStartPoint, colTimeLeft, colLastUpdate);
+		getColumns().addAll(colConnected, colId, colName, colStatus, colMarks, colStartPoint, colTimeLeft, colLastUpdate);
 
 	}//end constructor
 
 	public void setStudentList(ObservableList<Student> ol)
 	{
 		setItems(ol);
-		//Students = getItems();
 	}
 
 
@@ -108,7 +111,6 @@ class IsConnectedCellFactory implements Callback<TableColumn<Student,Boolean>, T
 					else
 						imgView = new ImageView(Util.getDisconnectedImage() );
 
-					//imgView.setFitHeight(20);
 					imgView.setPreserveRatio(true);
 					imgView.setFitWidth(20);
 					

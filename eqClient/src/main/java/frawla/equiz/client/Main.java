@@ -18,6 +18,7 @@ public class Main extends Application
 	{
 		jsap = new JSAPClient(args);
 		launch(args);
+		
 	}
 
 	@Override
@@ -26,6 +27,7 @@ public class Main extends Application
 		try 
 		{
 			new FXMLLoader(Util.getResourceAsURL("fx-login.fxml")).load();
+			Splasher.close();
 		}
 		catch (IOException e) 
 		{ 
@@ -34,4 +36,4 @@ public class Main extends Application
 		
 	}
 
-}
+}//end class

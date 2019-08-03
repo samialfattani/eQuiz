@@ -38,5 +38,14 @@ public class ExamSheet implements Serializable
 	public List<Question> getQuestionList(){return qustionList;}
 	public ExamConfig getExamConfig(){return examConfig;}
 	public void setExamConfig(ExamConfig examConfig){this.examConfig = examConfig;}
+	
+	public Double getTotalMarks() {
+		double res =  qustionList
+				.stream()
+				.mapToDouble(q -> q.getStudentMark())
+				.sum();
+		
+		return Double.valueOf(res);
+	}
 
 }

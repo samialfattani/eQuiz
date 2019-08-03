@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>true</dontWrapJar>
+  <headerType>console</headerType>
+  <jar>equiz-client\lib\eqClient.jar</jar>
+  <outfile>eQuiz-Client.exe</outfile>
+  <errTitle>Java is not Supported on this Computer</errTitle>
+  <cmdLine></cmdLine>
+  <chdir>.</chdir>
+  <priority>normal</priority>
+  <downloadUrl>https://www.java.com/ES/download/</downloadUrl>
+  <supportUrl></supportUrl>
+  <stayAlive>false</stayAlive>
+  <restartOnCrash>false</restartOnCrash>
+  <manifest></manifest>
+  <icon>..\..\eqClient\src\main\resources\images\exam.ico</icon>
+  <classPath>
+    <mainClass>frawla.equiz.client.Launcher</mainClass>
+    <cp>.</cp>
+    <cp>.\lib\*</cp>
+  </classPath>
+  <jre>
+    <path></path>
+    <bundledJre64Bit>false</bundledJre64Bit>
+    <bundledJreAsFallback>false</bundledJreAsFallback>
+    <minVersion>1.8.0_1</minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>jreOnly</jdkPreference>
+    <runtimeBits>32/64</runtimeBits>
+  </jre>
+  <versionInfo>
+    <fileVersion>2.12.0.3</fileVersion>
+    <txtFileVersion>Sami A. alfattani</txtFileVersion>
+    <fileDescription>Electronic Quizes</fileDescription>
+    <copyright>All Copyright are recieved (c) 2016~2018, This is a program for e-quizes in order to make exams for students and mark registeration.</copyright>
+    <productVersion>2.12.0.3</productVersion>
+    <txtProductVersion>Sami A. alfattani</txtProductVersion>
+    <productName>Electronic Quizes</productName>
+    <companyName>Eng. Sami Alfattani</companyName>
+    <internalName>Electronic Quizes</internalName>
+    <originalFilename>eQuiz-Client.exe</originalFilename>
+    <trademarks></trademarks>
+    <language>ENGLISH_US</language>
+  </versionInfo>
+  <messages>
+    <startupErr>An error occurred while starting the application.
+حدث خطأ أثناء تشغيل البرنامج</startupErr>
+    <bundledJreErr>This application was configured to use a bundled Java Runtime Environment but the runtime is missing or corrupted.
+</bundledJreErr>
+    <jreVersionErr>This application requires a Java Runtime Environment
+خطأ في اصدار نسخة الجافا ، تأكد من تثبيت النسخة المطلوبة</jreVersionErr>
+    <launcherErr>The registry refers to a nonexistent Java Runtime Environment installation or the runtime is corrupted.
+الجافا غير مسجلة بشكل صحيح</launcherErr>
+    <instanceAlreadyExistsMsg>An application instance is already running.
+لايمكن فتح أكثر من نسخة للبرنامج</instanceAlreadyExistsMsg>
+  </messages>
+</launch4jConfig>

@@ -1,6 +1,6 @@
-/*----------------
---   eQuiz   --
-------------------*/
+/*----------------------
+-- eQuiz-JAVA-12
+--------------------------*/
 	/* this allows you to get the version number form the last tag of your Git repo
 		using gitVersion()
 		1. make sure that last commit is tagged
@@ -19,23 +19,15 @@
 		}
 		//version = '2.10.0.0'
 		version = gitVersion()
-
-		dependencies{
-			compile 'commons-io:commons-io:2.5'
-		}
-
 	}
 	
 	subprojects
 	{
+		dependencies
+		{}
 	}
-	
-	task getjava{
-		//println System.getProperty('java.home')
-	}
-	
+
 	task simo { doLast {
-		
 		println "------ JAVA_HOME -----"
 		println System.getProperty('java.home')
 		println ""
@@ -48,11 +40,3 @@
 		println "branchName = $details.branchName"
 	}}
 	
-	task about(type: JavaExec) { doLast {
-		description 'Run Groovy script - to modify splash version'
-    	
-    	classpath = sourceSets.main.runtimeClasspath
-    	main = 'frawla.hi'	
-    	println '---------------'
-    	
-    }}

@@ -3,6 +3,8 @@ package general;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,8 +22,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import frawla.equiz.util.Util;
 import frawla.equiz.util.exam.BlankField;
@@ -38,7 +38,8 @@ import javafx.util.Duration;
 
 public class General
 {
-	@BeforeAll public void before(){
+	@BeforeAll
+	public static void before(){
 		new JFXPanel();
 	}
 

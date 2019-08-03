@@ -20,12 +20,12 @@ import javafx.util.Duration;
 
 public class StudentTest
 {
-	ExamSheet examSheetMocked;	
-	ExamSheet emptyExamSheet;
-	ExamConfig examConfigMocked;
+	private static ExamSheet examSheetMocked;	
+	private static ExamSheet emptyExamSheet;
+	private static ExamConfig examConfigMocked;
 	
 	@BeforeAll
-	public void readObjectFromFileAsMock() throws InterruptedException, EQuizException
+	public  static void readObjectFromFileAsMock() throws InterruptedException, EQuizException
 	{
 		File mockFile;
 		mockFile = Util.getResourceAsFile("ExamSheet-sami.mock");
@@ -41,11 +41,16 @@ public class StudentTest
 
 	
 	@Test
+	public void dataTest() throws InterruptedException, EQuizException
+	{
+		assertEquals(0.5, examSheetMocked.getTotalMarks(), 0.0 );	
+	}
+
+	@Test
 	public void rejectedTest() throws InterruptedException, EQuizException
 	{
 		//TODO: we need to move the validation method to be inside Student class		
 	}
-
 	
 	@Test
 	public void StartAndFinishTest() throws InterruptedException, EQuizException

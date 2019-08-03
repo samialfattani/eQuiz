@@ -8,19 +8,28 @@
 	plugins {
 		id 'edu.sc.seis.launch4j' version '2.4.6' //https://github.com/TheBoegl/gradle-launch4j
 		id 'java'
+		id 'application' //to use 'gradle run'
 		id 'eclipse' // optional (to generate Eclipse project files)
 	}
 	
-	buildDir = 'D:/build/equiz-client'
+	
+	//--- IMPORTANT CHANGES ----
+		buildDir = 'D:/build/equiz-client'
 
+		mainClassName = 'frawla.equiz.client.Launcher'
+		def splashImage = 'splash-client.jpg'
+	//------------------------
+	
+	applicationDefaultJvmArgs = ["-splash:$splashImage"]
+		
 	dependencies
 	{
 		compile project (":eqCore")
-		
-		testImplementation 'org.junit.jupiter:junit-jupiter:5.5.0'
+		//Junit
+		testCompile 'org.junit.jupiter:junit-jupiter:5.5.0'
 		
 		//JSAP (Java Simple Arguments Parser)
-		compile 'com.martiansoftware:jsap:2.1'
+		compile 'com.martiansoftware:jsap:2.1' //{ because 'we want to run the application using parameters' }
 	}
 	
 	
@@ -28,24 +37,20 @@
 	{
 		classpath {	
 		    //customizing the classes output directory:
-		    defaultOutputDir = file('build') //must be inside project folder
+		    //defaultOutputDir = file('build') //must be inside project folder
 		
 		    //default settings for downloading sources and Javadoc:
 		    downloadSources = false
 		    downloadJavadoc = true
         }
-		
 	}
-
-	apply plugin: 'application' //adds 'run' task	
-	mainClassName = 'frawla.equiz.client.Launcher'
 
 	jar {
 		version = '' //to avoid write it in Jar file name
     	manifest {
     	 attributes(
 			'Class-Path': ".",
-    	 	'Implementation-Title': "Gradle",
+    	 	'Implementation-Title': "eQuiz Manifest",
             'Implementation-Version': gitVersion(), 
             'Main-Class': mainClassName)
     	}
@@ -53,28 +58,24 @@
 	
 	// launch4j: put all configuration of launch4j here 
 	createExe {
-		
-		//println(buildDir.absolutePath)
-		//outputDir = "../../exe/client"
+		dependsOn 'makeAboutImage'
 		//outputDir = ""
 		fileDescription	 = "Electronic Quizes - Client"
-		copyright = "All Copyright are recieved (c) 2016~2018, This is a program for e-quizes in order to make exams for students and mark registeration."
+		copyright = "All Copyright are recieved (c) 2016~2018 by Eng. Sami Alfattani"
 		companyName = "Eng. Sami Alfattani"
 		 
-	    mainClassName = "frawla.equiz.client.Launcher"
+	    mainClassName = this.mainClassName
 	    
-	    def projPath = projectDir.absolutePath;
-	    def imgDir = projPath + '/src/main/resources/images';
+	    icon = "exam.ico" 				//realative to exe
 	    
-	    icon = new File(imgDir + '/exam.ico').absolutePath
-	    
-	    headerType = "console" //no splash with console
-	    //headerType = "gui" 
-		//splashFileName = new File(imgDir + '/splash-client.bmp').absolutePath
+	    //headerType = "console" //no splash with console
+	    headerType = "gui" 
+		jvmOptions = ["-splash:$splashImage"]
+		//splashFileName = splashImage
 		
 		version = gitVersion() 
 		outfile = 'eQuiz-client.exe'
-		productName	= 'eQuiz-client' 
+		productName	= 'eQuiz-client'
 		internalName = 'eQuiz-client-' + version
 		
 		//jreMinVersion = '9.0'
@@ -86,9 +87,78 @@
 		errTitle = "Java is not Supported on this Computer"
 		downloadUrl = 'https://www.java.com/ES/download/'
 		messagesStartupError "An error occurred while starting the application.\n" + "حصلت مشكلة أثناء التشغيل" 
-		messagesBundledJreError "This application was configured to use a bundled Java Runtime Environment but the runtime is missing or corrupted.\n" + "ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½"
-		messagesJreVersionError "This application requires a Java Runtime Environment\n" + "ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
-		messagesLauncherError "The registry refers to a nonexistent Java Runtime Environment installation or the runtime is corrupted.\n" + "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½"
+		messagesBundledJreError "This application was configured to use a bundled Java Runtime Environment but the runtime is missing or corrupted.\n" + "من المفترض أن يعمل هذا البرنامج على نسخة خاصة من الجافا متضمنة معه،ويبدو أنه قد حصل خطأ في هذه النسخة"
+		messagesJreVersionError "This application requires a Java Runtime Environment\n" + "هذا البرنامج يحتاج إلى الجافا"
+		messagesLauncherError "The registry refers to a nonexistent Java Runtime Environment installation or the runtime is corrupted.\n" + "يشير الريجستري إلى عدم تحميل الجافا أو النسخة معطوبة"
 		messagesInstanceAlreadyExists "An application instance is already running.\n" + "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
 		//see more: https://github.com/TheBoegl/gradle-launch4j
+		
 	}
+	
+	createExe.doFirst 
+	{		
+		copy{
+			from "src/main/resources/images"
+			include "exam.ico"
+			include splashImage
+			into "$buildDir/$outputDir"
+			into "$buildDir/SFX"
+		}
+	}
+
+	apply from: file('../eqCore/about.gradle')
+	makeAboutImage {
+		def res = 'src/main/resources/images'
+		inputFile = file("$res/splash-blank.bmp")
+		outputFile = file("$res/$splashImage")
+		version = gitVersion()
+		release = new Date().format('MMMM d, yyyy') 
+		licensed = 'To Eng. Sami Alfattani'
+
+		//println "about-"*5
+	}
+	
+	apply from: file('../eqCore/winrar/build.gradle');
+
+
+	makeSFXConfig
+	{
+		outputDir = file("$buildDir/launch4j")
+		version = gitVersion()
+		release = new Date().format('MMMM d, yyyy') 
+
+		shortcut.destType = 'desktop'
+		shortcut.srcName = 'eQuiz-client.exe -h 10.4.10.100 -p 10000' 	//relative to archive
+		shortcut.destFolder = ''
+		shortcut.desc = 'dddddd'
+		shortcut.shortcutName = 'run-eQuiz'
+		shortcut.shortcutIcon = 'exam.ico' 								//relative to archive
+
+		extractLocation = 'current' //'current' or 'program files'
+		extractDir = 'eQuiz'
+	}
+
+	makeSFX
+	{
+		def outputDir =  file("$buildDir/launch4j")
+		def outputFile = file("$outputDir/eQuiz-Installer.exe")
+		def packageIcon = file("exam.ico")
+		def packageImage = file("splash-client.jpg")
+		def packgeList =  ["lib",
+		 'eQuiz-Client.exe', 
+		 'exam.ico', 'splash-client.jpg']
+
+		workingDir = outputDir
+		//commandLine = [ 'cmd', '/c', 'echo', 'ff']
+ 		commandLine = ['cmd', '/c', 'rar',
+			'a', '-m5', 			
+			'-ep1',			
+			"-sfx${outputFile.absolutePath}",  
+			"-iicon ${packageIcon.absolutePath}", 
+			"-iimage ${packageImage.absolutePath}", 
+			"-z${outputDir}\\SFX-package.conf" ,
+			] + packgeList
+		
+		//println commandLine + '--------------'
+		//standardOutput = System.out //new ByteArrayOutputStream()
+	} 

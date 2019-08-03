@@ -1,0 +1,6 @@
+
+
+include   ':eqCore', ':eqClient'
+
+rootProject.name = 'eQuiz-Java12'
+

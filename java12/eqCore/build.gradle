@@ -1,0 +1,36 @@
+/*----------------
+--  CORE-JAVA-12
+------------------*/
+	plugins {
+		id 'java'
+		id 'application' //to use 'gradle run'
+		id 'org.openjfx.javafxplugin' version '0.0.7'
+	}
+
+	buildDir = 'D:/build/equiz-core-java12'
+	mainClassName = 'test.Test'
+
+	javafx {
+		version = "11.0.2" //version 11 hav long support.
+		modules = [ 'javafx.base', 'javafx.controls', 'javafx.fxml',
+					'javafx.swing', 'javafx.graphics',
+					'javafx.web' ]     
+		//'javafx.graphics',
+	}
+
+	sourceSets {
+		main {
+			java{ srcDirs = ['../../eqCore/src/main/java'] }
+			resources { srcDirs = ['../../eqCore/src/main/resources']}
+		}
+	}
+
+	dependencies
+	{
+		//Junit
+		testImplementation 'org.junit.jupiter:junit-jupiter:5.5.0'
+	
+		//mokito
+		testCompile "org.mockito:mockito-core:2.28.+"
+	}
+	

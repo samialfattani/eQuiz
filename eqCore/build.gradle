@@ -22,14 +22,12 @@
 	
 	eclipse {
 		classpath {	
-			defaultOutputDir = file('build') //must be inside project folder
-		
 		    //customizing the classes output directory:
-		    defaultOutputDir = file('build')
+		    //defaultOutputDir = file('build')
 		
 		    //default settings for downloading sources and Javadoc:
 		    downloadSources = false
-		    downloadJavadoc = false
+		    downloadJavadoc = true
 		}
 	}
 

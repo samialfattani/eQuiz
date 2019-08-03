@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.URL;
-import java.util.Random;
 import java.util.ResourceBundle;
 
 import frawla.equiz.util.Util;

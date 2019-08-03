@@ -13,7 +13,6 @@ public class Student implements Serializable
 {
 	private static final long serialVersionUID = -2983386758431074593L;
 	
-	
 	public static final String NONE = "None";
 	public static final String READY = "Ready";
 	public static final String DISCONNECTED = "Disconnected";
@@ -30,15 +29,16 @@ public class Student implements Serializable
 	private String status = NONE;
 	private SimpleStringProperty statusProperty = new SimpleStringProperty("");
 	private boolean connected = false;
-	private EQDate startPoint;
-	private EQDate cuttoffPoint;
+	private EQDate startPoint ;
+	private EQDate cuttoffPoint ;
 	private EQDate resumePoint ;
 	private EQDate finishPoint ;
-	private Duration leftTime = Duration.ZERO;
-	private Duration spendTime = Duration.ZERO;
+	private Duration leftTime = Duration.ZERO ;
+	private Duration spendTime = Duration.ZERO ;
 	private Optional<ExamSheet> examSheet = Optional.empty();
 	private EQDate LastUpdate = new EQDate();
-	
+	private Double totalMarks = Double.valueOf(0);
+
 	//IMPORTANT for Mockito.spys
 	public Student(){ }
 	
@@ -47,8 +47,7 @@ public class Student implements Serializable
 		connected = true;
 	}
 	
-	public Student(String id)
-	{
+	public Student(String id) {
 		this.id = id;
 	}
 
@@ -91,6 +90,14 @@ public class Student implements Serializable
 		statusProperty.set(status);
 	}
 
+	public void setTotalMarks(double m) {
+		totalMarks = m;
+	}
+	public Double getTotalMarks() {
+		totalMarks = examSheet.get().getTotalMarks();
+		return totalMarks;
+	}
+	
 	public boolean isRunningHisExam() {
 		return isSTARTED() || isRESUMED();
 	}
@@ -244,11 +251,5 @@ public class Student implements Serializable
 	public void UnGradeNow(){
 		setStatus(FINISHED);
 	}
-
-
-
-//	public void connectedNow(String status){
-//			setStatus(status);
-//	}
 
 }//end class

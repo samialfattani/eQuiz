@@ -1,0 +1,212 @@
+/*------------------------
+--   CLIENT-JAVA-12
+--------------------------*/
+
+	/**
+	  THIS script is refer to the exact same source code of eQuiz-Client
+		and compile it using Java-12 or any version later
+		see more in README.md
+
+		$ gradle run -Dorg.gradle.java.home="C:\Program Files\Java\jdk-12.0.2"
+	*/	
+	plugins {
+		id 'edu.sc.seis.launch4j' version '2.4.6' //https://github.com/TheBoegl/gradle-launch4j
+		id 'java'
+		id 'application' //to use 'gradle run'
+		
+		id 'org.openjfx.javafxplugin' version '0.0.7'
+		id 'org.beryx.runtime' version '1.2.1'
+	}
+
+	//--- IMPORTANT CHANGES ----
+		buildDir = "D:/build/equiz-client-java12"
+
+		mainClassName = 'frawla.equiz.client.Launcher'
+		def splashImage = 'splash-client.jpg'
+		def projPath = "../../eqClient"	
+		def jreImageDir = "equiz-client" //JRE image ($buildDir/image)
+	//---------------------------------
+	
+	applicationDefaultJvmArgs = ["-splash:$splashImage"]
+	javafx {
+		version = "11.0.2" //version 11 hav long support.
+		modules = [ 'javafx.base', 'javafx.controls', 'javafx.fxml',
+					'javafx.swing', 'javafx.graphics',
+					'javafx.web' ]     
+		//'javafx.graphics',
+	}
+
+	sourceSets {
+		main {
+			java { srcDirs = ["$projPath/src/main/java"] }
+			resources { srcDirs = ["$projPath/src/main/resources"] }
+		}
+	}
+	
+	dependencies
+	{
+		compile project (":eqCore")
+		
+		testImplementation 'org.junit.jupiter:junit-jupiter:5.5.0'
+		
+		//JSAP (Java Simple Arguments Parser)
+		compile 'com.martiansoftware:jsap:2.1'
+	}
+	
+	jar {
+		version = '' //to avoid write it in Jar file name
+    	manifest {
+    	 attributes(
+			'Class-Path': ".",
+    	 	'Implementation-Title': "eQuiz Manifest",
+            'Implementation-Version': gitVersion(), 
+            'Main-Class': mainClassName)
+    	}
+	}
+	
+
+	runtime {
+		imageDir = file("$buildDir/equiz-client") //JRE image
+
+	    //jlink options
+	    options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
+
+	}
+
+	task runtimeClean(dependsOn: 'runtime'){
+		mustRunAfter 'runtime'
+		doLast {
+			delete{
+				delete "$buildDir/jre"
+				delete "$buildDir/libs"
+				delete "$buildDir/install"
+			}		
+			println 'image is created !!!'
+		}
+	}
+
+
+	apply from: file('../../eqCore/about.gradle')
+	makeAboutImage {
+		def res = "$projPath/src/main/resources/images"
+		inputFile = file("$res/splash-blank.bmp")
+		outputFile = file("$res/$splashImage")
+		version = gitVersion()
+		release = new Date().format('MMMM d, yyyy') 
+		licensed = 'To Eng. Sami Alfattani'
+
+		//println "about-"*5
+	}
+	
+	// launch4j: put all configuration of launch4j here 
+	createExe {
+		dependsOn 'makeAboutImage'
+
+		fileDescription	 = "Electronic Quizes - Client"
+		copyright = "All Copyright are recieved (c) 2016~2018, This is a program for e-quizes in order to make exams for students and mark registeration."
+		companyName = "Eng. Sami Alfattani"
+
+		outputDir = "." 				//relative to $buildDir default "launch4j"
+		
+		bundledJrePath = "$jreImageDir" //Relative to exe 		default "image"
+		
+		//where launc4j puts all jars, this will be DELETED after task
+		libraryDir = "launch4j-lib"
+
+		classpath = ["$jreImageDir/lib/*"] 	//Relative to exe 	default []
+		jar = "$jreImageDir/lib/${project.tasks['jar'].archiveName}" 
+		mainClassName = this.mainClassName
+	    
+	    //headerType = "console" 			//no splash with console
+	    headerType = "gui" 
+		//splashFileName = 'splash-client.bmp' //realative to exe
+	    icon = "exam.ico" 				//realative to exe
+		
+		jvmOptions = ["-splash:$splashImage"]
+
+		outfile = 'eQuiz-client.exe'
+		productName	= 'eQuiz-client' 
+		internalName = 'eQuiz-client-' + gitVersion() 
+		
+		//jreMinVersion = '9.0'
+		jdkPreference = 'jdkOnly' //jreOnly|preferJre|preferJdk|jdkOnly
+
+		// initialHeapSize = 0 //Optional
+		// maxHeapSize = 4096
+		// maxHeapPercent = 50
+		errTitle = "Java is not Supported on this Computer"
+		downloadUrl = 'https://www.java.com/ES/download/'
+		messagesStartupError "An error occurred while starting the application.\n" + "حصلت مشكلة أثناء التشغيل" 
+		messagesBundledJreError "This application was configured to use a bundled Java Runtime Environment but the runtime is missing or corrupted.\n" + "��� �������� ���� ��� ���� ��� ���� ���� ��������ɡ ���� �� ������ ��� ������ �� �����"
+		messagesJreVersionError "This application requires a Java Runtime Environment\n" + "��� �� ����� ���� ������ � ���� �� ����� ������ ��������"
+		messagesLauncherError "The registry refers to a nonexistent Java Runtime Environment installation or the runtime is corrupted.\n" + "������ ��� ����� ���� ����"
+		messagesInstanceAlreadyExists "An application instance is already running.\n" + "������ ��� ���� �� ���� ��������"
+		//see more: https://github.com/TheBoegl/gradle-launch4j
+	}
+
+	createExe.doFirst {
+		copy{
+			from "$projPath/src/main/resources/images"
+			include "exam.ico"
+			include splashImage
+			into "$buildDir"
+		}
+	}
+
+	createExe.doLast {
+		delete{
+			delete "$buildDir/launch4j-lib"
+		}		
+	}
+
+	apply from: file('../../eqCore/winrar/build.gradle');
+
+	makeSFXConfig
+	{
+		outputDir = file("$buildDir")
+		version = gitVersion()
+		release = new Date().format('MMMM d, yyyy') 
+
+		shortcut.destType = 'desktop'
+		shortcut.srcName = 'eQuiz-client.exe -h 10.4.10.100 -p 10000' 	//relative to archive
+		shortcut.destFolder = ''
+		shortcut.desc = 'dddddd'
+		shortcut.shortcutName = 'run-eQuiz'
+		shortcut.shortcutIcon = 'exam.ico' 								//relative to archive
+
+		extractLocation = 'program files' //'current' or 'program files'
+		extractDir = 'eQuiz'
+	}
+
+	makeSFX
+	{
+		def outputDir =  file("$buildDir")
+		def outputFile = file("$outputDir/eQuiz-Installer-with-jre.exe")
+		def packageIcon = file("$outputDir/exam.ico")
+		def packageImage = file("$outputDir/splash-client.jpg")
+		def packgeList =  [ 
+		 	'splash-client.jpg' , 
+			'exam.ico', 
+		 	'eQuiz-client.exe' ,
+			'equiz-client'	 
+			 ]  
+
+		workingDir = outputDir
+		//commandLine = [ 'cmd', '/c', 'echo', 'ff']
+ 		
+		//'cmd', '/c', 
+		commandLine = [ 'cmd', '/c', 
+			'rar', 'a', '-m5',
+			"-sfx\"${outputFile.absolutePath}\"" , 
+			'-ep1', 
+			"-iicon\"${packageIcon.absolutePath}\"" , 
+			"-iimage\"${packageImage.absolutePath}\"" , 
+			"-z\"${outputDir}\\SFX-package.conf\""
+			] + packgeList
+
+		file("$buildDir/sfx-make.bat").write commandLine.join(' ') + "\npause";
+		
+		//println '-----------------------'
+		//println commandLine.join(' ') + "\npause"
+		//standardOutput = System.out //new ByteArrayOutputStream()
+	} 
