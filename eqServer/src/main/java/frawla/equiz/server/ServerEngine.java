@@ -1,7 +1,7 @@
 package frawla.equiz.server;
 
-import java.io.FileNotFoundException;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -269,6 +269,10 @@ public class ServerEngine extends ServerListener
 			st.getServerLinker()
 			.sendMessage( new Message<>(Message.KHALAS_TIMES_UP) );
 		});
+	}
+
+	public Map<String, byte[]> getImageList() {
+		return imageList;
 	}
 
 }//end class

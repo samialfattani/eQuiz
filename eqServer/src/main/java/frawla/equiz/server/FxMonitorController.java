@@ -37,6 +37,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -108,6 +109,8 @@ public class FxMonitorController implements Initializable
 		Platform.runLater(() -> {
 			Stage window = new Stage( );
 			Scene scene = new Scene(PanRoot, PanRoot.getPrefWidth(), PanRoot.getPrefHeight());
+			scene.getStylesheets().add(Util.getResourceAsURL("mystyle.css").toExternalForm());
+			
 			window.setScene(scene);
 
 			window.getIcons().add(new Image(Util.getResourceAsURL("images/servericon.png").toString() ));
@@ -149,6 +152,10 @@ public class FxMonitorController implements Initializable
 				handleMouseClicked(e);
 			});
 			
+		});
+		
+		examTable.setOnKeyTyped( e -> {
+			mntmGrading_click();
 		});
 
 
@@ -552,10 +559,10 @@ public class FxMonitorController implements Initializable
 		refreshStudentStatistics();
 		examTable.refresh();
 		
-		lblStatus.setText("" + serverEngine.getIP() + ":" +  serverEngine.getLocalPort( ) + "");
+		String str = String.format("server at %s:%d", serverEngine.getIP(),  serverEngine.getLocalPort( ) );
 		
 		if(serverEngine.isAlive())
-			lblStatus.setText( String.format("Listening to %S", serverEngine.getLocalPort() ) );
+			lblStatus.setText( str );
 		else
 			lblStatus.setText("Closed");
 	}
@@ -616,6 +623,29 @@ public class FxMonitorController implements Initializable
 
 	}
 	
+	
+	public void mntmGrading_click() 
+	{
+		try {
+			FXMLLoader loader = new FXMLLoader( Util.getResourceAsURL("fx-exam-sheet.fxml") );
+			loader.load();
+		
+			//get Controller Object.
+			FxExamSheetController fxExamSheet = (FxExamSheetController) loader.getController();
+			
+			Student st = examTable.getSelectionModel().getSelectedItem();
+			fxExamSheet.setStudentSheet( 
+				st.getId(),
+				st.getName(),
+				st.getOptionalExamSheet().get(), 
+				serverEngine.getImageList()
+			);
+			
+		} catch (IOException e) {
+			Util.showError(e, e.getMessage());
+		}
+	}
+	
 	public void mntmTest_click() {
 		//TODO: just for test anything
 	}
@@ -627,6 +657,7 @@ public class FxMonitorController implements Initializable
 	public void mnutmAbout_click()
 	{
 		//TODO: complete this also
+		
 	}
 
 

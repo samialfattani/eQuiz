@@ -25,7 +25,7 @@ public class ExamTableView extends TableView<Student>
 	private TableColumn<Student, Boolean> colConnected= new TableColumn<>("C");
 	private TableColumn<Student, Duration> colTimeLeft = new TableColumn<>("Time Left");
 	private TableColumn<Student, Date> colLastUpdate = new TableColumn<>("Last Backup");
-	private TableColumn<Student, Double> colMarks = new TableColumn<>("Marks");
+	private TableColumn<Student, Double> colMarks = new TableColumn<>("Mrk");
 
 	private StyleChangingRowFactory<Student> rowFactory;
 	//private ObservableList<Student> Students = FXCollections.observableArrayList();
@@ -54,7 +54,7 @@ public class ExamTableView extends TableView<Student>
 		colStartPoint.setPrefWidth(100);	colStartPoint.setMinWidth(USE_PREF_SIZE);		
 		colTimeLeft.setPrefWidth(100);		colTimeLeft.setMinWidth(USE_PREF_SIZE);
 		colLastUpdate.setPrefWidth(100);	colLastUpdate.setMinWidth(USE_PREF_SIZE);
-		colMarks.setPrefWidth(75);	colMarks.setMinWidth(USE_PREF_SIZE);
+		colMarks.setPrefWidth(40);	colMarks.setMinWidth(USE_PREF_SIZE);
 		
 		colConnected.setSortable(false);
 		colId.setSortable(true);		
@@ -79,6 +79,17 @@ public class ExamTableView extends TableView<Student>
 		colStartPoint.setCellFactory(new DateCellFactory());
 		colTimeLeft.setCellFactory(new DurationCellFactory());
 		colLastUpdate.setCellFactory(new DateCellFactory());
+		colMarks.setCellFactory( (param) -> {
+			TableCell<Student, Double> c = new TableCell<Student, Double>()
+			{
+				@Override protected void updateItem(Double item, boolean empty) {
+					if (item != null ) {
+						setText( Util.MARK_FORMATTER.format( item.doubleValue() ) );
+						setTooltip( new Tooltip("Total Marks") ); }
+				}
+			};		
+			return c;
+		});
 
 		getColumns().addAll(colConnected, colId, colName, colStatus, colMarks, colStartPoint, colTimeLeft, colLastUpdate);
 

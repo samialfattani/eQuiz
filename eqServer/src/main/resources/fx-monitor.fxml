@@ -113,6 +113,7 @@
                         <MenuItem fx:id="mnitmUnfinishHim" mnemonicParsing="false" onAction="#mnitmUnfinishHim_click" text="Set Him Unfinished" />
                         <MenuItem fx:id="mntmUngradeHim" mnemonicParsing="false" onAction="#mntmUngradeHim_click" text="Ungrade Him" />
                       <MenuItem fx:id="mntmDelete" mnemonicParsing="false" onAction="#mntmDelete_click" text="Delete" />
+                        <MenuItem fx:id="mntmGrading" mnemonicParsing="false" onAction="#mntmGrading_click" text="Grading..." />
                         <MenuItem fx:id="mntmExportPDF" mnemonicParsing="false" onAction="#mntmExportPDF_click" text="Export to PDF" />
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem fx:id="mntmRefresh" mnemonicParsing="false" onAction="#mntmRefresh_click" text="Refresh">

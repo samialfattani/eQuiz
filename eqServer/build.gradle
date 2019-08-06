@@ -16,6 +16,9 @@
 	
 	buildDir = 'D:/build/equiz-server'
 
+	mainClassName = 'frawla.equiz.client.Launcher'
+	def splashImage = 'splash-server.jpg'
+
 	test {
 	    useJUnitPlatform()
 	}
@@ -127,15 +130,17 @@
 	
 	
 	
-	task about(dependsOn: classes, type: JavaExec) { doLast 
-	{
-		description 'Run Groovy script - to modify splash version'
-    	
-    	classpath = sourceSets.main.runtimeClasspath
-    	main = 'frawla.equiz.server.Main'	
-    	println '---------------'
-    	
-    }}
+	apply from: file('../eqCore/about.gradle')
+	makeAboutImage {
+		def res = 'src/main/resources/images'
+		inputFile = file("$res/splash-blank.jpg")
+		outputFile = file("$res/$splashImage")
+		version = gitVersion()
+		release = new Date().format('MMMM d, yyyy') 
+		licensed = 'To Eng. Sami Alfattani'
+
+		//println "about-"*5
+	}
 	
 
 	

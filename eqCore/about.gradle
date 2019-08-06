@@ -18,6 +18,7 @@ class AboutTask extends DefaultTask
     {
         checkInputValidation()
 
+        println inputFile
         def bufferedImage = ImageIO.read(inputFile)
         def x = 600
         def y = 85

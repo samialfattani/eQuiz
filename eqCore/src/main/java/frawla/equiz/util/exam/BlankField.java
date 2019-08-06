@@ -86,7 +86,6 @@ public class BlankField extends Question implements Serializable
 
 	public void copyOptions(Question q)
 	{
-		// TODO Auto-generated method stub
 		((BlankField)q).getCorrectAnswerList()
 		.stream()
 		.forEach( option -> {
@@ -116,6 +115,5 @@ public class BlankField extends Question implements Serializable
 		
 		setStudentAnswer(ans);
 	}
-
 
 }
