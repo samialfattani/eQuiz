@@ -23,20 +23,24 @@ public class FxAboutController implements Initializable
 		//to be executed after initialize()
 		Platform.runLater(() -> {
 
-			Stage window = new Stage( );
 			Scene scene = new Scene(PanRoot, PanRoot.getPrefWidth(), PanRoot.getPrefHeight());
+			Stage window = new Stage( );
 
 			window.setScene(scene);
 			window.getIcons().add(new Image(Util.getResourceAsURI("images/about.png").toString() ));			
 			window.setTitle("eQuiz - About");
-			window.setOnCloseRequest( (w) -> { });
+			window.setOnCloseRequest( (w) -> { } );			
+			
+			window.setWidth(  img.getFitWidth() );
+			window.setHeight( img.getFitHeight() +50);
+			window.setResizable(false);
 			window.show();
-		});
+		} );
 		
 		//int size = 26 ;
-		img.setImage( new Image(  Util.getResourceAsStream( "images/about.png" ) )  ); 
-		//img.setFitHeight( size ); 
-		//img.setFitWidth( size ) ;
+		img.setImage( new Image(  Util.getResourceAsStream( "images/splash-client.jpg" ) )  ); 
+		img.setFitHeight( 250 ); 
+		img.setFitWidth( 600 ) ;
 	}//--------------- inilizse -------
 
 }//end class

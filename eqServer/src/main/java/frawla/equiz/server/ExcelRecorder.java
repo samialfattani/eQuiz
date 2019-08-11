@@ -20,35 +20,6 @@ import javafx.util.Duration;
 public class ExcelRecorder
 {
 
-	public static void AutoCorrectAnswers(ObservableList<Student> Students)
-	{
-		Students.stream()
-		        .filter(st -> st.isFINISHED() )
-		        .forEach(st -> {
-		        	correctAndGradeHim(st);
-		        });
-	}//AutoCorrectAnswers
-	
-	private static void correctAndGradeHim(Student st) 
-	{
-		if(!st.getOptionalExamSheet().isPresent())
-			return;
-		
-		int QuesCount = st.getOptionalExamSheet().get().getQuestionList().size();
-		for (int j=0; j < QuesCount ; j++)
-		{
-			final int qid = j+1;
-			Question q = st.getOptionalExamSheet()
-					.get()
-					.getQuestionList()
-					.stream()
-					.filter( qs -> qs.getId() == qid)
-					.findFirst()
-					.get();
-			q.setStudentMark(q.correctAndGetTheMark());		
-			
-		}//end for
-	}//correctAndGradeHims
 
 	public static void RecordAnswers(Workbook wrkBook, ObservableList<Student> Students, int QuesCount)
 	{

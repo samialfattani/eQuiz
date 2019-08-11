@@ -5,22 +5,13 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Date;
 import java.util.List;
 
-import com.itextpdf.text.BadElementException;
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Chunk;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Font;
+import com.itextpdf.text.*;
 import com.itextpdf.text.Font.FontFamily;
-import com.itextpdf.text.FontFactory;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Phrase;
-import com.itextpdf.text.pdf.BaseFont;
-import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.*;
 
 import frawla.equiz.util.Util;
 import frawla.equiz.util.exam.ExamConfig;
@@ -140,8 +131,9 @@ public class Exporter
 			String t = String.format("Total Marks: %s / %s", 
 					Util.MARK_FORMATTER.format(stMark) , 
 					Util.MARK_FORMATTER.format(totalMark) );  
+			
 			Font f = FontFactory.getFont(FontFactory.COURIER, 16, Font.BOLD, BaseColor.RED  );
-			doc.add(new Paragraph(  t, f));
+			doc.add( new Paragraph( t, f ) );
 		}
 		catch (DocumentException e)
 		{
@@ -157,7 +149,11 @@ public class Exporter
 		{
 			Paragraph prg =  new Paragraph("", FontFactory.getFont("Consolas"));
 
-			prg.add( "(" +  q.getMark() + ") " + q.getText() + "\n" );
+			prg.add( String.format( "Q%d. ( %s ) %s\n",
+						q.getId(), 
+						Util.MARK_FORMATTER.format(q.getMark()) ,
+						q.getText() )
+					);
 
 			if(!q.getImgFileName().equals("")){
 
@@ -192,7 +188,11 @@ public class Exporter
 		{
 			Paragraph prg =  new Paragraph("", FontFactory.getFont("Consolas"));
 
-			prg.add( "(" +  q.getMark() + ") " + q.getText() + "\n" );
+			prg.add( String.format( "Q%d. ( %s ) %s\n",
+					q.getId(), 
+					Util.MARK_FORMATTER.format(q.getMark()) ,
+					q.getText() )
+				);
 
 			if(!q.getImgFileName().equals("")){
 				getImageOfThisQuestion(examSheet, doc, q);
@@ -207,7 +207,7 @@ public class Exporter
 					if(l.equals(qmc.getCorrectAnswer()) )
 						prg.add(getCorrectChoicePhrase(qmc , l));
 					else
-						prg.add( "()" + qmc.getChoices().get(l)+ "   " ); //h2000
+						prg.add( "* " + qmc.getChoices().get(l)+ "   " ); //h2000
 						//prg.add( l + ")" + qmc.getChoices().get(l)+ "   " );
 				}
 
@@ -217,8 +217,10 @@ public class Exporter
 
 			Phrase ph = new Phrase();
 			Chunk ch = new Chunk("Answer: ", FontFactory.getFont(FontFactory.HELVETICA, 14, Font.BOLD, BaseColor.BLUE));
-			ch.append(q.getStudentAnswerAsText()  + "   " );
+			ch.append(q.getStudentAnswerAsText() + "   " );
 			
+			ph.add(ch);
+			ch = getCorrectionImage(q);
 			ph.add(ch);
 			ch = getCorrectionMark(q);
 			ph.add(ch);
@@ -235,6 +237,7 @@ public class Exporter
 		}
 
 	}
+	
 	private void getImageOfThisQuestion(ExamSheet examSheet, Document doc, Question q)
 	        throws BadElementException, MalformedURLException, IOException, DocumentException
 	{
@@ -245,25 +248,40 @@ public class Exporter
 		doc.add(img);
 	}
 
+	private Chunk getCorrectionImage(Question q) throws DocumentException, IOException
+	{
+		double m = q.getStudentMark();
+		Image img;
+		URL logoPath;
+		
+		if (m == q.getMark()) {
+			logoPath = Util.getResourceAsURL("images/correct.png");			
+			img = Image.getInstance(logoPath);			
+		}else if (m == 0) {
+			logoPath = Util.getResourceAsURL("images/wrong.png");			
+			img = Image.getInstance(logoPath);
+		}else {
+			logoPath = Util.getResourceAsURL("images/half-correct.png");			
+			img = Image.getInstance(logoPath);
+		}
+		
+		img.scaleAbsolute(16f, 16f);
+		Chunk chImg = new Chunk(img, 0, 0, true);
+		
+		return chImg;
+	}
+	
 	private Chunk getCorrectionMark(Question q) throws DocumentException, IOException
 	{
-		Chunk ch;
 		BaseFont bf = BaseFont.createFont(Util.getResourceAsURI("fonts/FreeSans.ttf").toString(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
 		Font fnt = new Font(bf, 12, Font.BOLD, BaseColor.RED);
-		ch = new Chunk("", fnt);
-		String correctionMark  = "";
+		Chunk ch = new Chunk("", fnt);
+		
 		String mark = Util.MARK_FORMATTER.format( q.getStudentMark() );
-		if (q.getStudentMark() == 0) {
-			correctionMark  = "X" + "   " + q.getTeacherNote();
-		}else if (q.getStudentMark() == q.getMark()) {
-			
-			correctionMark  = '\u221A' + "    "  + mark  + "   " + q.getTeacherNote();
-//			correctionMark  = '\uDDF8' + "    "  + mark + "   " + q.getTeacherNote() +
-//			String.format("%c", '\uD83C') + '\uDDF7';
-		}else {
-			correctionMark = '\u221A' + "X   " + mark  + "   " + q.getTeacherNote();
-		}
-		ch.append(correctionMark );
+		
+		String  correctionMark  = mark + "   " + q.getTeacherNote();
+		ch.append( correctionMark  );
+		
 		return ch;
 	}
 

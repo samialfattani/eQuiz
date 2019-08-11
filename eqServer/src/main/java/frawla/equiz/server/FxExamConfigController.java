@@ -31,8 +31,6 @@ public class FxExamConfigController implements Initializable
 	@FXML private TextArea txtInfo;
 	@FXML private Pane PanRoot;
 
-	private File lastDirectory = new File(".");
-
 	@Override
 	public void initialize(URL location, ResourceBundle resources) 
 	{
@@ -54,7 +52,6 @@ public class FxExamConfigController implements Initializable
 	{
 		try
 		{
-			lastDirectory = new File(examFile.getParent() );
 			txtInfo.setText("");
 
 			ExamLoader.getInstance(examFile);
@@ -127,10 +124,9 @@ public class FxExamConfigController implements Initializable
 	
 	public void mnutmOpen_click() 
 	{
-		
-		Util.getFileChooserForOpen(lastDirectory)
-		.filter( f -> f.exists() )
-		.ifPresent( f -> setExamFile(f) );
+		Util.getFileChooserForOpen()
+			.filter( f -> f.exists() )
+			.ifPresent( f -> setExamFile(f) );
 	}
 
 	public void mnutmNew_click()

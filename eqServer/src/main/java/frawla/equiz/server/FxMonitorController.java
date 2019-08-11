@@ -78,8 +78,8 @@ public class FxMonitorController implements Initializable
 	@FXML private ToggleButton btnAutoBackup;
 	@FXML private Button btnFinish;
 	@FXML private ContextMenu mnuStudents;
+	@FXML private MenuItem mntmAutoCorrect;
 	@FXML private MenuItem mntmRecordOnExcel;
-	@FXML private MenuItem mntmRecordOnExcelWithoutAutoCorrect;
 	@FXML private MenuItem mntmFinish;
 	@FXML private MenuItem mntmBackup;
 	@FXML private MenuItem mntmExportAllToPDF;
@@ -135,7 +135,7 @@ public class FxMonitorController implements Initializable
 		
 		btnChangePort.disableProperty().bind( examIsRunning );
 		mntmRecordOnExcel.disableProperty().bind( examIsRunning );
-		mntmRecordOnExcelWithoutAutoCorrect.disableProperty().bind( examIsRunning );
+		mntmAutoCorrect.disableProperty().bind( examIsRunning );
 		
 		btnFinish.disableProperty().bind( examIsRunning.not() );
 		mntmFinish.disableProperty().bind( examIsRunning.not() );
@@ -149,7 +149,7 @@ public class FxMonitorController implements Initializable
 		examTable.setOnMouseClicked( e -> {
 			examTable.requestFocus();
 			Platform.runLater( () ->{
-				handleMouseClicked(e);
+				handleMouseClicked(e);				
 			});
 			
 		});
@@ -217,21 +217,24 @@ public class FxMonitorController implements Initializable
 		examIsRunning.set(true);
 	}
 
-	public void btnRecordOnExcel_click(){
-		recordOnExcel(true);
+	public void mntmAutoCorrect_click() 
+	{
+		Students.stream()
+	        .filter(st -> st.isFINISHED() )
+	        .forEach(st -> {
+	        	st.correctAndGradeAllQuestions();
+	        });
+		mntmRefresh_click();
 	}
 
-	public void mntmRecordOnExcelWithoutAutoCorrect_click(){
-		recordOnExcel(false);
-	}
-
-	private void recordOnExcel(boolean withAutoCorrect){
+	public void mntmRecordOnExcel_click()
+	{
 		try {
 			if( Students.stream()
 					.allMatch( s -> not(s.isREADY() || s.isRESUMED()) ) )
 			{
 				log("Start Recording...");
-				RecordOnExcel(withAutoCorrect);
+				RecordOnExcel();
 				log("Finished and Recorded !");
 			}else{
 				new Alert(AlertType.ERROR, "Some of Students didn't Finished yet.").showAndWait();
@@ -246,7 +249,7 @@ public class FxMonitorController implements Initializable
 		}
 	}
 
-	private void RecordOnExcel(boolean withAutoCorrect) throws IOException, FileNotFoundException
+	private void RecordOnExcel() throws IOException, FileNotFoundException
 	{
 		FileInputStream fin = new FileInputStream(examConfig.SourceFile);
 		wrkBook = WorkbookFactory.create( fin );
@@ -254,19 +257,17 @@ public class FxMonitorController implements Initializable
 		Students.sort( (s1, s2) -> s1.getId().compareTo(s2.getId()) );
 		int quesCount = ExamLoader.getInstance().getQuestionCount() ;
 		
-		if(withAutoCorrect)
-			ExcelRecorder.AutoCorrectAnswers(Students);
-		
 		ExcelRecorder.RecordAnswers(wrkBook, Students, quesCount);
 		ExcelRecorder.RecordTimer(wrkBook, Students, quesCount);
 		ExcelRecorder.RecordLogs(wrkBook, Logs);
 		HSSFFormulaEvaluator.evaluateAllFormulaCells(wrkBook);
 
-		updateAndSaveExcelFileAndLogFile();
+		updateAndSaveExcelFile();
 
 	}//RecordOnExcel
 
-	private void updateAndSaveExcelFileAndLogFile() throws IOException, FileNotFoundException 
+	
+	private void updateAndSaveExcelFile() throws IOException, FileNotFoundException 
 	{
 		FileOutputStream excelFOut = new FileOutputStream( examConfig.SourceFile );
 
@@ -439,11 +440,15 @@ public class FxMonitorController implements Initializable
 		mntmRefresh_click();
 	}
 
-	public void mntmRecordOnExcel_click(){
-		btnRecordOnExcel_click();
-	}
 
-	private void handleMouseClicked(MouseEvent e) {
+	private void handleMouseClicked(MouseEvent e) 
+	{
+		//on Double click open Grading...
+		if (e.getClickCount() == 2) {
+			mntmGrading_click();
+			return;
+		}
+		
 		int i = examTable.getSelectionModel().getSelectedIndex();
 		Student st = Students.get(i);
 		mntmUngradeHim.disableProperty()
@@ -654,10 +659,9 @@ public class FxMonitorController implements Initializable
 		return !b;
 	}
 
-	public void mnutmAbout_click()
+	public void mnutmAbout_click() throws IOException
 	{
-		//TODO: complete this also
-		
+		new FXMLLoader( Util.getResourceAsURL("fx-about.fxml") ).load();
 	}
 
 

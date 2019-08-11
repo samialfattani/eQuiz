@@ -18,6 +18,9 @@
 	
 		//mokito
 		testCompile "org.mockito:mockito-core:2.28.+"
+		// https://mvnrepository.com/artifact/org.json/json
+		compile 'org.json:json:20180813'
+		
 	}
 	
 	eclipse {

@@ -1,7 +1,7 @@
 package frawla.equiz.server;
 
-import java.io.File;
 import java.awt.Desktop;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 import frawla.equiz.util.Util;
@@ -27,7 +26,13 @@ import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -93,6 +98,7 @@ public class FxExamSheetController implements Initializable
 			window.show();
 
 			lblIVersion.setVisible(false);
+			loadQuestion(currentQues);
 		});
 		
 		ImageView img ;
@@ -122,7 +128,20 @@ public class FxExamSheetController implements Initializable
 		List<ToggleButton> R = Arrays.asList(tglCorrect,  tglWrong, tglHalfCorrect );
 		R.forEach(ch -> ch.setToggleGroup(rdGrpCorrect) );
 		
-		
+		rdGrpCorrect.selectedToggleProperty().addListener((ov, tgl, newTgl) -> 
+		{
+            if (newTgl == null)
+            	rdGrpCorrect.selectToggle(tgl);
+            else if (tgl != null && newTgl != null)
+            {
+            	((ToggleButton)newTgl).setStyle("-fx-border-color: red;");
+            	((ToggleButton)tgl).setStyle("-fx-border: green;");
+        		if(newTgl == tglCorrect)
+        			txtStudentMark.setText( Util.MARK_FORMATTER.format( currentQues.getMark() )  );
+        		else if(newTgl == tglWrong)
+        			txtStudentMark.setText( "0" );
+            }
+		});		
 		
 		imgFigure.setSmooth(false);
 		imgFigure.setFitWidth(imgFigure.getFitWidth()-10);
@@ -130,11 +149,10 @@ public class FxExamSheetController implements Initializable
 		imgFigure.setCache(true);
 		
 		txtBlankField.setEditable(false);
-		//pnlChoices.setDisable(true);
 		Radios.forEach(rd -> rd.setDisable(false) );		
 
-		txtBlankField.textProperty().addListener((v, ov, nv) ->{
-			if(v.getValue().contains("`")){
+		txtBlankField.textProperty().addListener((v, ov, nv) -> {
+			if(v.getValue().contains("`")) {
 				 ((StringProperty)v).setValue(ov);
 				 Util.showError("You can't Enter a Text contains (`) !"); 
 			}
@@ -200,17 +218,15 @@ public class FxExamSheetController implements Initializable
 		if(q instanceof MultipleChoice)
 		{
 			MultipleChoice mc = (MultipleChoice)q;
+			pnlChoices.getChildren().clear();
 			
-			for(i=0; i<mc.getChoices().size() ; i++){
+			for(i=0; i<mc.getChoices().size() ; i++) {
 				String ch = mc.getOrderList().get(i); //A, B,...
 				String chText =  mc.getChoices().get(ch); //text of the choice.
 				Radios.get(i).setText( chText  );
 				Radios.get(i).setVisible(true);
+				pnlChoices.getChildren().add( Radios.get(i) );
 			}
-			
-			Radios.stream()
-				  .filter(rd -> Radios.indexOf(rd) >= mc.getOrderList().size())
-				  .forEach(rd -> rd.setVisible(false) );
 			
 			pnlChoices.setVisible(true);
 			txtBlankField.setVisible(false);
@@ -236,9 +252,10 @@ public class FxExamSheetController implements Initializable
 		updateCompletionList(q);
 		updateCorrect(q);
 		txtStudentMark.setText( Util.MARK_FORMATTER.format( q.getStudentMark() ) );
-		txtMark.setText( 		Util.MARK_FORMATTER.format( q.getMark() ) );
+		txtMark.setText( Util.MARK_FORMATTER.format( q.getMark() ) );
 		txtTeacherNote.setText( q.getTeacherNote() );
-
+		((ToggleButton)rdGrpCorrect.getSelectedToggle()).requestFocus();
+		
 	}//load question
 
 	private void updateCorrect(Question q) 
@@ -321,10 +338,9 @@ public class FxExamSheetController implements Initializable
 	}
 	
 	public void tglWrong_click() {
-		txtStudentMark.setText( "0" );
+		
 	}
 	public void tglCorrect_click() {
-		txtStudentMark.setText( Util.MARK_FORMATTER.format( currentQues.getMark() )  );
 	}
 
 

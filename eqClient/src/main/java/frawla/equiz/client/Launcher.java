@@ -10,7 +10,6 @@ public class Launcher
     {
     	//System.out.println(new File(".").getAbsolutePath());
         Splasher.splash();      
-    	System.out.println("-------------700");
     	try {Thread.sleep(10 * 1000);}catch(InterruptedException e) {}
         
     	Main.main(args);

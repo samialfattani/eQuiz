@@ -1,7 +1,10 @@
 {
   "hi":"--HelloWorld--",
   "openExam": "",
-  "pdfFolder": "",
+  "lastRecentUsedDir": ".",
+  "lastExcelOpen": ".",
+  "lastExcelSave": ".",
+  "pdfFolder": ".",
   "boolean": true,
   "color": "#82b92c",
   "null": null,

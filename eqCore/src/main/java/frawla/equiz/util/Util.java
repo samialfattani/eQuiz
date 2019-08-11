@@ -23,6 +23,8 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
+import org.json.JSONObject;
+
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.control.Alert;
@@ -38,10 +40,8 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-
 public class Util
 {
-
 	public static SimpleDateFormat MY_DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
 	public static DecimalFormat MARK_FORMATTER = new DecimalFormat("0.##");
 	private static Image CONNECTED_IMAGE ;
@@ -51,10 +51,7 @@ public class Util
 		new JFXPanel();
 	}
 	
-	public Util()
-	{
-
-	}
+	public Util(){ }
 
 	public static Image getConnectedImage(){
 		if(CONNECTED_IMAGE == null)
@@ -163,7 +160,8 @@ public class Util
 	}
 
 	public static Optional<File> getFileChooserForOpen(){
-		return getFileChooserForOpen(new File("."));
+		File f = new File(getProperty("lastExcelOpen"));
+		return getFileChooserForOpen( f );
 	}
 	public static Optional<File> getFileChooserForOpen(File initialDir)
 	{
@@ -176,8 +174,9 @@ public class Util
 				new ExtensionFilter("Open-office SpreadSheet Files", "*.ods"),
 				new ExtensionFilter("All Files", "*.*"));
 		fc.setTitle("Open MS-Excel files");
-		//fc.setInitialDirectory(new File("."));
 		File selectedFile = fc.showOpenDialog( null );
+		
+		Optional.ofNullable(selectedFile).ifPresent(f -> saveProperty("lastExcelOpen", f.getParent() ) );
 		return Optional.ofNullable(selectedFile);
 	}
 
@@ -190,8 +189,10 @@ public class Util
 				new ExtensionFilter("MS-Excel(97-2003) Files", "*.xls"),
 				new ExtensionFilter("All Files", "*.*"));
 		fc.setTitle("Save MS-Excel files");
-		fc.setInitialDirectory(new File("."));
+		fc.setInitialDirectory( new File( getProperty("lastExcelSave") ) );
 		File selectedFile = fc.showSaveDialog( null );
+		
+		Optional.ofNullable(selectedFile).ifPresent(f -> saveProperty("lastExcelSave", f.getParent() ) );
 		return Optional.ofNullable(selectedFile);
 	}
 
@@ -203,13 +204,33 @@ public class Util
 				new ExtensionFilter("PDF Files", "*.pdf"),
 				new ExtensionFilter("All Files", "*.*"));
 		fc.setTitle("Save PDF files");
-		fc.setInitialDirectory(new File("."));
-		
-		
-		
+		fc.setInitialDirectory( new File(getProperty("pdfFolder")) );
 		
 		File selectedFile = fc.showSaveDialog( null );
+		
+		Optional.ofNullable(selectedFile).ifPresent( f -> {
+			saveProperty("pdfFolder", f.getParent());	
+		} );
 		return Optional.ofNullable(selectedFile);
+	}
+
+	private static String getProperty(String pName) 
+	{
+		//initFile = '~/.equiz/init.json'
+		String json = Util.readFileAsString( getInitFile() );
+        JSONObject obj = new JSONObject(json);
+        String str = obj.getString( pName );
+        
+        return str;
+	}
+	
+	private static void saveProperty(String pName, String pValue) 
+	{
+    	//update the init file with the last dir.
+		String json = Util.readFileAsString( getInitFile() );
+        JSONObject obj = new JSONObject(json);
+        obj.putOpt(pName, pValue);
+        Util.Save(obj.toString(2), getInitFile(), false);
 	}
 
 	public static String formatTime(Duration d)
@@ -446,10 +467,10 @@ public class Util
 		File dir = getEquizDir();
 		
 		File initFile = new File(dir + "\\init.json");
-		if(initFile.exists())
-			initFile.delete();
+		if(!initFile.exists())
+			copyFile(Util.getResourceAsFile("init.json"), initFile);
 		
-		copyFile(Util.getResourceAsFile("init.json"), initFile);
+		
 		return initFile;
 	}  
 }

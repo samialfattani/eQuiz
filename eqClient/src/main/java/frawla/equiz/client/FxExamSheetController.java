@@ -30,6 +30,7 @@ import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
@@ -307,11 +308,14 @@ public class FxExamSheetController implements Initializable
 		{
 			MultipleChoice mc = (MultipleChoice)q;
 			
+			pnlChoices.getChildren().clear();
+			
 			for(i=0; i<mc.getChoices().size() ; i++){
 				String ch = mc.getOrderList().get(i); //A, B,...
 				String chText =  mc.getChoices().get(ch); //text of the choice.
 				Radios.get(i).setText( chText  );
 				Radios.get(i).setVisible(true);
+				pnlChoices.getChildren().add( Radios.get(i) );
 			}
 			
 			Radios.stream()
@@ -582,5 +586,10 @@ public class FxExamSheetController implements Initializable
 	public void imgFigure_mouseExited(){
 		PanRoot.getScene().setCursor(Cursor.DEFAULT);
 	}
+	
+	public void mnitmAbout_Clicked() throws IOException {
+		new FXMLLoader( Util.getResourceAsURL("fx-about.fxml") ).load();
+	}
+	
 
 }//end class

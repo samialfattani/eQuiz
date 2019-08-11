@@ -167,7 +167,7 @@
                   <Font name="Consolas Bold" size="16.0" />
                </font>
             </TextField>
-            <Label alignment="CENTER" prefHeight="43.0" prefWidth="13.0" text="/">
+            <Label alignment="CENTER" prefHeight="43.0" prefWidth="13.0" style="-fx-text-fill: red;" text="/">
                <font>
                   <Font name="Consolas Bold" size="22.0" />
                </font>

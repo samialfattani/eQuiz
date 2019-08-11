@@ -252,4 +252,27 @@ public class Student implements Serializable
 		setStatus(FINISHED);
 	}
 
+	public void correctAndGradeAllQuestions() 
+	{
+		if(!getOptionalExamSheet().isPresent())
+			return;
+		
+		int QuesCount = getOptionalExamSheet().get().getQuestionList().size();
+		for (int j=0; j < QuesCount ; j++)
+		{
+			final int qid = j+1;
+			Question q = getOptionalExamSheet()
+					.get()
+					.getQuestionList()
+					.stream()
+					.filter( qs -> qs.getId() == qid)
+					.findFirst()
+					.get();
+			
+			q.setStudentMark(q.correctAndGetTheMark());		
+			
+		}//end for
+	}//correctAndGradeHims
+
+	
 }//end class

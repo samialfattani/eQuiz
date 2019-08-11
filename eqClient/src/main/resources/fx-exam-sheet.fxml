@@ -30,11 +30,23 @@
                     <items>
                       <MenuItem fx:id="mnitmNext" mnemonicParsing="false" onAction="#lblNext_MouseClicked" text="Next Question">
                            <accelerator>
+                              <KeyCodeCombination alt="UP" code="PAGE_DOWN" control="ANY" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator>
+                        </MenuItem>
+                        <MenuItem fx:id="mnitmPrev" mnemonicParsing="false" onAction="#lblPrev_MouseClicked" text="Previouse Question">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="PAGE_UP" control="ANY" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator></MenuItem>
+                    </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="Help">
+                     <items>
+                        <MenuItem fx:id="mnitmAbout" mnemonicParsing="false" onAction="#mnitmAbout_Clicked" text="About...">
+                           <accelerator>
                               <KeyCodeCombination alt="ANY" code="F1" control="UP" meta="UP" shift="UP" shortcut="UP" />
                            </accelerator>
                         </MenuItem>
-                        <MenuItem fx:id="mnitmPrev" mnemonicParsing="false" onAction="#lblPrev_MouseClicked" text="Previouse Question" />
-                    </items>
+                     </items>
                   </Menu>
                </menus>
             </MenuBar>

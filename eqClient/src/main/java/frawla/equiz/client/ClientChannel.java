@@ -21,6 +21,7 @@ public class ClientChannel extends Channel {
 		super(threadName, sock);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void handleTheMsg(Message<?> msg, Channel ch) throws Exception 
 	{
 		String code = msg.getCode();
