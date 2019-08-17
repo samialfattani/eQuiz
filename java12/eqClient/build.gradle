@@ -15,7 +15,10 @@
 		id 'application' //to use 'gradle run'
 		
 		id 'org.openjfx.javafxplugin' version '0.0.7'
-		id 'org.beryx.runtime' version '1.2.1'
+		
+		// Create a custom runtime image
+		// https://badass-jlink-plugin.beryx.org/releases/latest/
+		id 'org.beryx.runtime' version '1.2.1' //Badass 
 	}
 
 	//--- IMPORTANT CHANGES ----
@@ -70,6 +73,7 @@
 
 	    //jlink options
 	    options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
+	    targetPlatform 'linux-x64', '/usr/lib/jvm/jdk_x64_linux_hotspot_11_28'
 
 	}
 
@@ -89,7 +93,7 @@
 	apply from: file('../../eqCore/about.gradle')
 	makeAboutImage {
 		def res = "$projPath/src/main/resources/images"
-		inputFile = file("$res/splash-blank.bmp")
+		inputFile = file("$res/splash-blank.jpg")
 		outputFile = file("$res/$splashImage")
 		version = gitVersion()
 		release = new Date().format('MMMM d, yyyy') 
@@ -205,8 +209,4 @@
 			] + packgeList
 
 		file("$buildDir/sfx-make.bat").write commandLine.join(' ') + "\npause";
-		
-		//println '-----------------------'
-		//println commandLine.join(' ') + "\npause"
-		//standardOutput = System.out //new ByteArrayOutputStream()
 	} 

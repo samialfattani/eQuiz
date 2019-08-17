@@ -1,4 +1,4 @@
-package frawla.equiz.server;
+package frawla.equiz.server.gui;
 
 import java.util.Collections;
 

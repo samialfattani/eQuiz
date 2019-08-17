@@ -29,10 +29,10 @@ public class Student implements Serializable
 	private String status = NONE;
 	private SimpleStringProperty statusProperty = new SimpleStringProperty("");
 	private boolean connected = false;
-	private EQDate startPoint ;
-	private EQDate cuttoffPoint ;
-	private EQDate resumePoint ;
-	private EQDate finishPoint ;
+	private EQDate startPoint  = new EQDate();
+	private EQDate cuttoffPoint  = new EQDate();
+	private EQDate resumePoint  = new EQDate();
+	private EQDate finishPoint  = new EQDate();
 	private Duration leftTime = Duration.ZERO ;
 	private Duration spendTime = Duration.ZERO ;
 	private Optional<ExamSheet> examSheet = Optional.empty();
@@ -59,7 +59,9 @@ public class Student implements Serializable
 	public void setServerLinker(Channel ch){serverLinker = ch;}
 	public EQDate getStartPoint(){return startPoint;}
 	public void setStartPoint(EQDate start){startPoint = start;}	
-	public EQDate getFinishPoint(){return finishPoint;}
+	public EQDate getFinishPoint(){
+		return finishPoint;
+	}
 	public void setFinishPoint(EQDate fp){finishPoint = fp;}
 	public void setCuttoffPoint(EQDate cuttoff){cuttoffPoint = cuttoff;}
 	public EQDate getCuttoffPoint(){return cuttoffPoint;}
@@ -94,7 +96,9 @@ public class Student implements Serializable
 		totalMarks = m;
 	}
 	public Double getTotalMarks() {
-		totalMarks = examSheet.get().getTotalMarks();
+		if ( examSheet.isPresent() )
+			totalMarks = examSheet.get().getTotalMarks();
+		
 		return totalMarks;
 	}
 	
@@ -121,15 +125,9 @@ public class Student implements Serializable
 	 */
 	public Duration getLeftTime()
 	{
-		if (isRunningHisExam())
-		{
-			Duration examTime = new Duration (finishPoint.getTime() - startPoint.getTime());
-			leftTime = examTime.subtract( getSpendTime() );
-			
-			return leftTime;
-		}
-		
-		return Duration.ZERO;
+		Duration examTime = new Duration (getFinishPoint().getTime() - getStartPoint().getTime());
+		leftTime = examTime.subtract( getSpendTime() );			
+		return leftTime;
 	}
 
 	/**
@@ -148,9 +146,9 @@ public class Student implements Serializable
 		}else
 			t1 = spendTime;
 		
-		t2 = this.calculateSpendTime();
+		t2 = this.calculateConsumedTime();
 		
-		double t = Math.max(t1.toMillis(), t2.toMillis());
+		double t = Math.max( t1.toMillis(), t2.toMillis() );
 		return new Duration(t);
 	}
 	
@@ -162,7 +160,7 @@ public class Student implements Serializable
 		spendTime = getSpendTime();
 	}
 
-	private Duration calculateSpendTime() 
+	private Duration calculateConsumedTime() 
 	{
 	    Duration sum = Duration.ZERO;
 	    
@@ -272,6 +270,7 @@ public class Student implements Serializable
 			q.setStudentMark(q.correctAndGetTheMark());		
 			
 		}//end for
+		setStatus(GRADED);
 	}//correctAndGradeHims
 
 	

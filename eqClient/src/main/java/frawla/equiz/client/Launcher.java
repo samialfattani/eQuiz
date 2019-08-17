@@ -2,6 +2,8 @@ package frawla.equiz.client;
 
 import com.martiansoftware.jsap.JSAPException;
 
+import frawla.equiz.util.Splasher;
+
 //-splash:splash-client.png
 
 public class Launcher 
@@ -10,7 +12,7 @@ public class Launcher
     {
     	//System.out.println(new File(".").getAbsolutePath());
         Splasher.splash();      
-    	try {Thread.sleep(10 * 1000);}catch(InterruptedException e) {}
+    	//try {Thread.sleep(10 * 1000);}catch(InterruptedException e) {}
         
     	Main.main(args);
     }

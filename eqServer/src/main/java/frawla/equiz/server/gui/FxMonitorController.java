@@ -1,4 +1,4 @@
-package frawla.equiz.server;
+package frawla.equiz.server.gui;
 
 
 import java.io.File;
@@ -20,6 +20,10 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import com.itextpdf.text.DocumentException;
 
+import frawla.equiz.server.ExamLoader;
+import frawla.equiz.server.ExcelRecorder;
+import frawla.equiz.server.Exporter;
+import frawla.equiz.server.ServerEngine;
 import frawla.equiz.util.Channel;
 import frawla.equiz.util.EQDate;
 import frawla.equiz.util.EQuizException;
@@ -144,7 +148,6 @@ public class FxMonitorController implements Initializable
 		
 		examTable.setContextMenu(mnuStudents);
 		examTable.setDisable(false);
-		
 		
 		examTable.setOnMouseClicked( e -> {
 			examTable.requestFocus();
@@ -285,8 +288,12 @@ public class FxMonitorController implements Initializable
 	
 	protected void StartTakingBackupForAll() throws ExecutionException 
 	{
-		log("Start Taking Backup for All Students...");
-		serverEngine.backupAll();
+		//if there is at least one running exam.
+		if (Students.stream().filter(st -> st.isRunningHisExam() ).count() >= 1) 
+		{
+			log("Start Taking Backup for All Students...");
+			serverEngine.backupAll();
+		}
 	}
 	
 	private void newMessageHasBeenReleased(final Message<?> msg, final Channel chnl)

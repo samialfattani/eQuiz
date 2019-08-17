@@ -20,7 +20,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="PanRoot" prefHeight="422.0" prefWidth="572.0" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frawla.equiz.server.FxMonitorController">
+<BorderPane fx:id="PanRoot" prefHeight="422.0" prefWidth="572.0" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frawla.equiz.server.gui.FxMonitorController">
    <center>
       <AnchorPane prefHeight="413.0" prefWidth="756.0" BorderPane.alignment="CENTER">
          <children>
@@ -73,7 +73,7 @@
                               <KeyCodeCombination alt="UP" code="B" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                            </accelerator></MenuItem>
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem fx:id="mntmAutoCorrect" mnemonicParsing="false" onAction="#mntmAutoCorrect_click" text="Auto Correct" />
+                        <MenuItem fx:id="mntmAutoCorrect" mnemonicParsing="false" onAction="#mntmAutoCorrect_click" text="Auto Correct All" />
                         <MenuItem fx:id="mntmRecordOnExcel" mnemonicParsing="false" onAction="#mntmRecordOnExcel_click" text="mntmRecordOnExcel" />
                         <MenuItem fx:id="mntmExportAllToPDF" mnemonicParsing="false" onAction="#mntmExportAllToPDF_click" text="Export Every One to PDF File" />
                         <MenuItem fx:id="mntmOpenExcelFile" mnemonicParsing="false" onAction="#mntmOpenExcelFile_click" text="Browse Excel File..." />

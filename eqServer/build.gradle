@@ -17,7 +17,7 @@
 	buildDir = 'D:/build/equiz-server'
 
 	mainClassName = 'frawla.equiz.client.Launcher'
-	def splashImage = 'splash-server.jpg'
+	def splashImage = 'splash.jpg'
 
 	test {
 	    useJUnitPlatform()
@@ -97,15 +97,14 @@
 
 	// launch4j: put all configuration of launch4j here 
 	createExe {
-		outputDir = "../../exe/server"
+		//outputDir = "../../exe/server"
 		fileDescription =	"Electronic Quizes - Server"
 		copyright = "All Copyright are recieved (c) 2016~2018 by Eng. Sami Alfattani"
-		companyName = "Sami"
+		companyName = "Eng. Sami Alfattani"
 		 
-	    mainClassName = "frawla.equiz.server.Main"
+	    mainClassName = this.mainClassName
 	    
-	    def projPath = projectDir.absolutePath;	    
-	    icon = new File(projPath  + '/src/main/resources/images/servericon.ico').absolutePath
+	    icon = "servericon.ico" //realative to exe
 		
 		//initialHeapSize = 0 //Optional
 		maxHeapSize = 4096
@@ -113,21 +112,32 @@
 		headerType = "console" //no splash with console
 		//splashFileName = new File('src/main/resources/images/splash-server.bmp').absolutePath
 		//project.name
+		jvmOptions = ["-splash:$splashImage"]
+		
 		version = gitVersion()
 		outfile	= 'eQuiz-server.exe'	
-		productName	= 'eQuiz-server-' + version
+		productName	= 'eQuiz-server'
 		internalName = 'eQuiz-server-' + version
 
 		errTitle = "Java is not Supported on this Computer"
 		downloadUrl = 'https://www.java.com/ES/download/'
-		messagesStartupError "An error occurred while starting the application.\n" + "ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" 
-		messagesBundledJreError "This application was configured to use a bundled Java Runtime Environment but the runtime is missing or corrupted.\n" + "ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½"
-		messagesJreVersionError "This application requires a Java Runtime Environment\n" + "ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
-		messagesLauncherError "The registry refers to a nonexistent Java Runtime Environment installation or the runtime is corrupted.\n" + "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½"
-		messagesInstanceAlreadyExists "An application instance is already running.\n" + "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
+		messagesStartupError "An error occurred while starting the application.\n" + "ÍÕáÊ ãÔßáÉ ÃËäÇÁ ÇáÊÔÛíá" 
+		messagesBundledJreError "This application was configured to use a bundled Java Runtime Environment but the runtime is missing or corrupted.\n" + "ãä ÇáãİÊÑÖ Ãä íÚãá åĞÇ ÇáÈÑäÇãÌ Úáì äÓÎÉ ÎÇÕÉ ãä ÇáÌÇİÇ ãÊÖãäÉ ãÚå¡æíÈÏæ Ãäå ŞÏ ÍÕá ÎØÃ İí åĞå ÇáäÓÎÉ"
+		messagesJreVersionError "This application requires a Java Runtime Environment\n" + "åĞÇ ÇáÈÑäÇãÌ íÍÊÇÌ Åáì ÇáÌÇİÇ"
+		messagesLauncherError "The registry refers to a nonexistent Java Runtime Environment installation or the runtime is corrupted.\n" + "íÔíÑ ÇáÑíÌÓÊÑí Åáì ÚÏã ÊÍãíá ÇáÌÇİÇ Ãæ ÇáäÓÎÉ ãÚØæÈÉ"
+		messagesInstanceAlreadyExists "An application instance is already running.\n" + "åĞÇ ÇáÈÑäÇãÌ ÍÇáíÇ ŞíÏ ÇáÊÔÛíá æáÇ íãßä İÊÍ ÃßËÑ ãä äÓÎÉ æÇÍÏÉ"
 		//see more: https://github.com/TheBoegl/gradle-launch4j
 	}
 	
+	createExe.doFirst 
+	{
+		copy{
+			from "src/main/resources/images"
+			include "servericon.ico"
+			include splashImage
+			into "$buildDir/$outputDir"
+		}
+	}
 	
 	
 	apply from: file('../eqCore/about.gradle')

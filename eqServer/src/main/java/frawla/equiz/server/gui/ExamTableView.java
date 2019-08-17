@@ -1,4 +1,4 @@
-package frawla.equiz.server;
+package frawla.equiz.server.gui;
 
 import java.util.Date;
 
@@ -23,8 +23,8 @@ public class ExamTableView extends TableView<Student>
 	private TableColumn<Student, Date> colStartPoint = new TableColumn<>("Start");	
 	private TableColumn<Student, String> colStatus= new TableColumn<>("Status");
 	private TableColumn<Student, Boolean> colConnected= new TableColumn<>("C");
-	private TableColumn<Student, Duration> colTimeLeft = new TableColumn<>("Time Left");
-	private TableColumn<Student, Date> colLastUpdate = new TableColumn<>("Last Backup");
+	private TableColumn<Student, Duration> colTimeLeft = new TableColumn<>("Left");
+	private TableColumn<Student, Date> colLastUpdate = new TableColumn<>("Backup");
 	private TableColumn<Student, Double> colMarks = new TableColumn<>("Mrk");
 
 	private StyleChangingRowFactory<Student> rowFactory;

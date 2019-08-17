@@ -1,4 +1,4 @@
-package frawla.equiz.client;
+package frawla.equiz.util;
 
 import java.awt.*;
 
@@ -12,6 +12,7 @@ public class Splasher
             System.out.println("SplashScreen.getSplashScreen() returned null");
             return;
         }
+        
         Graphics2D g = splash.createGraphics();
         if (g == null) {
             System.out.println("Graphics object g is null");

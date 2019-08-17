@@ -1,8 +1,9 @@
 
-package frawla.equiz.server;
+package frawla.equiz.server.gui;
 
 import java.io.File;
 
+import frawla.equiz.util.Splasher;
 import frawla.equiz.util.Util;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -22,18 +23,20 @@ public class Main extends Application
 			
 			FXMLLoader loader = new FXMLLoader( Util.getResourceAsURL("fx-exam-config.fxml") );
 			loader.load();
+			Splasher.close();
+			
 			//File f = new File("../data/MidTerm-1/MidTerm-2019.xlsx");
 			File f = new File("../data/MidTerm-1/SE260-MidTerm-1.xlsx");
 			
 			if(f.exists()) {
-				//System.out.println( new File(".").getAbsolutePath() );
 				FxExamConfigController cntrl = (FxExamConfigController) loader.getController();
 				cntrl.setExamFile(f);
 			}
+			
 		}catch(Exception ex){
 			Util.showError(ex, ex.getMessage());
 		}
 
 	}
 
-}
+}//end class

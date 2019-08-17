@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import com.martiansoftware.jsap.JSAPException;
 
+import frawla.equiz.util.Splasher;
 import frawla.equiz.util.Util;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

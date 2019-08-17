@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="PanRoot" prefHeight="394.0" prefWidth="492.0" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frawla.equiz.server.FxExamConfigController">
+<BorderPane fx:id="PanRoot" prefHeight="394.0" prefWidth="492.0" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frawla.equiz.server.gui.FxExamConfigController">
    <top>
       <MenuBar prefHeight="25.0" prefWidth="518.0" BorderPane.alignment="CENTER">
         <menus>

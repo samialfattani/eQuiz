@@ -79,7 +79,8 @@ public class ExcelRecorder
 				
 				row.createCell(Base + (2*j+1)).setCellValue( q.getStudentMark());
 			}//end for
-			st.setStatus(Student.GRADED);
+			
+			//st.setStatus(Student.GRADED);
 		}//end for
 
 		mySheet.getRow(0)

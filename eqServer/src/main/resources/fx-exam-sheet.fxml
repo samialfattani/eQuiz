@@ -20,7 +20,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.web.WebView?>
 
-<BorderPane fx:id="PanRoot" prefHeight="597.0" prefWidth="737.0" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frawla.equiz.server.FxExamSheetController">
+<BorderPane fx:id="PanRoot" prefHeight="597.0" prefWidth="737.0" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1" fx:controller="frawla.equiz.server.gui.FxExamSheetController">
    <top>
       <VBox spacing="5.0" BorderPane.alignment="CENTER">
          <children>

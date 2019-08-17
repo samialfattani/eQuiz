@@ -1,28 +1,22 @@
 package general;
 
-
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
 import frawla.equiz.util.EQDate;
 import frawla.equiz.util.EQuizException;
 import frawla.equiz.util.Util;
-import frawla.equiz.util.exam.ExamConfig;
 import frawla.equiz.util.exam.ExamSheet;
 import frawla.equiz.util.exam.Student;
 import javafx.util.Duration;
-
 
 public class StudentTest
 {
 	private static ExamSheet examSheetMocked;	
 	private static ExamSheet emptyExamSheet;
-	private static ExamConfig examConfigMocked;
+	//private static ExamConfig examConfigMocked;
 	
 	@BeforeAll
 	public  static void readObjectFromFileAsMock() throws InterruptedException, EQuizException
@@ -35,8 +29,7 @@ public class StudentTest
 		emptyExamSheet = (ExamSheet) Util.readFileAsObject( mockFile  );
 
 		mockFile = Util.getResourceAsFile("ExamConfig.mock");
-		examConfigMocked = (ExamConfig) Util.readFileAsObject( mockFile  );
-		
+		//examConfigMocked = (ExamConfig) Util.readFileAsObject( mockFile  );
 	}
 
 	
@@ -47,13 +40,24 @@ public class StudentTest
 	}
 
 	@Test
+	public void ConsumedTimeTest() throws InterruptedException, EQuizException
+	{
+		assertEquals( 330.0,
+			examSheetMocked.getQuestionList()
+						.stream()
+						.mapToDouble(q -> q.getConsumedTime().toSeconds() )
+						.sum(), 
+			0.0 );	
+	}
+
+	@Test
 	public void rejectedTest() throws InterruptedException, EQuizException
 	{
 		//TODO: we need to move the validation method to be inside Student class		
 	}
 	
 	@Test
-	public void StartAndFinishTest() throws InterruptedException, EQuizException
+	public void readyStartAndFinishTest() throws InterruptedException, EQuizException
 	{
 		Student st = new Student("NBE222");
 		st.setExamSheet(examSheetMocked);
@@ -70,7 +74,7 @@ public class StudentTest
 	}
 
 	@Test
-	public void cutOffOnReadyTest() throws InterruptedException, EQuizException
+	public void readyCutGobackTest() throws InterruptedException, EQuizException
 	{
 		Student st = new Student("NBE222");
 		st.setExamSheet(examSheetMocked);
@@ -87,7 +91,7 @@ public class StudentTest
 	}
 
 	@Test
-	public void cutOffAndResumeTest() throws InterruptedException, EQuizException
+	public void readyStartedCutResumeTest() throws InterruptedException, EQuizException
 	{
 		Student st = new Student("NBE222");
 		st.setExamSheet(emptyExamSheet);
@@ -136,7 +140,7 @@ public class StudentTest
 	}//end Test
 
 	@Test
-	public void  cutOffAfterFinishTest() throws InterruptedException, EQuizException
+	public void  readyStartedFinishCutTest() throws InterruptedException, EQuizException
 	{
 		Student st = new Student("NBE222");
 		st.setExamSheet(emptyExamSheet);
@@ -165,7 +169,7 @@ public class StudentTest
 	}
 	
 	@Test
-	public void resumeAfterFinishTest() throws InterruptedException, EQuizException
+	public void readyStartedFinishCutResumeTest() throws InterruptedException, EQuizException
 	{
 		Student st = new Student();
 		//spy is better than mock
@@ -198,14 +202,9 @@ public class StudentTest
 		st.runExam(examTime);
 		assertEquals(4.5, st.getLeftTime().toMinutes(), 0.01);
 		assertEquals(Student.RESUMED, st.getStatus());
-	
 	}
-	
 
 }//end class
-
-
-
 
 //doCallRealMethod().when(st).setStartPoint( any(EQDate.class) );
 //doCallRealMethod().when(st).getStartPoint(  );

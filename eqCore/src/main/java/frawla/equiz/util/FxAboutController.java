@@ -38,7 +38,7 @@ public class FxAboutController implements Initializable
 		} );
 		
 		//int size = 26 ;
-		img.setImage( new Image(  Util.getResourceAsStream( "images/splash-client.jpg" ) )  ); 
+		img.setImage( new Image(  Util.getResourceAsStream( "images/splash.jpg" ) )  ); 
 		img.setFitHeight( 250 ); 
 		img.setFitWidth( 600 ) ;
 	}//--------------- inilizse -------

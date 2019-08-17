@@ -17,7 +17,7 @@
 		buildDir = 'D:/build/equiz-client'
 
 		mainClassName = 'frawla.equiz.client.Launcher'
-		def splashImage = 'splash-client.jpg'
+		def splashImage = 'splash.jpg'
 	//------------------------
 	
 	applicationDefaultJvmArgs = ["-splash:$splashImage"]
@@ -66,7 +66,7 @@
 		 
 	    mainClassName = this.mainClassName
 	    
-	    icon = "exam.ico" 				//realative to exe
+	    icon = "exam.ico" 	//realative to exe
 	    
 	    //headerType = "console" //no splash with console
 	    headerType = "gui" 
@@ -90,26 +90,28 @@
 		messagesBundledJreError "This application was configured to use a bundled Java Runtime Environment but the runtime is missing or corrupted.\n" + "من المفترض أن يعمل هذا البرنامج على نسخة خاصة من الجافا متضمنة معه،ويبدو أنه قد حصل خطأ في هذه النسخة"
 		messagesJreVersionError "This application requires a Java Runtime Environment\n" + "هذا البرنامج يحتاج إلى الجافا"
 		messagesLauncherError "The registry refers to a nonexistent Java Runtime Environment installation or the runtime is corrupted.\n" + "يشير الريجستري إلى عدم تحميل الجافا أو النسخة معطوبة"
-		messagesInstanceAlreadyExists "An application instance is already running.\n" + "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
+		messagesInstanceAlreadyExists "An application instance is already running.\n" + "هذا البرنامج حاليا قيد التشغيل ولا يمكن فتح أكثر من نسخة واحدة"
 		//see more: https://github.com/TheBoegl/gradle-launch4j
 		
 	}
 	
 	createExe.doFirst 
-	{		
-		copy{
-			from "src/main/resources/images"
-			include "exam.ico"
-			include splashImage
-			into "$buildDir/$outputDir"
-			into "$buildDir/SFX"
+	{
+		def destinations = ["$buildDir/$outputDir", "$buildDir/SFX"]
+		destinations.each { dest ->		
+			copy{
+				from "src/main/resources/images"
+				include "exam.ico"
+				include splashImage
+				into dest
+			}
 		}
 	}
 
 	apply from: file('../eqCore/about.gradle')
 	makeAboutImage {
 		def res = 'src/main/resources/images'
-		inputFile = file("$res/splash-blank.bmp")
+		inputFile = file("$res/splash-blank.jpg")
 		outputFile = file("$res/$splashImage")
 		version = gitVersion()
 		release = new Date().format('MMMM d, yyyy') 
@@ -142,23 +144,22 @@
 	{
 		def outputDir =  file("$buildDir/launch4j")
 		def outputFile = file("$outputDir/eQuiz-Installer.exe")
-		def packageIcon = file("exam.ico")
-		def packageImage = file("splash-client.jpg")
+		def packageIcon = file("$outputDir/exam.ico")
+		def packageImage = file("$outputDir/splash.jpg")
 		def packgeList =  ["lib",
 		 'eQuiz-Client.exe', 
-		 'exam.ico', 'splash-client.jpg']
+		 'exam.ico', 'splash.jpg']
 
-		workingDir = outputDir
-		//commandLine = [ 'cmd', '/c', 'echo', 'ff']
- 		commandLine = ['cmd', '/c', 'rar',
-			'a', '-m5', 			
-			'-ep1',			
-			"-sfx${outputFile.absolutePath}",  
-			"-iicon ${packageIcon.absolutePath}", 
-			"-iimage ${packageImage.absolutePath}", 
-			"-z${outputDir}\\SFX-package.conf" ,
+ 		def commandLine = ['cmd', '/c', 
+ 			'rar', 'a', '-m5',
+ 			"-sfx \"${outputFile.absolutePath}\"" , 			
+			'-ep1',	
+			"-iicon\"${packageIcon.absolutePath}\"" ,		
+			"-iimage\"${packageImage.absolutePath}\"" ,
+			"-z\"${outputDir}\\SFX-package.conf\"" 
 			] + packgeList
 		
+		file("$outputDir/sfx-make.bat").write commandLine.join(' ^\n ') + "\npause";
 		//println commandLine + '--------------'
 		//standardOutput = System.out //new ByteArrayOutputStream()
 	} 

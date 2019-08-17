@@ -2,6 +2,7 @@ package frawla.equiz.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Clock;
 import java.util.Date;
 
 import javafx.util.Duration;
@@ -12,6 +13,7 @@ public class EQDate extends Date
 
 	public EQDate() {super();}
 	public EQDate(long date) {super(date);}
+	public EQDate(Clock  clock) { super( clock.millis() ); }
 	
 	public EQDate(SimpleDateFormat f, String sdate) throws ParseException
 	{

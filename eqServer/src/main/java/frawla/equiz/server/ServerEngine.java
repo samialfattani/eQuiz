@@ -147,14 +147,15 @@ public class ServerEngine extends ServerListener
 		case Student.NONE:
 		case Student.DISCONNECTED:
 			st.setStatus(Student.READY);
+			st.setExamSheet( ExamLoader.getInstance().generateNewSheet() );			
 		break;
 		case Student.REJECTED:
 			st.getServerLinker().sendMessage(
 					new Message<>(Message.YOU_ARE_REJECTED));
 		break;
 		//new, reconnect or late
-		case Student.READY:
-		case Student.RESUMED:
+		case Student.READY:					
+		case Student.RESUMED:			
 			st.getServerLinker().sendMessage( 
 					new Message<>(Message.YOU_ARE_ALREADY_CONNECTED) );			
 		break;

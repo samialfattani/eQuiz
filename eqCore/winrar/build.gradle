@@ -115,6 +115,6 @@ Problem NOT SOLVED YET:
 
 
 task makeSFXConfig(type: RarTask) 
-task makeSFX(type: Exec, dependsOn: 'makeSFXConfig')  
+task makeSFX(dependsOn: 'makeSFXConfig')  
 
 

@@ -46,9 +46,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -119,12 +116,6 @@ public class FxExamSheetController implements Initializable
 			window.setTitle("Exam Sheet");
 			window.setOnCloseRequest(event -> disconnect());
 			window.show();
-
-			KeyCombination kc;
-			kc = new KeyCodeCombination(KeyCode.PAGE_DOWN, KeyCombination.CONTROL_DOWN);
-			PanRoot.getScene().getAccelerators().put(kc, () -> { lblNext_MouseClicked(); } );
-			kc = new KeyCodeCombination(KeyCode.PAGE_UP, KeyCombination.CONTROL_DOWN);
-			PanRoot.getScene().getAccelerators().put(kc, () -> { lblPrev_MouseClicked(); } );
 
 			lblIVersion.setVisible(false);
 

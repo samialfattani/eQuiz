@@ -214,6 +214,8 @@ public class Util
 		return Optional.ofNullable(selectedFile);
 	}
 
+	
+	
 	private static String getProperty(String pName) 
 	{
 		//initFile = '~/.equiz/init.json'

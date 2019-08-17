@@ -125,6 +125,7 @@ public class ExamLoaderXLSX extends ExamLoader{
 			return null;
 		}
 
+		
 		for (int i = 2; i < shtQuestions.getPhysicalNumberOfRows(); i++) {
 			Row row = shtQuestions.getRow(i);
 			row.getCell(0).setCellValue(i - 1); // put question number.
@@ -227,7 +228,8 @@ public class ExamLoaderXLSX extends ExamLoader{
 		return imageList;
 	}
 
-	private ObservableList<Student> loadStudentList(Workbook wrkBook) {
+	private ObservableList<Student> loadStudentList(Workbook wrkBook) 
+	{
 		ObservableList<Student> students = FXCollections.observableArrayList();
 		Sheet shtAnswer = wrkBook.getSheet("Answers");
 		Sheet shtTimer = wrkBook.getSheet("Timer");
@@ -290,15 +292,15 @@ public class ExamLoaderXLSX extends ExamLoader{
 				mcCopy.setConsumedTime(toDuration(timeCellContent));
 				Qlst.add(mcCopy);
 			} else if (qj instanceof BlankField) {
-					BlankField qbCopy = new BlankField(cellContent);
-					qbCopy.setText(qj.getText() + "");
-					qbCopy.copyOptions(qj);
-					qbCopy.setStudentMark(
-							stRow.getCell(base + (qid - 1) * 2 + 1)
-									.getNumericCellValue());
-					qbCopy.setConsumedTime(toDuration(timeCellContent));
-					Qlst.add(qbCopy);
-				}
+				BlankField qbCopy = new BlankField(cellContent);
+				qbCopy.setText(qj.getText() + "");
+				qbCopy.copyOptions(qj);
+				qbCopy.setStudentMark(
+						stRow.getCell(base + (qid - 1) * 2 + 1)
+								.getNumericCellValue());
+				qbCopy.setConsumedTime(toDuration(timeCellContent));
+				Qlst.add(qbCopy);
+			}
 
 		}
 		return Qlst;

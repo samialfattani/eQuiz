@@ -1,4 +1,4 @@
-package frawla.equiz.server;
+package frawla.equiz.server.gui;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import frawla.equiz.server.ExamLoader;
+import frawla.equiz.server.Exporter;
 import frawla.equiz.util.Util;
 import frawla.equiz.util.exam.ExamConfig;
 import frawla.equiz.util.exam.ExamSheet;
