@@ -70,7 +70,7 @@
 	}
 
 	apply plugin: 'application' //adds 'run' task	
-	mainClassName = 'frawla.equiz.server.Launcher'
+	mainClassName = 'frawla.equiz.server.gui.Launcher'
 
 	//this is to run with JVM option to run the java agent
 	run {
