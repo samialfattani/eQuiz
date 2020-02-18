@@ -33,6 +33,8 @@
 		//println System.getProperty('java.home')
 	}
 	
+
+
 	task simo { doLast {
 		
 		println "------ JAVA_HOME -----"
@@ -45,6 +47,7 @@
 		println "commitDistance = $details.commitDistance"
 		println "gitHash = $details.gitHash"
 		println "branchName = $details.branchName"
+		//println get_git_message()
 	}}
 	
 	task about(type: JavaExec) { doLast {

@@ -25,34 +25,34 @@
 	
 	dependencies
 	{
-		compile project (":eqCore")
+		implementation project (":eqCore")
 	
 		//Junit
 		testImplementation 'org.junit.jupiter:junit-jupiter:5.5.0'
 		testRuntimeOnly    'org.junit.jupiter:junit-jupiter-engine:5.3.1'
 		
 		//mokito
-		testCompile "org.mockito:mockito-core:2.28.+"
+		testImplementation "org.mockito:mockito-core:2.28.+"
 		
 		//Excel (.xlsx)
-		compile 'org.apache.poi:poi:4.1.0'
-		compile 'org.apache.poi:poi-ooxml:4.1.0'
+		implementation 'org.apache.poi:poi:4.1.0'
+		implementation 'org.apache.poi:poi-ooxml:4.1.0'
 		
 		//Open-Office Sheet files (.ods)
-		compile 'org.apache.odftoolkit:simple-odf:0.7-incubating'
+		implementation 'org.apache.odftoolkit:simple-odf:0.7-incubating'
 		
 		//iText
-		compile 'com.itextpdf:itextpdf:5.5.10'
-		compile 'com.itextpdf:itext-pdfa:5.5.10'
+		implementation 'com.itextpdf:itextpdf:5.5.10'
+		implementation 'com.itextpdf:itext-pdfa:5.5.10'
 		//compile 'com.itextpdf:itext-xtra:5.5.10'
 		//compile 'com.itextpdf.tool:xmlworker:5.5.10'
 		
 		//FOP
-		compile 'commons-io:commons-io:2.5'
+		implementation 'commons-io:commons-io:2.5'
 		
 		
 		// https://mvnrepository.com/artifact/org.json/json
-		compile 'org.json:json:20180813'
+		implementation 'org.json:json:20180813'
 		
 	}
 	
@@ -77,7 +77,7 @@
 	     jvmArgs '-javaagent:../ObjectSize/build/libs/ObjectSizeFetcherAgent.jar'
 	}
 
-	runtime 
+	runtime 	
 	{
 	    //jlink options
 	    options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
@@ -85,7 +85,7 @@
 
 
 	jar {
-		version = '' //to avoid write it in Jar file name
+		archiveVersion = '' //to avoid write it in Jar file name
     	manifest {
     	 attributes(
 			'Class-Path': ".",
@@ -121,11 +121,11 @@
 
 		errTitle = "Java is not Supported on this Computer"
 		downloadUrl = 'https://www.java.com/ES/download/'
-		messagesStartupError "An error occurred while starting the application.\n" + "ÍÕáÊ ãÔßáÉ ÃËäÇÁ ÇáÊÔÛíá" 
-		messagesBundledJreError "This application was configured to use a bundled Java Runtime Environment but the runtime is missing or corrupted.\n" + "ãä ÇáãİÊÑÖ Ãä íÚãá åĞÇ ÇáÈÑäÇãÌ Úáì äÓÎÉ ÎÇÕÉ ãä ÇáÌÇİÇ ãÊÖãäÉ ãÚå¡æíÈÏæ Ãäå ŞÏ ÍÕá ÎØÃ İí åĞå ÇáäÓÎÉ"
-		messagesJreVersionError "This application requires a Java Runtime Environment\n" + "åĞÇ ÇáÈÑäÇãÌ íÍÊÇÌ Åáì ÇáÌÇİÇ"
-		messagesLauncherError "The registry refers to a nonexistent Java Runtime Environment installation or the runtime is corrupted.\n" + "íÔíÑ ÇáÑíÌÓÊÑí Åáì ÚÏã ÊÍãíá ÇáÌÇİÇ Ãæ ÇáäÓÎÉ ãÚØæÈÉ"
-		messagesInstanceAlreadyExists "An application instance is already running.\n" + "åĞÇ ÇáÈÑäÇãÌ ÍÇáíÇ ŞíÏ ÇáÊÔÛíá æáÇ íãßä İÊÍ ÃßËÑ ãä äÓÎÉ æÇÍÏÉ"
+		messagesStartupError "An error occurred while starting the application.\n" + "ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" 
+		messagesBundledJreError "This application was configured to use a bundled Java Runtime Environment but the runtime is missing or corrupted.\n" + "ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
+		messagesJreVersionError "This application requires a Java Runtime Environment\n" + "ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
+		messagesLauncherError "The registry refers to a nonexistent Java Runtime Environment installation or the runtime is corrupted.\n" + "ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
+		messagesInstanceAlreadyExists "An application instance is already running.\n" + "ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½"
 		//see more: https://github.com/TheBoegl/gradle-launch4j
 	}
 	

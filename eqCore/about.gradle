@@ -8,11 +8,11 @@ apply plugin:'java'
 
 class AboutTask extends DefaultTask 
 {
-    def version = '-----'
-    def release = '-----'
-    def licensed = '-----'
-    def inputFile = null
-    def outputFile = null
+    @Input def version = '-----'
+    @Input def release = '-----'
+    @Input def licensed = '-----'
+    @InputFile def File inputFile = null
+    @InputFile def File outputFile = null
 
     @TaskAction def doThis() 
     {

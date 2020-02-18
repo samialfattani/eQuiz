@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<!-- Sami: keep this file to launch the client with the splash screen and other args. -->
+
 <launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
 <listEntry value="/eqClient/src/main/java/frawla/equiz/client/Launcher.java"/>
@@ -12,7 +15,8 @@
 </listAttribute>
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_EXCLUDE_TEST_CODE" value="true"/>
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_CLASSPATH_ONLY_JAR" value="false"/>
+<stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.buildship.core.classpathprovider"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="frawla.equiz.client.Launcher"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="eqClient"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-splash:src/main/resources/images/splash-client.jpg"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-splash:src/main/resources/images/splash.jpg"/>
 </launchConfiguration>

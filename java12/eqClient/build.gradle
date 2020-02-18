@@ -68,7 +68,9 @@
 	}
 	
 
-	runtime {
+	
+	runtime 
+	{
 		imageDir = file("$buildDir/equiz-client") //JRE image
 
 	    //jlink options

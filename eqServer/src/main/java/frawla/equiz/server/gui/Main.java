@@ -26,7 +26,7 @@ public class Main extends Application
 			Splasher.close();
 			
 			//File f = new File("../data/MidTerm-1/MidTerm-2019.xlsx");
-			File f = new File("../data/MidTerm-1/SE260-MidTerm-1.xlsx");
+			File f = new File("../data/MidTerm-1/SE260-MidTerm-12.xlsx");
 			
 			if(f.exists()) {
 				FxExamConfigController cntrl = (FxExamConfigController) loader.getController();

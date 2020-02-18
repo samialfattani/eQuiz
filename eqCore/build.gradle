@@ -17,9 +17,10 @@
 		testImplementation 'org.junit.jupiter:junit-jupiter:5.5.0'
 	
 		//mokito
-		testCompile "org.mockito:mockito-core:2.28.+"
+		testImplementation "org.mockito:mockito-core:2.28.+"
+		
 		// https://mvnrepository.com/artifact/org.json/json
-		compile 'org.json:json:20180813'
+		implementation 'org.json:json:20180813'
 		
 	}
 	

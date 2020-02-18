@@ -10,17 +10,21 @@ class Shortcut{
     def shortcutIcon = ''
 }
 
-class RarTask extends DefaultTask 
+//class RarTask extends Exec 
+class RarTask extends DefaultTask
 {
-    def version = '-----'
-    def release = '-----'
-    File sfxConfigFile = null
-    File outputDir = null
+    @Input def version = '-----'
+    @Input def release = '-----'
+    
+    @InputDirectory def File outputDir = null
 
-    def shortcut = new Shortcut()
+    @Input def shortcut = new Shortcut()
 
-    def extractLocation = ''
-    def extractDir = ''
+    @Input def extractLocation = ''
+    @Input def extractDir = ''
+    @Input def git_message = ''
+    @Input def git_message_title = ''
+
 
     @TaskAction def doThis() 
     {
@@ -32,11 +36,13 @@ class RarTask extends DefaultTask
         def extractLocationMap = ['program files':'', 'current':'.\\']
         extractLocation = extractLocationMap[ extractLocation ]
         
+
         sfxConfigFile.write generateSFXConfig();
     }
 
     def generateSFXConfig()
     {
+        
         //using Dollar Slashy String $/.../$ read[http://docs.groovy-lang.org/latest/html/documentation/#_dollar_slashy_string]
         def htmlText = $/
 ;-------------------------------
@@ -80,31 +86,11 @@ Text
 <pre style="color: blue; font-weight: bold ">
 Product     : manga ${version} 
 Released on : ${release} 
-Description : Fix Reading Recorded Data
 
-What's A New:</pre>
-
-<pre>Server Side:
-- Fix coding bugs in Exam Loader's classes, now it can be extended to any other file types.
-- Fix the reading of Timing data from file, now it can detect the total spend time and 
-    appended to the student so that he can connect again after finish.
-- add feature of disconnected status.
-- add feature of Ungrade student and Unfinish him.
-- GUI: change IP and port to be in one label
-
-Client Side:
-- GUI: change the style of quesion list navigator.
-
-Gradle Side:- 
-- 
-
-Problem NOT SOLVED YET:
-- we need to move the validation method to be inside Student class
-- why the heap memory is keep increasing on each backup?
-- let the multiple choices boxes to be hidden without taking palce.
-- change exam time 
-- ODS file loader still not implemented 100%   
+What's A New:
 </pre>
+<pre style="color: green; font-weight: bold ">${git_message_title}</pre>
+<pre>${git_message}</pre>
 }    
         /$;
         return htmlText;
@@ -114,7 +100,18 @@ Problem NOT SOLVED YET:
 }//end class AboutTask
 
 
-task makeSFXConfig(type: RarTask) 
+task stopTomcat(type:Exec) {
+    def stdout = new ByteArrayOutputStream()
+    //git log -n 1 --format=format:%B
+    
+    commandLine 'git', 'log', '-n', '1', '--format=format:%B'
+    standardOutput = stdout
+
+    //def git_message =  stdout.toString().trim()
+    println stdout.toString().trim()
+}
+
+task makeSFXConfig(type: RarTask, dependsOn: stopTomcat) 
 task makeSFX(dependsOn: 'makeSFXConfig')  
 
 

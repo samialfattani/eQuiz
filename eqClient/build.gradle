@@ -24,12 +24,13 @@
 		
 	dependencies
 	{
-		compile project (":eqCore")
+		//compile project (":eqCore")
+		implementation project (":eqCore")
 		//Junit
-		testCompile 'org.junit.jupiter:junit-jupiter:5.5.0'
+		testImplementation 'org.junit.jupiter:junit-jupiter:5.5.0'
 		
 		//JSAP (Java Simple Arguments Parser)
-		compile 'com.martiansoftware:jsap:2.1' //{ because 'we want to run the application using parameters' }
+		implementation 'com.martiansoftware:jsap:2.1' //{ because 'we want to run the application using parameters' }
 	}
 	
 	
@@ -46,14 +47,14 @@
 	}
 
 	jar {
-		version = '' //to avoid write it in Jar file name
-    	manifest {
-    	 attributes(
+		archiveVersion = '' //to avoid write it in Jar file name
+		manifest {
+			attributes(
 			'Class-Path': ".",
-    	 	'Implementation-Title': "eQuiz Manifest",
-            'Implementation-Version': gitVersion(), 
-            'Main-Class': mainClassName)
-    	}
+			'Implementation-Title': "eQuiz Manifest",
+			'Implementation-Version': gitVersion(), 
+			'Main-Class': mainClassName)
+		}
 	}
 	
 	// launch4j: put all configuration of launch4j here 
@@ -64,12 +65,12 @@
 		copyright = "All Copyright are recieved (c) 2016~2018 by Eng. Sami Alfattani"
 		companyName = "Eng. Sami Alfattani"
 		 
-	    mainClassName = this.mainClassName
+	  mainClassName = this.mainClassName
 	    
-	    icon = "exam.ico" 	//realative to exe
+	  icon = "exam.ico" 	//realative to exe
 	    
-	    //headerType = "console" //no splash with console
-	    headerType = "gui" 
+	  //headerType = "console" //no splash with console
+	  headerType = "gui" 
 		jvmOptions = ["-splash:$splashImage"]
 		//splashFileName = splashImage
 		
@@ -98,7 +99,7 @@
 	createExe.doFirst 
 	{
 		def destinations = ["$buildDir/$outputDir", "$buildDir/SFX"]
-		destinations.each { dest ->		
+		destinations.each {  dest ->		
 			copy{
 				from "src/main/resources/images"
 				include "exam.ico"
@@ -123,11 +124,29 @@
 	apply from: file('../eqCore/winrar/build.gradle');
 
 
+    def get_git_message()
+    {
+		def stdout = new ByteArrayOutputStream()
+		//git log -n 1 --format=format:%B
+		exec {
+			commandLine 'git', 'log', '-n', '1', '--format=format:%B'
+			standardOutput = stdout
+		}
+		return stdout.toString().trim()
+    }
+	def first_line( x ){
+		return x.substring(0, x.indexOf('\n'))
+	}
+
 	makeSFXConfig
 	{
 		outputDir = file("$buildDir/launch4j")
 		version = gitVersion()
 		release = new Date().format('MMMM d, yyyy') 
+		git_message = get_git_message()
+		
+		git_message_title = first_line(git_message)
+		git_message = git_message.split('\n').drop(1).join('\n')
 
 		shortcut.destType = 'desktop'
 		shortcut.srcName = 'eQuiz-client.exe -h 10.4.10.100 -p 10000' 	//relative to archive
@@ -142,7 +161,10 @@
 
 	makeSFX
 	{
+		
 		def outputDir =  file("$buildDir/launch4j")
+		outputDir.mkdirs() //create if not exists
+
 		def outputFile = file("$outputDir/eQuiz-Installer.exe")
 		def packageIcon = file("$outputDir/exam.ico")
 		def packageImage = file("$outputDir/splash.jpg")

@@ -1,16 +1,29 @@
-.gradle
-.settings
-.vscode
-build
-build-eclipse
-bin
-/exe
-.project
-.classpath
+# bin		    --> ignore all bin folders even in the sub-folders
+#
+# /build		--> ignore only build not in the sub-folders
+# build/*.log   --> ignore log files only in '/build/'
+
+# General Files
 *.lnk
 Thumb.mdb
+.gradle
+
+# Files just for Dev. Notes
 GIT modifications.txt
 ERRORS.txt
+
+# VSCode
+.settings
+.vscode
+
+# Eclipse
+.project
+.classpath
+bin
+build
+build-eclipse
+
+/exe
 /eqCore/nbproject/private/
 /eqClient/nbproject/private/
 /ObjectSize/nbproject/private/
