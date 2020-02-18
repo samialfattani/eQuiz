@@ -1,4 +1,4 @@
-package General;
+package ggeneral;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

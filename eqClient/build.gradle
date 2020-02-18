@@ -124,8 +124,8 @@
 	apply from: file('../eqCore/winrar/build.gradle');
 
 
-    def get_git_message()
-    {
+	def get_git_message()
+	{
 		def stdout = new ByteArrayOutputStream()
 		//git log -n 1 --format=format:%B
 		exec {
@@ -133,9 +133,11 @@
 			standardOutput = stdout
 		}
 		return stdout.toString().trim()
-    }
-	def first_line( x ){
-		return x.substring(0, x.indexOf('\n'))
+	}
+
+	def first_line( x )
+	{
+			return x.substring(0 , x.indexOf('\n')+1 )	
 	}
 
 	makeSFXConfig
