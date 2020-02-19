@@ -17,7 +17,7 @@
 		id 'org.openjfx.javafxplugin' version '0.0.7'
 		
 		// Create a custom runtime image
-		// https://badass-jlink-plugin.beryx.org/releases/latest/
+		// https://badass-runtime-plugin.beryx.org/releases/latest/
 		id 'org.beryx.runtime' version '1.2.1' //Badass 
 	}
 
@@ -25,17 +25,16 @@
 		buildDir = "D:/build/equiz-client-java12"
 
 		mainClassName = 'frawla.equiz.client.Launcher'
-		def splashImage = 'splash-client.jpg'
+		def splashImage = 'splash.jpg'
 		def projPath = "../../eqClient"	
-		def jreImageDir = "equiz-client" //JRE image ($buildDir/image)
+		def jreImageDir = "equiz-client-with-jre" //JRE image ($buildDir/image) eqClient-linux-x64
 	//---------------------------------
 	
 	applicationDefaultJvmArgs = ["-splash:$splashImage"]
 	javafx {
 		version = "11.0.2" //version 11 hav long support.
 		modules = [ 'javafx.base', 'javafx.controls', 'javafx.fxml',
-					'javafx.swing', 'javafx.graphics',
-					'javafx.web' ]     
+					'javafx.swing', 'javafx.graphics', 'javafx.web' ]     
 		//'javafx.graphics',
 	}
 
@@ -48,22 +47,22 @@
 	
 	dependencies
 	{
-		compile project (":eqCore")
+		implementation project (":eqCore")
 		
 		testImplementation 'org.junit.jupiter:junit-jupiter:5.5.0'
 		
 		//JSAP (Java Simple Arguments Parser)
-		compile 'com.martiansoftware:jsap:2.1'
+		implementation 'com.martiansoftware:jsap:2.1'
 	}
 	
 	jar {
-		version = '' //to avoid write it in Jar file name
+		archiveVersion = '' //to avoid write it in Jar file name
     	manifest {
-    	 attributes(
-			'Class-Path': ".",
-    	 	'Implementation-Title': "eQuiz Manifest",
+    	  attributes( 'Class-Path': ".",
+    	 			'Implementation-Title': "eQuiz Manifest",
             'Implementation-Version': gitVersion(), 
-            'Main-Class': mainClassName)
+            'Main-Class': mainClassName
+				)
     	}
 	}
 	
@@ -71,11 +70,17 @@
 	
 	runtime 
 	{
-		imageDir = file("$buildDir/equiz-client") //JRE image
+		imageDir = file("$buildDir/$jreImageDir")  //JRE image
 
-	    //jlink options
-	    options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
-	    targetPlatform 'linux-x64', '/usr/lib/jvm/jdk_x64_linux_hotspot_11_28'
+	  //jlink options
+	  options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
+		
+		//targetPlatform 'j11-win64', 'D:/Program Files/java/jdk-11.0.6_windows-x64',['--endian', 'big']
+		//targetPlatform 'linux64', 'D:/Program Files/java/jdk-13.0.2_linux-x64'
+		//targetPlatform 'j13-win64', 'D:/Program Files/java/jdk-13.0.2_windows-x64'
+
+		//targetPlatform 'win64', 'C:/Program Files/Java/jdk-12.0.2' // --> OK
+		//targetPlatform 'win64', 'D:/Program Files/java/jdk-12.0.2_windows-x64' // --> OK
 
 	}
 
@@ -143,10 +148,10 @@
 		errTitle = "Java is not Supported on this Computer"
 		downloadUrl = 'https://www.java.com/ES/download/'
 		messagesStartupError "An error occurred while starting the application.\n" + "حصلت مشكلة أثناء التشغيل" 
-		messagesBundledJreError "This application was configured to use a bundled Java Runtime Environment but the runtime is missing or corrupted.\n" + "��� �������� ���� ��� ���� ��� ���� ���� ��������ɡ ���� �� ������ ��� ������ �� �����"
-		messagesJreVersionError "This application requires a Java Runtime Environment\n" + "��� �� ����� ���� ������ � ���� �� ����� ������ ��������"
-		messagesLauncherError "The registry refers to a nonexistent Java Runtime Environment installation or the runtime is corrupted.\n" + "������ ��� ����� ���� ����"
-		messagesInstanceAlreadyExists "An application instance is already running.\n" + "������ ��� ���� �� ���� ��������"
+		messagesBundledJreError "This application was configured to use a bundled Java Runtime Environment but the runtime is missing or corrupted.\n" + "من المفترض أن يعمل هذا البرنامج على نسخة خاصة من الجافا متضمنة معه،ويبدو أنه قد حصل خطأ في هذه النسخة"
+		messagesJreVersionError "This application requires a Java Runtime Environment\n" + "هذا البرنامج يحتاج إلى الجافا"
+		messagesLauncherError "The registry refers to a nonexistent Java Runtime Environment installation or the runtime is corrupted.\n" + "يشير الريجستري إلى عدم تحميل الجافا أو النسخة معطوبة"
+		messagesInstanceAlreadyExists "An application instance is already running.\n" + "هذا البرنامج حاليا قيد التشغيل ولا يمكن فتح أكثر من نسخة واحدة"
 		//see more: https://github.com/TheBoegl/gradle-launch4j
 	}
 
@@ -167,11 +172,31 @@
 
 	apply from: file('../../eqCore/winrar/build.gradle');
 
+	def get_git_message()
+	{
+		def stdout = new ByteArrayOutputStream()
+		//git log -n 1 --format=format:%B
+		exec {
+			commandLine 'git', 'log', '-n', '1', '--format=format:%B'
+			standardOutput = stdout
+		}
+		return stdout.toString().trim()
+	}
+
+	def first_line( x )
+	{
+			return x.substring(0 , x.indexOf('\n')+1 )	
+	}
+
 	makeSFXConfig
 	{
 		outputDir = file("$buildDir")
 		version = gitVersion()
 		release = new Date().format('MMMM d, yyyy') 
+		git_message = get_git_message()
+		
+		git_message_title = first_line(git_message)
+		git_message = git_message.split('\n').drop(1).join('\n')
 
 		shortcut.destType = 'desktop'
 		shortcut.srcName = 'eQuiz-client.exe -h 10.4.10.100 -p 10000' 	//relative to archive
@@ -197,18 +222,18 @@
 			'equiz-client'	 
 			 ]  
 
-		workingDir = outputDir
+		//workingDir = outputDir
 		//commandLine = [ 'cmd', '/c', 'echo', 'ff']
  		
 		//'cmd', '/c', 
-		commandLine = [ 'cmd', '/c', 
+		def commandLine = [ 'cmd', '/c', 
 			'rar', 'a', '-m5',
-			"-sfx\"${outputFile.absolutePath}\"" , 
+			"-sfx \"${outputFile.absolutePath}\"" , 
 			'-ep1', 
 			"-iicon\"${packageIcon.absolutePath}\"" , 
 			"-iimage\"${packageImage.absolutePath}\"" , 
 			"-z\"${outputDir}\\SFX-package.conf\""
 			] + packgeList
 
-		file("$buildDir/sfx-make.bat").write commandLine.join(' ') + "\npause";
+		file("$buildDir/sfx-make.bat").write commandLine.join(' ^\n ') + "\npause";
 	} 

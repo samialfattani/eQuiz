@@ -47,7 +47,6 @@
 		println "commitDistance = $details.commitDistance"
 		println "gitHash = $details.gitHash"
 		println "branchName = $details.branchName"
-		//println get_git_message()
 	}}
 	
 	task about(type: JavaExec) { doLast {
@@ -57,4 +56,4 @@
     	main = 'frawla.hi'	
     	println '---------------'
     	
-    }}
+  }}

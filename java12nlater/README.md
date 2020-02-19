@@ -16,7 +16,7 @@ $ gradle eqClient:run
 ```bash
 $ gradle eqClient:runtime
 ```
-this will create a custom JRE in included `*.bat` running file. You can change the image location by setting `runteime.imageDir` variable which is by default `$buildDir/image`.
+This will create a custom JRE in included `*.bat` running file. You can change the image location by setting `runteime.imageDir` variable which is by default `$buildDir/image`.
 
 ### **Step-2:** Create Exe file using Launch4j Gradle plugin
 ```bash

@@ -8,11 +8,9 @@ $ git clone
 ```
 ### Test both Server & Client applications using:
 ```bash
-$ cd eqServer 
-$ gradle run
+$ gradle eqServer:run 
 
-$ cd eqClient 
-$ gradle run
+$ gradle eqClient:run 
 ```
 ### Get some usfule information:
 ```bash
@@ -22,14 +20,12 @@ $ gradle simo
 ## **Update About Image (and Splash-Screen)**
 ### Whenever you create a new commit in GIT assigned with TAG, then you can update the About image using:
 ```bash
-$ cd eqServer
-$ gradle makeAboutImage
-# this will be updat:
+$ gradle eqServer:makeAboutImage
+# This will be updat:
 # eqServer/src/main/resources/images/splash.jpg !
 
-$ cd eqClient 
-$ gradle makeAboutImage
-# this will be updat:
+$ gradle eqClient:makeAboutImage
+# This will be updat:
 # eqClient/src/main/resources/images/splash.jpg !
 ```
 * check the [current About image of eqServer](eqServer\src\main\resources\images\splash.jpg)
@@ -50,8 +46,7 @@ $ gradle makeAboutImage
 * WinRAR is installed in your machine.
 * WinRAR folder should be added to `$PATH` env. varaiable.
 ```bash
-> cd eqClient 
-> gradle makeSFX
+> gradle eqClient:makeSFX
 # This will create config and maker files in: biuld/launch4j
 # Config: /launch4j/SFX-package.conf
 # Maker: /launch4j/sfx-make.bat
