@@ -121,11 +121,11 @@
 
 		errTitle = "Java is not Supported on this Computer"
 		downloadUrl = 'https://www.java.com/ES/download/'
-		messagesStartupError "An error occurred while starting the application.\n" + "���� ����� ����� �������" 
-		messagesBundledJreError "This application was configured to use a bundled Java Runtime Environment but the runtime is missing or corrupted.\n" + "�� ������� �� ���� ��� �������� ��� ���� ���� �� ������ ������ �������� ��� �� ��� ��� �� ��� ������"
-		messagesJreVersionError "This application requires a Java Runtime Environment\n" + "��� �������� ����� ��� ������"
-		messagesLauncherError "The registry refers to a nonexistent Java Runtime Environment installation or the runtime is corrupted.\n" + "���� ��������� ��� ��� ����� ������ �� ������ ������"
-		messagesInstanceAlreadyExists "An application instance is already running.\n" + "��� �������� ����� ��� ������� ��� ���� ��� ���� �� ���� �����"
+		messagesStartupError "An error occurred while starting the application.\n" + "حصلت مشكلة أثناء التشغيل" 
+		messagesBundledJreError "This application was configured to use a bundled Java Runtime Environment but the runtime is missing or corrupted.\n" + "من المفترض أن يعمل هذا البرنامج على نسخة خاصة من الجافا متضمنة معه،ويبدو أنه قد حصل خطأ في هذه النسخة"
+		messagesJreVersionError "This application requires a Java Runtime Environment\n" + "هذا البرنامج يحتاج إلى الجافا"
+		messagesLauncherError "The registry refers to a nonexistent Java Runtime Environment installation or the runtime is corrupted.\n" + "يشير الريجستري إلى عدم تحميل الجافا أو النسخة معطوبة"
+		messagesInstanceAlreadyExists "An application instance is already running.\n" + "هذا البرنامج حاليا قيد التشغيل ولا يمكن فتح أكثر من نسخة واحدة"
 		//see more: https://github.com/TheBoegl/gradle-launch4j
 	}
 	
