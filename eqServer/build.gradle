@@ -18,6 +18,8 @@
 
 	mainClassName = 'frawla.equiz.client.Launcher'
 	def splashImage = 'splash.jpg'
+	def verdetls = versionDetails()
+	def gitLastTag = verdetls.lastTag
 
 	test {
 	    useJUnitPlatform()
@@ -90,7 +92,7 @@
     	 attributes(
 			'Class-Path': ".",
     	 	'Implementation-Title': "Gradle",
-            'Implementation-Version': gitVersion(),
+            'Implementation-Version': gitLastTag /*gitVersion()*/,
             'Main-Class': mainClassName)
     	}
 	}
@@ -114,7 +116,7 @@
 		//project.name
 		jvmOptions = ["-splash:$splashImage"]
 		
-		version = gitVersion()
+		version =  gitLastTag /*gitVersion()*/
 		outfile	= 'eQuiz-server.exe'	
 		productName	= 'eQuiz-server'
 		internalName = 'eQuiz-server-' + version
@@ -145,7 +147,8 @@
 		def res = 'src/main/resources/images'
 		inputFile = file("$res/splash-blank.jpg")
 		outputFile = file("$res/$splashImage")
-		version = gitVersion()
+		version = gitLastTag
+		//version = gitVersion()
 		release = new Date().format('MMMM d, yyyy') 
 		licensed = 'To Eng. Sami Alfattani'
 

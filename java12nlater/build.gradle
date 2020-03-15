@@ -10,6 +10,9 @@
 	     id "com.palantir.git-version" version "0.6.0"
 	}
 
+	def verdetls = versionDetails()
+	gitLastTag = verdetls.lastTag
+
 	allprojects
 	{
 		repositories{
@@ -18,7 +21,7 @@
 			jcenter()
 		}
 		//version = '2.10.0.0'
-		version = gitVersion()
+		version = gitLastTag /*gitVersion()*/
 	}
 	
 	subprojects

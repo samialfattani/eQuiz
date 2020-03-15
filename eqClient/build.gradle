@@ -18,6 +18,8 @@
 
 		mainClassName = 'frawla.equiz.client.Launcher'
 		def splashImage = 'splash.jpg'
+		def verdetls = versionDetails()
+		def gitLastTag = verdetls.lastTag
 	//------------------------
 	
 	applicationDefaultJvmArgs = ["-splash:$splashImage"]
@@ -52,7 +54,7 @@
 			attributes(
 			'Class-Path': ".",
 			'Implementation-Title': "eQuiz Manifest",
-			'Implementation-Version': gitVersion(), 
+			'Implementation-Version': gitLastTag /*gitVersion()*/, 
 			'Main-Class': mainClassName)
 		}
 	}
@@ -74,7 +76,7 @@
 		jvmOptions = ["-splash:$splashImage"]
 		//splashFileName = splashImage
 		
-		version = gitVersion() 
+		version = gitLastTag /*gitVersion()*/
 		outfile = 'eQuiz-client.exe'
 		productName	= 'eQuiz-client'
 		internalName = 'eQuiz-client-' + version
@@ -114,7 +116,8 @@
 		def res = 'src/main/resources/images'
 		inputFile = file("$res/splash-blank.jpg")
 		outputFile = file("$res/$splashImage")
-		version = gitVersion()
+
+		version = gitLastTag /*gitVersion()*/
 		release = new Date().format('MMMM d, yyyy') 
 		licensed = 'To Eng. Sami Alfattani'
 
@@ -143,8 +146,8 @@
 	makeSFXConfig
 	{
 		outputDir = file("$buildDir/launch4j")
-		def verdetls = versionDetails()
-		version = verdetls.lastTag
+
+		version = gitLastTag
 		release = new Date().format('MMMM d, yyyy') 
 		git_message = get_git_message()
 		

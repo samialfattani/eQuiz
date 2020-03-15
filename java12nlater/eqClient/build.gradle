@@ -28,6 +28,9 @@
 		def splashImage = 'splash.jpg'
 		def projPath = "../../eqClient"	
 		def jreImageDir = "equiz-client-with-jre" //JRE image ($buildDir/image) eqClient-linux-x64
+		def verdetls = versionDetails()
+		gitLastTag = verdetls.lastTag
+		
 	//---------------------------------
 	
 	applicationDefaultJvmArgs = ["-splash:$splashImage"]
@@ -60,7 +63,7 @@
     	manifest {
     	  attributes( 'Class-Path': ".",
     	 			'Implementation-Title': "eQuiz Manifest",
-            'Implementation-Version': gitVersion(), 
+            'Implementation-Version': gitLastTag, 
             'Main-Class': mainClassName
 				)
     	}
@@ -102,7 +105,8 @@
 		def res = "$projPath/src/main/resources/images"
 		inputFile = file("$res/splash-blank.jpg")
 		outputFile = file("$res/$splashImage")
-		version = gitVersion()
+		version = gitLastTag
+		//version = gitVersion()
 		release = new Date().format('MMMM d, yyyy') 
 		licensed = 'To Eng. Sami Alfattani'
 
@@ -137,7 +141,7 @@
 
 		outfile = 'eQuiz-client.exe'
 		productName	= 'eQuiz-client' 
-		internalName = 'eQuiz-client-' + gitVersion() 
+		internalName = 'eQuiz-client-' + gitLastTag /*gitVersion() */
 		
 		//jreMinVersion = '9.0'
 		jdkPreference = 'jdkOnly' //jreOnly|preferJre|preferJdk|jdkOnly
@@ -191,7 +195,7 @@
 	makeSFXConfig
 	{
 		outputDir = file("$buildDir")
-		version = gitVersion()
+		version = gitLastTag /*gitVersion()*/
 		release = new Date().format('MMMM d, yyyy') 
 		git_message = get_git_message()
 		
