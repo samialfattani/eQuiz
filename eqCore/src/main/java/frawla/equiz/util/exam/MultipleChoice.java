@@ -1,6 +1,5 @@
 package frawla.equiz.util.exam;
 
-import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,7 +12,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MultipleChoice extends Question implements Serializable, Randomizable
+public class MultipleChoice extends Question implements Randomizable
 {
 	private static final long serialVersionUID = -9129997940545881330L;
 	private Map<String, String> Choices = new HashMap<>();

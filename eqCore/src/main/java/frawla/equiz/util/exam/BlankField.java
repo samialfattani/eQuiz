@@ -1,6 +1,5 @@
 package frawla.equiz.util.exam;
 
-import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class BlankField extends Question implements Serializable
+public class BlankField extends Question 
 {
 	private static final long serialVersionUID = 7874885710303162877L;
 	List<String> correctAnswerList = new ArrayList<>();
