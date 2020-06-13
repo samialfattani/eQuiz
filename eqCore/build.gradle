@@ -1,6 +1,8 @@
 /*----------------
 --     CORE   --
 ------------------*/
+	import org.gradle.plugins.ide.eclipse.model.AccessRule
+
 	plugins {
 		id 'java'
 		id 'eclipse' // optional (to generate Eclipse project files)
@@ -32,6 +34,12 @@
 		    //default settings for downloading sources and Javadoc:
 		    downloadSources = false
 		    downloadJavadoc = true
+				
+				file { whenMerged {
+                def jre = entries.find { it.path.contains 'org.eclipse.jdt.launching.JRE_CONTAINER' }
+                jre.accessRules.add(new AccessRule('0', 'javafx/**'))
+                jre.accessRules.add(new AccessRule('0', 'com/sun/javafx/**'))
+        } }
 		}
 	}
 

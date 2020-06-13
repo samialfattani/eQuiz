@@ -2,6 +2,8 @@
 --     SERVER   --
 ------------------*/
 
+	import org.gradle.plugins.ide.eclipse.model.AccessRule
+
 	/*only buildscript {} and other plugins {} blocks are allowed before plugins {} blocks, 
 	  no other statements are allowed
 	//this is for making exe file only*/	
@@ -62,12 +64,19 @@
 	eclipse {
 		
 		classpath {
-		    //customizing the classes output directory:
-		    //defaultOutputDir = file('build') //must be inside project folder
-		
-		    //default settings for downloading sources and Javadoc:
-		    downloadSources = false
-		    downloadJavadoc = true
+			//customizing the classes output directory:
+			//defaultOutputDir = file('build') //must be inside project folder
+	
+			//default settings for downloading sources and Javadoc:
+			downloadSources = false
+			downloadJavadoc = true
+
+			file { whenMerged {
+							def jre = entries.find { it.path.contains 'org.eclipse.jdt.launching.JRE_CONTAINER' }
+							jre.accessRules.add(new AccessRule('0', 'javafx/**'))
+							jre.accessRules.add(new AccessRule('0', 'com/sun/javafx/**'))
+			} }
+			
 		}
 	}
 
