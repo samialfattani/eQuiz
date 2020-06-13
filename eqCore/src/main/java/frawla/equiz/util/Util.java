@@ -160,13 +160,18 @@ public class Util
 	}
 
 	public static Optional<File> getFileChooserForOpen(){
+		
 		File f = new File(getProperty("lastExcelOpen"));
-		return getFileChooserForOpen( f );
+		if (f.exists())
+			return getFileChooserForOpen( f );
+		else
+			return getFileChooserForOpen( new File(".") );
 	}
+	
 	public static Optional<File> getFileChooserForOpen(File initialDir)
 	{
 		FileChooser fc = new FileChooser() ;
-		fc.setInitialDirectory(initialDir);
+		fc.setInitialDirectory( initialDir);
 		fc.setTitle("Open File");
 		fc.getExtensionFilters().addAll(
 				new ExtensionFilter("MS-Excel Files", "*.xlsx"),

@@ -18,7 +18,9 @@ ERRORS.txt
 
 # Eclipse
 .project
-.classpath
+
+# (keep this files as it is to avoid "Access Restriction" problem)
+.classpath 
 bin
 build
 build-eclipse

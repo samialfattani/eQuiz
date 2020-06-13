@@ -6,6 +6,17 @@
 ```bash
 $ git clone
 ```
+
+### if you are using JavaFx gives "Access Restriction Problem" please copy this code in .classpath file. If this tag is already exists then replace it with this:
+```xml
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8/">
+			<accessrules>
+					<accessrule kind="accessible" pattern="**/javafx/**"/>
+			</accessrules>
+	</classpathentry>
+```
+
+
 ### Test both Server & Client applications using:
 ```bash
 $ gradle eqServer:run 
